@@ -22,43 +22,24 @@ build.gradle 에 implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialec
 + Follow라는걸 엔티티로 볼 것이냐, 관계로 볼 것이냐에 따라 설계가 달라짐?
 
 
-⭐ 12/20 할일 ⭐
-+ 샘플데이터 만들기 -> 회원, 포스트
-+ 태그기능 구상 및 만들기 시작
-+ 소셜로그인 이어서 진행
-+ 기능보단 아예 컨트롤러, 서비스를 나눠맡아서 분담하는게 좋을것 같음(for 충돌방지?) -> 엔티티별
 ++건의사항 : post에 title속성 빼는게 나을것 같음. 딱히 쓸모x
-++ 우선 post 의 author를 member로 변경. -> 여러프로필생성기능 추가가능할때, profile로 수정하기
-
-
-memberController
- -> signup, login, delete, 소셜?, 아이디,비번찾기, 휴대폰인증 등등
-
-profileController(멤버생성과동시, 디폴트값 생성하도록)
- -> update, petupdate, 사진등록및수정 , delete..(member삭제해야..?)
-
-(noticeController) 관리자권한
- -> create/update/delete
-
-postController
- -> create, update, delete, like
-
-commentController
- -> create, update, delete, like
-
-imageService ? Controller?
- -> saveImagesforPost, saveImagesforProfile,
-
-followingMapController (나중)
-ChatController (나중)
 
 
 
-
+⭐ 12/21 할일 ⭐
++ 기능 추가할거 생각해보기
++ 여태 만들었던거 피드백, 버그 수정할지, 아니면 새로운기능을 진행할지?
 
 ```
     
 ### 2주차: 기능명세작성 완료, 기능구현 진행 
+```
+2주차 목표 : 
++ 28목 까지 지금까지 만들었던 기능 버그,에러 다 완벽하게 수정하기.+다듬기
++ 29금 추가기능 상의해보기. 
++ (보류)지도 api적용해보기 -> 리뷰공간 에 추가. /병원리뷰, 반려동물 카페 리뷰
+
+```
 ### 3주차: 기능구현 진행 
 ### 4주차: 기능구현 진행  + 템플릿 다듬기
 ### 5주차: 기능구현 진행  + 템플릿 다듬기

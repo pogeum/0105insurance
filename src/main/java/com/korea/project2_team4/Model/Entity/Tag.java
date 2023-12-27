@@ -20,4 +20,6 @@ public class Tag {
     @Column(unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.REMOVE)
+    private Set<TagMap> tagMaps;
 }

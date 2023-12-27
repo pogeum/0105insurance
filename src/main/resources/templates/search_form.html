@@ -23,20 +23,98 @@
             </div>
             <div class="row row-cols-1 align-items-center">
                 <div class="col">
-                    <div class="col" th:each="post : ${searchResults}">
+                    <h2>제목 검색 결과 조회</h2>
+                    <div class="col" th:if="${searchResultsByPostTitle.size() > 0}"
+                         th:each="post : ${searchResultsByPostTitle}">
                         <div class="card" style="width:100%">
                             <div class="d-flex">
                                 <div class="card-body">
-                                    <div th:text="${post.title}"></div>
-                                    <div th:text="${post.content}"></td>
-                                    </div>
+                                    <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                    <div th:text="${post.content}"></div>
+                                    <div th:text="${post.author.profileName}"></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col" th:unless="${searchResultsByPostTitle.size() > 0}">
+                        <p>검색 결과가 없습니다.</p>
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <a th:href="@{|/post/showMoreTitle?kw=${kw}&page=${0}|}" class="btn btn-primary">더 보기</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <h2>내용 검색 결과 조회</h2>
+                    <div class="col" th:if="${searchResultsByPostContent.size() > 0}"
+                         th:each="post : ${searchResultsByPostContent}">
+                        <div class="card" style="width:100%">
+                            <div class="d-flex">
+                                <div class="card-body">
+                                    <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                    <div th:text="${post.content}"></div>
+                                    <div th:text="${post.author.profileName}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" th:unless="${searchResultsByPostContent.size() > 0}">
+                        <p>검색 결과가 없습니다.</p>
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <a th:href="@{|/post/showMoreContent?kw=${kw}&page=${0}|}" class="btn btn-primary">더 보기</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <h2>이름 검색 결과 조회</h2>
+                    <div class="col" th:if="${searchResultsByProfileName.size() > 0}"
+                         th:each="post : ${searchResultsByProfileName}">
+                        <div class="card" style="width:100%">
+                            <div class="d-flex">
+                                <div class="card-body">
+                                    <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                    <div th:text="${post.content}"></div>
+                                    <div th:text="${post.author.profileName}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" th:unless="${searchResultsByProfileName.size() > 0}">
+                        <p>검색 결과가 없습니다.</p>
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <a th:href="@{|/post/showMoreProfileName?kw=${kw}&page=${0}|}" class="btn btn-primary">더 보기</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <h2>댓글 검색 결과 조회</h2>
+                    <div class="col" th:if="${searchResultsByCommentContent.size() > 0}"
+                         th:each="post : ${searchResultsByCommentContent}">
+                        <div class="card" style="width:100%">
+                            <div class="d-flex">
+                                <div class="card-body">
+                                    <a th:href=@{|/post/detail/${post.id}/0|} th:text="${post.title}"></a>
+                                    <div th:text="${post.content}"></div>
+                                    <div th:text="${post.author.profileName}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" th:unless="${searchResultsByCommentContent.size() > 0}">
+                        <p>검색 결과가 없습니다.</p>
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <a th:href="@{|/post/showMoreComment?kw=${kw}&page=${0}|}" class="btn btn-primary">더 보기</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script layout:fragment="script" type='text/javascript'>
+</script>
+
 </html>

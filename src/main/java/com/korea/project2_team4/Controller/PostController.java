@@ -1,13 +1,14 @@
 package com.korea.project2_team4.Controller;
 
-import com.korea.project2_team4.Model.Entity.Post;
-import com.korea.project2_team4.Model.Entity.Member;
+import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.PostForm;
-import com.korea.project2_team4.Service.ImageService;
-import com.korea.project2_team4.Service.MemberService;
-import com.korea.project2_team4.Service.PostService;
+import com.korea.project2_team4.Repository.PostRepository;
+import com.korea.project2_team4.Service.*;
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -26,9 +29,13 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
+    private final PostRepository postRepository;
+    private final ProfileService profileService;
+    private final CommentService commentService;
     private final ImageService imageService;
     private final MemberService memberService;
+    private final TagService tagService;
+    private final TagMapService tagMapService;
 
 
     @GetMapping("/main")
@@ -39,6 +46,8 @@ public class PostController {
 
     @GetMapping("/createPost")
     public String createPost(Model model, PostForm postForm) {
+        List<Tag> allTags = tagService.getAllTags();
+        model.addAttribute("allTags", allTags);
         return "createPost_form";
     }
 
@@ -54,7 +63,9 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/createPost")
-    public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult, @RequestParam(value = "imageFiles") List<MultipartFile> imageFiles) throws IOException, NoSuchAlgorithmException {//      Profile testProfile = profileService.getProfilelist().get(0);
+    public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult
+            , @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles, @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames) throws IOException, NoSuchAlgorithmException {
+        //      Profile testProfile = profileService.getProfilelist().get(0);
 //      profileService.updateprofile(testProfile,profileForm.getProfileName(),profileForm.getContent());
         Post post = new Post();
 //        System.out.println(imageFiles.size());
@@ -63,44 +74,222 @@ public class PostController {
         post.setContent(postForm.getContent());
         post.setCreateDate(LocalDateTime.now());
         post.setAuthor(sitemember.getProfile());
+        post.setCategory(postForm.getCategory());
         if (imageFiles != null && !imageFiles.isEmpty()) {
             imageService.uploadPostImage(imageFiles, post);
         }
         postService.save(post);
-
+        if (selectedTagNames != null && !selectedTagNames.isEmpty()) {
+            for (String selectedTagName : selectedTagNames) {
+                Tag tag = tagService.getTagByTagName(selectedTagName);
+                TagMap tagMap = new TagMap();
+                tagMap.setPost(post);
+                tagMap.setTag(tag);
+                tagMapService.save(tagMap);
+            }
+        }
         return "redirect:/post/community/main";
     }
 
     @GetMapping("/community/main")
-    public String communityMain(Model model) {
-        List<Post> allPosts = postService.postList();
-        model.addAttribute("allPosts", allPosts);
+    public String communityMain(Model model, @RequestParam(name = "sort", required = false) String sort, @RequestParam(value = "page", defaultValue = "0") int page,
+                                @RequestParam(name = "searchTagName", required = false) String searchTagName,
+                                @RequestParam(name="category", required = false)String category) {
+        Page<Post> allPosts;
+        allPosts = postService.postList(page);
+        if (searchTagName == null) {
+            searchTagName = "";  // 기본적으로 빈 문자열로 설정
+        }
+        if (category == null) {
+            category = "";
+        }
+        if (sort == null) {
+            sort = "latest";
+        }
+//        세가지..레파지토리?
+//                postService.sortList(searchTagName, sort, category); 세가지 한꺼번에, 메서드에 소트, 정렬된 포스트 넘겨서
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equals("latest")) {
+                allPosts = postService.postList(page);
+
+            } else if (sort.equals("likeCount")) {
+                allPosts = postService.getPostsOrderByLikeCount(page);
+            } else {
+                allPosts = postService.getPostsOrderByCommentCount(page);
+            }
+        }
+        if (searchTagName != null && !searchTagName.isEmpty()) {
+//            allPosts = postService.getPostsByTagName(page, searchTagName, sort); 이렇게 하라고 하심 내일수정
+            allPosts = postService.getPostsByTagName(page, searchTagName);
+        }
+        if (category !=null && !category.isEmpty()) {
+            allPosts = postService.getPostsByCategory(page,category);
+        }
+        model.addAttribute("searchTagName", searchTagName);
+        model.addAttribute("sort", sort);
+        model.addAttribute("paging", allPosts);
         return "community_main";
     }
 
 
-
     @GetMapping("/search")
-    public String searchPosts(@RequestParam(value = "kw", defaultValue = "") String kw, @RequestParam(name = "sort",required = false) String sort, Model model) {
-        List<Post> searchResults  = postService.searchPosts(kw);
+    public String searchPosts(@RequestParam(value = "kw", defaultValue = "") String kw, Model model) {
 
-        System.out.println(searchResults.size());
+        List<Post> searchResultsByPostTitle = postService.searchPostTitle(kw);
+        List<Post> searchResultsByPostContent = postService.searchPostContent(kw);
+        List<Post> searchResultsByProfileName = postService.searchProfileName(kw);
+        List<Post> searchResultsByCommentContent = postService.searchCommentContent(kw);
 
-        model.addAttribute("searchResults",searchResults);
+        Collections.reverse(searchResultsByPostTitle);
+        Collections.reverse(searchResultsByPostContent);
+        Collections.reverse(searchResultsByProfileName);
+        Collections.reverse(searchResultsByCommentContent);
+
+        searchResultsByPostTitle = searchResultsByPostTitle.subList(0, Math.min(5, searchResultsByPostTitle.size()));
+        searchResultsByPostContent = searchResultsByPostContent.subList(0, Math.min(5, searchResultsByPostContent.size()));
+        searchResultsByProfileName = searchResultsByProfileName.subList(0, Math.min(5, searchResultsByProfileName.size()));
+        searchResultsByCommentContent = searchResultsByCommentContent.subList(0, Math.min(5, searchResultsByCommentContent.size()));
+
+        model.addAttribute("searchResultsByPostTitle", searchResultsByPostTitle);
+        model.addAttribute("searchResultsByPostContent", searchResultsByPostContent);
+        model.addAttribute("searchResultsByProfileName", searchResultsByProfileName);
+        model.addAttribute("searchResultsByCommentContent", searchResultsByCommentContent);
         model.addAttribute("kw", kw);
-        model.addAttribute("sort", sort);
 
         return "search_form";
     }
 
-    @GetMapping("/detail/{id}")
-    public String postDetail(Model model, @PathVariable Long id) {
-        Post post = postService.getPost(id);
+    @GetMapping("/showMoreTitle")
+    public String showMorePosts(@RequestParam(value = "kw", defaultValue = "") String kw,
+                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                  Model model) {
+        Page<Post> pagingByTitle = postService.pagingByTitle(kw,page);
 
-        model.addAttribute("post",post);
+        model.addAttribute("pagingByTitle", pagingByTitle);
+        model.addAttribute("kw", kw);
+
+        return "showMoreTitle_form";
+    }
+
+    @GetMapping("/showMoreContent")
+    public String showMoreContents(@RequestParam(value = "kw", defaultValue = "") String kw,
+                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                  Model model) {
+        Page<Post> pagingByContent = postService.pagingByContent(kw,page);
+
+        model.addAttribute("pagingByContent", pagingByContent);
+        model.addAttribute("kw", kw);
+
+        return "showMoreContent_form";
+    }
+
+    @GetMapping("/showMoreProfileName")
+    public String showMoreProfileNames(@RequestParam(value = "kw", defaultValue = "") String kw,
+                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                  Model model) {
+        Page<Post> pagingByProfileName = postService.pagingByProfileName(kw,page);
+
+        model.addAttribute("pagingByProfileName", pagingByProfileName);
+        model.addAttribute("kw", kw);
+
+        return "showMoreProfileName_form";
+    }
+
+    @GetMapping("/showMoreComment")
+    public String showMoreComments(@RequestParam(value = "kw", defaultValue = "") String kw,
+                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                  Model model) {
+        Page<Post> pagingByComment = postService.pagingByComment(kw,page);
+
+        model.addAttribute("pagingByComment", pagingByComment);
+        model.addAttribute("kw", kw);
+
+        return "showMoreComment_form";
+    }
+
+    @GetMapping("/detail/{id}/{hit}")
+    public String postDetail(Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit) {
+        if (hit == 0) {
+            Post post = postService.getPostIncrementView(id);
+            model.addAttribute("post", post);
+        } else {
+            Post post = postService.getPost(id);
+            model.addAttribute("post", post);
+        }
 
         return "postDetail_form";
     }
 
+    @PostMapping("/postLike")
+    public String postLike(Principal principal, @RequestParam("id") Long id) {
+        if (principal != null) {
+            Post post = this.postService.getPost(id);
+            Member member = this.memberService.getMember(principal.getName());
+            Long postId = post.getId();
+            if (postService.isLiked(post, member)) {
+                postService.unLike(post, member);
+            } else {
+                postService.Like(post, member);
+            }
+            return "redirect:/post/detail/" + postId + "/1";
+        } else {
+            return "redirect:/member/login";
+        }
+    }
+
+    @PostMapping("/deletePost/{id}")
+    public String deletePost(@PathVariable Long id) {
+
+        postService.deleteById(id);
+
+        return "redirect:/post/community/main";
+    }
+
+    @PostMapping("/updatePost/{id}")
+    public String updatePost(@PathVariable Long id, @ModelAttribute Post updatePost) {
+
+        Post existingPost = postRepository.findById(id).orElse(null);
+
+        if (existingPost != null) {
+
+            existingPost.setTitle(updatePost.getTitle());
+            existingPost.setContent(updatePost.getContent());
+            existingPost.setModifyDate(LocalDateTime.now());
+
+            postRepository.save(existingPost);
+        }
+
+        return "redirect:/post/detail/{id}/1";
+    }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myPosts")
+    public String getMyPosts(Model model,Principal principal,@RequestParam(value = "page", defaultValue = "0") int page){
+        Profile author = memberService.getMember(principal.getName()).getProfile();
+        Page<Post> myPosts = postService.getMyPosts(page,author);
+        model.addAttribute("paging", myPosts);
+        return "Member/findMyPosts_form";
+    }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myLikedPosts")
+    public String getMyLikedPosts(Model model,Principal principal,@RequestParam(value = "page", defaultValue = "0") int page){
+        Member member = memberService.getMember(principal.getName());
+        Page<Post> myLikedPosts = postService.getMyLikedPosts(page,member);
+        model.addAttribute("paging", myLikedPosts);
+        return "Member/findMyLikedPosts_form";
+    }
+
+    //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+
+
+
+    //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 }
+
+
+
+
+
+
+

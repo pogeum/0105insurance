@@ -14,11 +14,11 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
+                        Category
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>
@@ -35,6 +35,8 @@
 
             <div class="d-flex justify-content-end">
                 <ul class="nav">
+                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findUserName|}">아이디 찾기</a>
+                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/send-email|}">비밀 번호 찾기(미구현, 이메일 전송 테스트)</a>
                     <li class="nav-item">
                         <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
                         <a class="nav-link rounded" sec:authorize="isAuthenticated()"
@@ -48,16 +50,21 @@
                     <li sec:authorize="isAuthenticated()">
                         <a class="nav-link rounded" th:href="@{/profile/detail}">내 프로필</a>
                     </li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
+                    </li>
 
                 </ul>
             </div>
 
             <form th:action="@{/post/search}" class="d-flex" role="search">
                 <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"
-                       style="width: 330px;">
-
+                       style="width: 330px;" th:value="${kw}">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>
     </div>
+    <script layout:fragment="script" type='text/javascript'>
+
+    </script>
 </nav>

@@ -5,7 +5,22 @@
     <form th:action="@{/post/createPost}" th:object="${postForm}" method="post" enctype="multipart/form-data" id="myForm">
         <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
             <div>
-                태그 선택 박스
+                <label class="form=label">태그 선택</label>
+                <div th:each="tag : ${allTags}">
+                    <label th:for="${'tag_' + tag.name}">
+                        <input type="checkbox" id="${'tag_' + tag.name}" name="selectedTagNames" th:value="${tag.name}"
+                               th:text="${tag.name}">
+                        <!--                <span th:text="${tag.name}"></span>-->
+                    </label>
+                </div>
+            </div>
+            <!-- 카테고리 선택 -->
+            <div>
+                <select id="category" name="category" class="form-select" aria-label="Default select example">
+                    <option selected>카테고리</option>
+                    <option th:selected="${postForm.category == '자유게시판'}" value="자유게시판">자유게시판</option>
+                    <option th:selected="${postForm.category == 'QnA'}" value="QnA">QnA</option>
+                </select>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -20,15 +35,14 @@
 
             <div>
                 <label for="imageFiles">이미지 업로드</label>
-                <input type="file" id="imageFiles" name="imageFiles">
+
+                <input type="file" id="imageFiles" name="imageFiles" multiple>
+
             </div>
             <button type="submit" class="btn btn-light">저장</button>
 
         </div>
     </form>
-
-
-
 
 </div>
 </html>

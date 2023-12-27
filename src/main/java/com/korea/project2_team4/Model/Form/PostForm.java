@@ -12,6 +12,7 @@ public class PostForm {
 
     private String title;
     private String content;
+    private String category;
 
     private List<MultipartFile> fileList; // 이미지 업로드를 위한 필드
 }

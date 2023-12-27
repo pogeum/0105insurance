@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <form th:action="@{/profile/myPage/update}" method="post">
+        <label for="nickName">닉네임:</label>
+        <input type="text" id="nickName" name="nickName" th:value="${siteMember.getNickName()}">
+
+        <label for="phoneNum">전화번호:</label>
+        <input type="text" id="phoneNum" name="phoneNum" th:value="${siteMember.getPhoneNum()}">
+
+        <label for="email">이메일:</label>
+        <input type="text" id="email" name="email" th:value="${siteMember.getEmail()}">
+
+        <input type="submit" value="회원 정보 수정">
+    </form>
+</div>
+<form th:action="@{|/profile/myPage/delete|}" method="post">
+    <input type="submit" value="회원 탈퇴">
+</form>
+</body>
+</html>

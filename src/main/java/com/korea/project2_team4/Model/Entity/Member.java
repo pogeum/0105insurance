@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class Member {
+public class  Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -16,19 +16,4 @@ public class MainController {
     }
 
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
-
-    @PostMapping("/test")
-    @ResponseBody
-    public MultipartFile test(@RequestParam(value = "test", required = false) MultipartFile test) {
-
-        System.out.println("111");
-        System.out.println(test);
-
-        return test;
-    }
-
 }
