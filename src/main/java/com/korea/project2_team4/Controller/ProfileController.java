@@ -55,10 +55,15 @@ public class ProfileController {
                 model.addAttribute("profile", sitemember.getProfile());
                 return "Profile/profile_detail";
             } else { // 회원이 포스트에서 프로필누를때? principal있고, postid받아온거 있을때,,
-                Member sitemember = this.memberService.getMember(principal.getName());
-                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
-                model.addAttribute("postList", myPosts);
-                model.addAttribute("profile", sitemember.getProfile());
+////                Member sitemember = this.memberService.getMember(principal.getName());
+//                Post thispost = postService.getPost(postid);
+//                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
+//                model.addAttribute("postList", myPosts);
+//                model.addAttribute("profile", sitemember.getProfile());
+
+                Post thispost = postService.getPost(postid);
+                model.addAttribute("postList", postService.getPostsbyAuthor(thispost.getAuthor()));
+                model.addAttribute("profile", thispost.getAuthor());
                 return "Profile/profile_detail";
             }
 //            try{ // 회원이 포스트에서 프로필누를때? principal있고, postid받아온거 있을때,,
