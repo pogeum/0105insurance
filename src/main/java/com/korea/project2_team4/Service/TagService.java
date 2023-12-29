@@ -21,4 +21,11 @@ public class TagService {
         return tagRepository.findByName(tagName)
                 .orElseThrow(() -> new RuntimeException("Tag not found for name: " + tagName));
     }
+
+    public Tag save(Tag tag) {
+        return tagRepository.save(tag);
+    }
+    public void deleteById(Long id) {
+        tagRepository.deleteById(id);
+    }
 }

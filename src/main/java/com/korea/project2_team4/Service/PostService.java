@@ -204,6 +204,10 @@ public class PostService {
         return postRepository.findAllByauthorPage(profile.getProfileName(), pageable);
     }
 
+    public List<Post> getPostslikes(){
+        return this.postRepository.findAllByLikesDesc();
+    }
+
     public Page<Post> getPostsBycategoryAndsortAndtag(int page, String category, String sort, String tagname) {
         Pageable pageable = PageRequest.of(page, 10);
         if (sort.equals("likeCount")) {
@@ -272,33 +276,33 @@ public class PostService {
 
 
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
     public Page<Post> pagingByTitle(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByPostTitleFromPaging(kw, pageable);
+        return postRepository.findByPostTitleWithPaging(kw, pageable);
     }
 
     public Page<Post> pagingByContent(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByPostContentFromPaging(kw, pageable);
+        return postRepository.findByPostContentWithPaging(kw, pageable);
     }
 
     public Page<Post> pagingByProfileName(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByProfileNameFromPaging(kw, pageable);
+        return postRepository.findByProfileNameWithPaging(kw, pageable);
     }
+
 
     public Page<Post> pagingByComment(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByCommentFromPaging(kw, pageable);
+        return postRepository.findByCommentWithPaging(kw, pageable);
     }
 
 }

@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
-                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                                        <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
-                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                                        <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
-                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                                        <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
                                 </div>
@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">
-                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
+                                        <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
                                              style="width: 7rem; height: 7rem; border-radius: 1rem;">
                                     </div>
                                 </div>
@@ -185,6 +185,10 @@
 
                      .card {
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+
+                    .image{
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
                     }
 
                     .clickable-card {

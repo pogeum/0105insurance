@@ -121,23 +121,18 @@
 
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="mb-0">Recent posts</h5>
+                    <h5 class="mb-0">Recent photos</h5>
                 </div>
                 <div class="row">
-<!--                    <div th:each="post : ${postList}">-->
-                        <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post : ${postList}">
-                            <!--                            <div th:text="${post.title}"></div>-->
+                        <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post : ${postList}"
+                             th:if="${post.postImages ne null and not #lists.isEmpty(post.postImages)}">
                             <a th:href="@{|/post/detail/${post.id}/0|}">
-                                <div th:each="img : ${post.postImages}" class="flex-shrink-0">
+                                <div class="flex-shrink-0" th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                     <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm" style="width:450px; height:300px;">
                                 </div>
                             </a>
 
-                            <!--                            <img th:src="@{|/files/${post.postImages[0].fileName}|}" alt="no_img" class="img-fluid rounded shadow-sm">-->
-                            <!--                            <img th:src="@{|/files/${post.postImages != null and not #lists.isEmpty(post.postImages) ? post.postImages[0].fileName : 'default-image.jpg'}|}"-->
-                            <!--                                 alt="no_img" class="img-fluid rounded shadow-sm">-->
                         </div>
-<!--                    </div>-->
 
 
                 </div>

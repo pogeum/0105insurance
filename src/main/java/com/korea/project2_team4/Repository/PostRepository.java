@@ -62,7 +62,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
 
+
 //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    //메인페이지에 쓸 포스트리스트 좋아요순
+    @Query("SELECT p FROM Post p ORDER BY SIZE(p.likeMembers) DESC")
+    List<Post> findAllByLikesDesc();
 
     //작성자 게시물 리스트all 반환
     @Query("SELECT p FROM Post p WHERE p.author.profileName LIKE %:name%")
@@ -133,21 +137,21 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " + "LEFT JOIN p.comments c " +
+    @Query("SELECT p FROM Post p " +
             "WHERE LOWER(p.title) LIKE LOWER(CONCAT('%',:kw,'%')) ")
-    Page<Post> findByPostTitleFromPaging(@Param("kw") String kw, Pageable pageable);
+    Page<Post> findByPostTitleWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " + "LEFT JOIN p.comments c " +
+    @Query("SELECT p FROM Post p " +
             "WHERE LOWER(p.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
-    Page<Post> findByPostContentFromPaging(@Param("kw") String kw, Pageable pageable);
+    Page<Post> findByPostContentWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " + "LEFT JOIN p.comments c " +
+    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " +
             "WHERE LOWER(pr.profileName) LIKE LOWER(CONCAT('%',:kw,'%')) ")
-    Page<Post> findByProfileNameFromPaging(@Param("kw") String kw, Pageable pageable);
+    Page<Post> findByProfileNameWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " + "LEFT JOIN p.comments c " +
+    @Query("SELECT p FROM Post p " + "LEFT JOIN p.comments c " +
             "WHERE LOWER(c.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
-    Page<Post> findByCommentFromPaging(@Param("kw") String kw, Pageable pageable);
+    Page<Post> findByCommentWithPaging(@Param("kw") String kw, Pageable pageable);
 
 
 }
