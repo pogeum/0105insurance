@@ -64,7 +64,8 @@
                     <div th:if="${!paging.isEmpty()}">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-                                <a class="page-link" th:href="@{|/post/community/main?page=${paging.number-1}&sort=${sort}&searchTagName=${searchTagName}|}">
+                                <a class="page-link"
+                                   th:href="@{|?page=${paging.number-1}|}">
                                     <span>이전</span>
                                 </a>
                             </li>
@@ -72,10 +73,10 @@
                                 th:if="${page >= paging.number-5 and page <= paging.number+5}"
                                 th:classappend="${page == paging.number+1} ? 'active'"
                                 class="page-item">
-                                <a th:text="${page}" class="page-link" th:href="@{|/post/community/main?page=${page-1}&sort=${sort}&searchTagName=${searchTagName}|}"></a>
+                                <a th:text="${page}" class="page-link" th:href="@{|?page=${page-1}|}"></a>
                             </li>
                             <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                                <a class="page-link" th:href="@{|/post/community/main?page=${paging.number+1}&sort=${sort}&searchTagName=${searchTagName}|}">
+                                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
                                     <span>다음</span>
                                 </a>
                             </li>

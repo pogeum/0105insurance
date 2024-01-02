@@ -48,7 +48,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                if(member.getUserName().equals("admin"))
+                if(member.getRole().equals("ROLE_ADMIN"))
                 {
                     return String.valueOf(UserRole.ADMIN.getValue());
                 }

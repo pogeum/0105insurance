@@ -55,10 +55,15 @@ public class ProfileController {
                 model.addAttribute("profile", sitemember.getProfile());
                 return "Profile/profile_detail";
             } else { // 회원이 포스트에서 프로필누를때? principal있고, postid받아온거 있을때,,
-                Member sitemember = this.memberService.getMember(principal.getName());
-                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
-                model.addAttribute("postList", myPosts);
-                model.addAttribute("profile", sitemember.getProfile());
+////                Member sitemember = this.memberService.getMember(principal.getName());
+//                Post thispost = postService.getPost(postid);
+//                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
+//                model.addAttribute("postList", myPosts);
+//                model.addAttribute("profile", sitemember.getProfile());
+
+                Post thispost = postService.getPost(postid);
+                model.addAttribute("postList", postService.getPostsbyAuthor(thispost.getAuthor()));
+                model.addAttribute("profile", thispost.getAuthor());
                 return "Profile/profile_detail";
             }
 //            try{ // 회원이 포스트에서 프로필누를때? principal있고, postid받아온거 있을때,,
@@ -95,6 +100,32 @@ public class ProfileController {
 //            return "community_main";
 //        }
     }
+
+    @GetMapping("/detail/showall")
+    public String detailShowall(Model model,  Principal principal, @RequestParam(name = "postid", required = false) Long postid) {
+        if (principal == null) { //postid가 null일수가 없음
+            Post thispost = postService.getPost(postid);
+            model.addAttribute("postList", postService.getPostsbyAuthor(thispost.getAuthor()));
+            model.addAttribute("profile", thispost.getAuthor());
+            return "Profile/profile_detail_showall";
+        } else { // postid는 null이거나 아예없거나 있는걸로? 예외처리로 해야하는듯
+            if (postid == null) { //principal있고, postid받아온거 없을때
+                Member sitemember = this.memberService.getMember(principal.getName());
+                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
+                model.addAttribute("postList", myPosts);
+                model.addAttribute("profile", sitemember.getProfile());
+                return "Profile/profile_detail_showall";
+            } else { // 회원이 포스트에서 프로필누를때? principal있고, postid받아온거 있을때,,
+                Member sitemember = this.memberService.getMember(principal.getName());
+                List<Post> myPosts = postService.getPostsbyAuthor(sitemember.getProfile());
+                model.addAttribute("postList", myPosts);
+                model.addAttribute("profile", sitemember.getProfile());
+                return "Profile/profile_detail_showall";
+            }
+//        return "Profile/profile_detail_showall";
+        }
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/update")
     public String profileupdate(Model model, ProfileForm profileForm,Principal principal) {
@@ -258,7 +289,8 @@ public class ProfileController {
 
         petService.updatePet(pet,name,content);
 
-        return "redirect:/profile/petprofile";
+        return "redirect:/profile/petprofile?petid="+petid;
+
     }
 
 

@@ -10,7 +10,7 @@
                     <div class="profile mr-3">
                         <div class="avatar" style="width:30px, height:30px;">
 
-                            <img th:src="@{/files/${profile.profileImage.fileName}}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
+                            <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
                             <form th:action="@{|/profile/deleteProfileImage|}" method="post">
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
                                 <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
@@ -121,27 +121,26 @@
 
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class
-
-                                ="mb-0">Recent posts</h5>
-                    <form th:action="@{|/profile/showallPostsBy|}">
-                        <input type="hidden" name="profileid" th:value="${profile.id}">
-                        <button type="submit" class="btn btn-link text-muted" >Show all</button>
-                    </form>
+                    <h5 class ="mb-0">Recent photos</h5>
+                    <a th:href="@{|/profile/detail/showall|}" class="btn btn-link text-muted">Show all</a>
+<!--                    <form th:action="@{|/profile/showallPostsBy|}">-->
+<!--                        <input type="hidden" name="profileid" th:value="${profile.id}">-->
+<!--                        <button type="submit" class="btn btn-link text-muted" >Show all</button>-->
+<!--                    </form>-->
                 </div>
-                <div class="row">
-                    <div th:each="post : ${postList}">
-                        <div class="col-lg-6 mb-2 pr-lg-1">
-<!--                            <div th:text="${post.title}"></div>-->
-                            <a th:href="@{|/post/detail/${post.id}|}">
-                                <div th:each="img : ${post.postImages}">
-                                    <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm">
+                <div class="row" >
+                    <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post, iterStat : ${postList}"
+                         th:if="${post.postImages ne null and not #lists.isEmpty(post.postImages)} and ${iterStat.index < 4}">
+                        <div>
+                            <a th:href="@{|/post/detail/${post.id}/0|}">
+                                <div >
+                                    <div class="flex-shrink-0" th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+
+                                        <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm" style="width:450px; height:300px;">
+                                    </div>
                                 </div>
                             </a>
-
-<!--                            <img th:src="@{|/files/${post.postImages[0].fileName}|}" alt="no_img" class="img-fluid rounded shadow-sm">-->
-<!--                            <img th:src="@{|/files/${post.postImages != null and not #lists.isEmpty(post.postImages) ? post.postImages[0].fileName : 'default-image.jpg'}|}"-->
-<!--                                 alt="no_img" class="img-fluid rounded shadow-sm">-->
+                        </div>
                         </div>
                     </div>
 

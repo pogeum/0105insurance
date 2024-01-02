@@ -25,4 +25,14 @@ public class TagMapService {
         tagMapRepository.delete(tagMap);
     }
 
+    public List<TagMap> findTagMapsByPostId(Long postId) {
+        return tagMapRepository.findByPostId(postId);
+    }
+
+
+    public void deleteTagMapsByPostId(Long postId) {
+        List<TagMap> tagMaps = findTagMapsByPostId(postId);
+        tagMapRepository.deleteAll(tagMaps);
+    }
+
 }

@@ -32,6 +32,7 @@ public class PostService {
         postRepository.save(post);
     }
 
+
     public Page<Post> postList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
@@ -46,20 +47,6 @@ public class PostService {
         return postRepository.findByTagName(searchTagName, pageable);
     }
 
-//    public Page<Post> getPostsByTagName(int page, String searchTagName, String sort, String category) {
-//        Page<Post> sortedList;
-//        if ( sort.equals("latest")) {
-//            sortedList = this.postList(page);
-//        }
-//        if (sort.equals("likeCount")) {
-//            sortedList = this.getPostsOrderByLikeCount(page);
-//        }
-//        List<Sort.Order> sorts = new ArrayList<>();
-//        sorts.add(Sort.Order.desc("createDate"));
-//        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-//        return postRepository.findByTagName(searchTagName, pageable);
-//    } 선영추가 , 수정중
-
     public Page<Post> getPostsOrderByLikeCount(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         return postRepository.findAllOrderByLikeMembersSizeDesc(pageable);
@@ -69,17 +56,19 @@ public class PostService {
         Pageable pageable = PageRequest.of(page, 10);
         return postRepository.findAllOrderByCommentsSizeDesc(pageable);
     }
-    public Page<Post> getMyPosts(int page,Profile author){
+
+    public Page<Post> getMyPosts(int page, Profile author) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return postRepository.findByAuthor(author,pageable);
+        return postRepository.findByAuthor(author, pageable);
     }
-    public Page<Post> getMyLikedPosts(int page,Member member){
+
+    public Page<Post> getMyLikedPosts(int page, Member member) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return postRepository.findByLikeMembers(member,pageable);
+        return postRepository.findByLikeMembers(member, pageable);
 
     }
 
@@ -207,53 +196,186 @@ public class PostService {
         List<Post> targetPosts = this.postRepository.findAllByauthor(profile.getProfileName());
         return targetPosts;
     }
+
     //작성자 게시글 -> 페이징처리
     public Page<Post> myPostListPage(int page, Profile profile) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10,Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return postRepository.findAllByauthorPage(profile.getProfileName(), pageable);
     }
 
-    public Page<Post> getPostsByCategory(int page, String category) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return postRepository.findByTagName(category, pageable);
+    public Page<Post> getPostsFreeboard(int page, String sort, String tagname) { //
+        if (tagname == null) {
+            tagname = "";  // 기본적으로 빈 문자열로 설정
+        }
+        if (sort == null) {
+            sort = "latest";
+        }
+
+        Pageable pageable = PageRequest.of(page,10);
+
+        if (tagname.equals("")) {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc("자유게시판", pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc("자유게시판", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByCategory("자유게시판", pageable2);
+            }
+        } else {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname,"자유게시판",pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname,"자유게시판", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByTagNameAndCategory(tagname,"자유게시판", pageable2);
+            }
+        }
+    }
+
+    public Page<Post> getPostsQnA(int page, String sort, String tagname) { //
+        if (tagname == null) {
+            tagname = "";  // 기본적으로 빈 문자열로 설정
+        }
+        if (sort == null) {
+            sort = "latest";
+        }
+
+        Pageable pageable = PageRequest.of(page,10);
+
+        if (tagname.equals("")) {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc("QnA", pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc("QnA", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByCategory("QnA", pageable2);
+            }
+        } else {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname,"QnA",pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname,"QnA", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByTagNameAndCategory(tagname,"QnA", pageable2);
+            }
+        }
     }
 
 
 
+    public List<Post> getPostslikes(){
+        return this.postRepository.findAllByLikesDesc();
+    }
+
+    public Page<Post> getPostsBycategoryAndsortAndtag(int page, String category, String sort, String tagname) {
+        Pageable pageable = PageRequest.of(page, 10);
+        if (sort.equals("likeCount")) {
+            return postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname, category, pageable);
+        } else {
+            return postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname, category, pageable);
+        }
+    }
+
+    public Page<Post> getPostsBytagAndcategoryAndsort(int page, String tagName, String category, String sort) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        if ((!tagName.equals("")) || (!category.equals(""))) {
+            if (category.equals("")) { // 태그만 있고 sort 3 가지
+                if (sort.equals("likeCount")) {
+                    return this.postRepository.findAllByTagNameOrderByLikeMembersSizeDesc(tagName, pageable);
+                } else if (sort.equals("commentCount")) {
+                    return this.postRepository.findAllByTagNameOrderByCommentsSizeDesc(tagName, pageable);
+                } else { // 최신순 + 페이징 추가
+                    List<Sort.Order> sorts = new ArrayList<>();
+                    sorts.add(Sort.Order.desc("createDate"));
+                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                    return this.postRepository.findAllByTagName(tagName, pageable2);
+                }
+            } else if (tagName.equals("")) { // 카테고리만 있고 sort 3 가지
+                if (sort.equals("likeCount")) {
+                    return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc(category, pageable);
+                } else if (sort.equals("commentCount")) {
+                    return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc(category, pageable);
+                } else { // 최신순 + 페이징 추가
+                    List<Sort.Order> sorts = new ArrayList<>();
+                    sorts.add(Sort.Order.desc("createDate"));
+                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                    return this.postRepository.findAllByCategory(category, pageable2);
+                }
+
+            } else { // 태그, 카테고리 둘 다 있고 sort 3 가지
+                if (sort.equals("likeCount")) {
+                    return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagName, category, pageable);
+                } else if (sort.equals("commentCount")) {
+                    return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagName, category, pageable);
+                } else { // 최신순 + 페이징 추가
+                    List<Sort.Order> sorts = new ArrayList<>();
+                    sorts.add(Sort.Order.desc("createDate"));
+                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                    return this.postRepository.findAllByTagNameAndCategory(tagName, category, pageable);
+                }
+
+            }
+        } else { // 태그, 카테고리 둘 다 ""
+
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllOrderByLikeMembersSizeDesc(pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllOrderByCommentsSizeDesc(pageable);
+            } else {
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAll(pageable2);
+            }
+        }
+
+
+    }
 
 
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
     public Page<Post> pagingByTitle(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByPostTitleFromPaging(kw, pageable);
+        return postRepository.findByPostTitleWithPaging(kw, pageable);
     }
 
     public Page<Post> pagingByContent(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByPostContentFromPaging(kw, pageable);
+        return postRepository.findByPostContentWithPaging(kw, pageable);
     }
 
     public Page<Post> pagingByProfileName(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByProfileNameFromPaging(kw, pageable);
+        return postRepository.findByProfileNameWithPaging(kw, pageable);
     }
+
 
     public Page<Post> pagingByComment(String kw, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
-        return postRepository.findByCommentFromPaging(kw, pageable);
+        return postRepository.findByCommentWithPaging(kw, pageable);
     }
 
 }

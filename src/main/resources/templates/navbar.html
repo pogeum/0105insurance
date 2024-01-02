@@ -6,19 +6,30 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{|/post/community/main|}">커뮤니티</a>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        커뮤니티
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/post/community/main(searchTagName='', sort='', category='')}">전체</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
+                    </ul>
                 </li>
+
+
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="#">분양/입양 공간</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Category
+                        기능추가
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
-                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
+                        <li><a class="dropdown-item" th:href="@{|#|}">1</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/#|}">2</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>
@@ -28,7 +39,7 @@
                 </li>
                 <li class="nav-item">
 
-                    <a class="nav-link active" th:href="@{/post/createPost}">글쓰기(임시)</a>
+                    <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
 
                 </li>
             </ul>
@@ -36,8 +47,11 @@
             <div class="d-flex justify-content-end">
                 <ul class="nav">
                     <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findUserName|}">아이디 찾기</a>
-                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/send-email|}">비밀 번호 찾기(미구현, 이메일 전송 테스트)</a>
+                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findPassword|}">비밀 번호 찾기</a>
                     <li class="nav-item">
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>
+                    </li>
                         <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
                         <a class="nav-link rounded" sec:authorize="isAuthenticated()"
                            th:href="@{/member/logout}">로그아웃</a>
@@ -48,8 +62,24 @@
                     </li>
 
                     <li sec:authorize="isAuthenticated()">
-                        <a class="nav-link rounded" th:href="@{/profile/detail}">내 프로필</a>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent2">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        프로필
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="nav-link rounded" th:href="@{/profile/detail}">내 프로필</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+<!--                                        each 루프돌려서 펫 드롭다운리스트 생성-->
+                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫1</a></li>
+                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫2</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+
                     <li sec:authorize="isAuthenticated()">
                         <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
                     </li>
@@ -58,9 +88,18 @@
             </div>
 
             <form th:action="@{/post/search}" class="d-flex" role="search">
-                <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"
-                       style="width: 330px;" th:value="${kw}">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <div class="input-group">
+                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"
+                           style="width: 330px;" th:value="${kw}">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </div>
+<!--                <div class="recent-keyword">-->
+<!--                    <div class="recent-search">-->
+<!--                        <div th:if="${recentSearchKeywords}">-->
+<!--                            <p th:each="keyword : ${recentSearchKeywords}" th:text="${keyword}"></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </form>
         </div>
     </div>

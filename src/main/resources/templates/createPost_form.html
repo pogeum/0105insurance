@@ -7,11 +7,22 @@
             <div>
                 <label class="form=label">태그 선택</label>
                 <div th:each="tag : ${allTags}">
+                    <th:block th:if="${tag.name == '고양이' or tag.name == '강아지' or tag.name == '기타'}">
                     <label th:for="${'tag_' + tag.name}">
                         <input type="checkbox" id="${'tag_' + tag.name}" name="selectedTagNames" th:value="${tag.name}"
                                th:text="${tag.name}">
-                        <!--                <span th:text="${tag.name}"></span>-->
                     </label>
+                    </th:block>
+                </div>
+                <div id="new-tag">
+
+                </div>
+            </div>
+            <div>
+                <label class="form=label">혹시 추가 하고 싶은 태그가 있나요?</label>
+                <div class="d-flex">
+                    <input type="text" name="newTagNames" id="tag-name" class="form-control me-2" placeholder="추가 하고 싶은 태그의 이름을 적어 보세요">
+                    <button type="button" class="btn btn-primary flex-fill" onclick="addTag()">추가</button>
                 </div>
             </div>
             <!-- 카테고리 선택 -->
@@ -27,6 +38,7 @@
             <div class="mb-3">
                 <label for="title" class="form-label">제목</label>
                 <input type="text" class="form-control" id="title" th:field="*{title}">
+                <small class="text-danger" id="title-error"></small>
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">내용</label>
@@ -39,10 +51,55 @@
                 <input type="file" id="imageFiles" name="imageFiles" multiple>
 
             </div>
-            <button type="submit" class="btn btn-light">저장</button>
+            <button type="submit" class="btn btn-light" onclick="checkTitle()">저장</button>
 
         </div>
     </form>
 
 </div>
+<script layout:fragment="script" type='text/javascript'>
+    function addTag() {
+        var container = document.getElementById('new-tag');
+        var tagName = document.getElementById('tag-name').value;
+
+        var div = document.createElement('div');
+        div.classList = 'form-check';
+        div.style.marginLeft = '-1.5rem'; // 이 부분을 추가하였습니다.
+
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = 'tag-' + tagName;
+        input.name = 'selectedTagNames';
+        input.value = tagName;
+        input.checked = true;
+
+        var label = document.createElement('label');
+        label.classList = 'form-check-label';
+        label.htmlFor = 'tag-' + tagName;
+        label.textContent = tagName;
+
+        div.appendChild(input);
+        div.appendChild(label);
+        container.appendChild(div);
+    }
+    function checkTitle() {
+        var titleInput = document.getElementById('title');
+        var titleError = document.getElementById('title-error');
+
+        if (!titleInput.value.trim()) {
+            titleError.textContent = '제목을 입력하세요.';
+            titleError.style.display = 'block';
+            titleInput.focus();
+            return false;
+        } else {
+            titleError.textContent = '';
+            titleError.style.display = 'none';
+            return true;
+        }
+    }
+
+    document.getElementById('myForm').onsubmit = function() {
+        return checkTitle();
+    };
+</script>
 </html>

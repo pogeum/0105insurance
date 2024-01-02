@@ -58,6 +58,6 @@ public class  Member {
     @OneToMany(mappedBy = "following")
     private List<Follow> followings;
 
-    private String Role;
+    private String role;
 
 }

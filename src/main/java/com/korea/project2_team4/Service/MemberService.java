@@ -3,6 +3,7 @@ package com.korea.project2_team4.Service;
 import com.korea.project2_team4.Config.UserRole;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Profile;
+import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
 import com.korea.project2_team4.Repository.MemberRepository;
@@ -10,6 +11,10 @@ import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,9 +63,16 @@ public class MemberService {
         member.setPassword(passwordEncoder.encode(memberResetForm.getNew_password()));
         memberRepository.save(member);
     }
+    public void editPassword(EditPasswordForm editPasswordForm, Member member) {
+        member.setPassword(passwordEncoder.encode(editPasswordForm.getNew_password()));
+        memberRepository.save(member);
+    }
 
     public Member getMember(String username) {
         return this.memberRepository.findByUserName(username).orElse(null);
+    }
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
     }
 
     public Member getMemberById(Long memberId) {
@@ -156,19 +168,41 @@ public class MemberService {
         return memberRepository.findByRealNameAndEmail(realName, email)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다. 실명: " + realName + ", 이메일: " + email));
     }
+    public Member foundUserByUserName(String realName, String email,String userName) {
+        return memberRepository.findByRealNameAndEmailAndUserName(realName, email, userName)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다. 실명: " + realName + ", 이메일: " + email));
+    }
 
 
-    public boolean checkMemberByEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public boolean checkMemberToFindUserName(String email,String realName) {
+        return memberRepository.existsByEmailAndRealName(email,realName);
+    }
+    public boolean checkMemberToFindPassword(String userName, String email, String realName){
+        return memberRepository.existsByUserNameAndEmailAndRealName(userName,email,realName);
     }
 
     public void SendVerificationCode(String email,String verificationCode) {
-        emailService.sendEmail(email,"비마이펫 인증 번호 입니다","인증 번호 : "+verificationCode);
+        emailService.sendEmail(email,"PetPlanet 인증 번호 입니다","인증 번호 : "+verificationCode);
     }
     public static String generateRandomCode() {
         // 100000부터 999999까지의 랜덤 숫자 생성 (6자리)
         int randomCode = new Random().nextInt(900000) + 100000;
         return String.valueOf(randomCode);
     }
+    public Page<Member> getMemberListByPage(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10,Sort.by(sorts));
+        return this.memberRepository.findAll(pageable);
+    }
+    @jakarta.transaction.Transactional
+    public void changeMemberRole(Long id, String Role) {
+        Member member = memberRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("member not found"));
 
+        member.setRole(Role);
+
+        memberRepository.save(member);
+
+    }
 }

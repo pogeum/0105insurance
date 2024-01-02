@@ -1,0 +1,191 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content" class="row py-5 px-4">
+    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
+
+        <!-- Profile widget -->
+        <div class="bg-white shadow rounded overflow-hidden">
+            <div class="px-4 pt-0 pb-4 bg-secondary" >
+                <div class="media align-items-end profile-header">
+                    <div class="profile mr-3">
+                        <div class="avatar" style="width:30px, height:30px;">
+
+                            <img th:src="@{/files/${profile.profileImage.fileName}}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
+                            <form th:action="@{|/profile/deleteProfileImage|}" method="post">
+                                <input type="hidden" name="profileid" th:value="${profile.id}">
+                                <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="media-body mb-5 text-white">
+                        <a sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>
+                        <h4 class="mt-0 mb-0" th:text="${profile.profileName}"></h4>
+                        <p class="small mb-4" th:text="${profile.content}"> <i class="fa fa-map-marker mr-2"></i></p>
+
+
+                        <!-- Button trigger modal -->
+                        <button sec:authorize="isAuthenticated()" type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            펫추가
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">펫 추가</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- 폼 시작 -->
+                                        <form th:action="@{/profile/addpet}" method="post" enctype="multipart/form-data" id="myForm">
+                                            <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                                <div class="mb-3">
+                                                    <!--                                    <label for="name" class="form-label">이름</label>-->
+                                                    <input type="text" class="form-control" name="name" >
+                                                </div>
+                                                <div class="mb-3">
+                                                    <!--                                    <label for="content" class="form-label">소개</label>-->
+                                                    <textarea class="form-control" name="content" rows="3"></textarea>
+                                                </div>
+
+                                                <div>
+                                                    <label for="imageFile">이미지 업로드</label>
+                                                    <input type="file" id="imageFile" name="imageFile">
+                                                </div>
+                                                <!--                                <button type="submit" class="btn btn-light">저장</button>-->
+
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <button type="submit" class="btn btn-light">저장</button>
+                                            </div>
+
+                                        </form>
+
+                                        <!-- 폼 종료 -->
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="pets-box d-flex">
+                            <!-- 펫 카드 -->
+                            <div class="pet-card" th:each="pet : ${profile.petList}" >
+                                <!-- 부트스트랩 카드 -->
+                                <div class="d-flex flex-column" style="width: 100%; height:100%; margin:5px;">
+
+
+
+
+                                    <form th:action="@{/profile/petprofile}" th:id="'petForm' + ${pet.id}" method="get">
+                                        <input type="hidden" name="petid" th:value="${pet.id}">
+                                        <a th:onclick="submitForm('${pet.id}')" class="d-flex align-items-center" >
+                                            <img th:if="${pet.petImage.fileName != null}" th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet" class="avatar-img rounded-circle" style="width:100px; height:100px; object-fit: cover; cursor:pointer;" />
+                                        </a>
+                                    </form>
+
+
+                                    <div style="width:100%; height:10%;">
+                                        <a th:href="@{/profile/petprofile(petid=${pet.id})}" th:text="${pet.name}" style="margin:0;" ></a>
+                                        <!--                                        <p class="small mb-4 " th:text="${pet.name}" style="margin:0;"><i class="fa fa-map-marker mr-2"></i></p>-->
+                                    </div>
+                                    <form th:action="@{|/profile/deletepet|}" method="post">
+                                        <input type="hidden" name="petid" th:value="${pet.id}">
+                                        <button type="submit" class="btn btn-link" style="text-decoration:none; color:inherit;">✕</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-light p-4 d-flex justify-content-end text-center">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block" th:text="${postList.size}"></h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>게시물</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">848</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>팔로워</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">24</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>팔로잉</small>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="py-4 px-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0">Recent photos</h5>
+                </div>
+                <div class="row">
+                        <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post : ${postList}"
+                             th:if="${post.postImages ne null and not #lists.isEmpty(post.postImages)}">
+                            <a th:href="@{|/post/detail/${post.id}/0|}">
+                                <div class="flex-shrink-0" th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+                                    <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm" style="width:450px; height:300px;">
+                                </div>
+                            </a>
+
+                        </div>
+
+
+                </div>
+                <!--                <div class="py-4">-->
+                <!--                    <h5 class="mb-3">Recent posts</h5>-->
+                <!--                    <div class="p-4 bg-light rounded shadow-sm">-->
+                <!--                        <p class="font-italic mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>-->
+                <!--                        <ul class="list-inline small text-muted mt-3 mb-0">-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-comment-o mr-2"></i>12 Comments</li>-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-heart-o mr-2"></i>200 Likes</li>-->
+                <!--                        </ul>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div><!-- End profile widget -->
+
+    </div>
+
+
+
+    <!--    <script>-->
+    <!--        document.addEventListener("DOMContentLoaded", function() {-->
+    <!--            function submitForm(petid) {-->
+    <!--                var formId = 'petForm' + petid;-->
+    <!--                var form = document.getElementById(formId);-->
+
+    <!--                if (form) {-->
+    <!--                    form.submit();-->
+    <!--                } else {-->
+    <!--                    console.error('Form not found:', formId);-->
+    <!--                }-->
+    <!--            }-->
+    <!--        });-->
+    <!--    </script>-->
+</div>
+<script>
+    <!--    function submitForm(petid) {-->
+    <!--        var formId = 'petForm' + petid;-->
+    <!--        document.getElementById(formId).submit();-->
+    <!--    }-->
+
+            function submitForm(petid) {
+                var formId = 'petForm' + petid;
+                var form = document.getElementById(formId);
+
+                if (form) {
+                    form.submit();
+                } else {
+                    console.error('Form not found:', formId);
+                }
+        }
+
+
+</script>
+
+</html>

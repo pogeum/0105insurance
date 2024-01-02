@@ -6,7 +6,6 @@ import com.korea.project2_team4.Model.Entity.Post;
 import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Repository.ImageRepository;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -202,5 +200,7 @@ public class ImageService {
 
     }
 
-
+    public void deleteImage(Long imageId) {
+        imageRepository.deleteById(imageId);
+    }
 }
