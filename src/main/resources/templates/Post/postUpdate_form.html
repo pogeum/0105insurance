@@ -32,9 +32,15 @@
                     </div>
                     <hr class="mt-1 mb-5">
                     <div class="mb-5">
-                        <input type="hidden" name="id" th:value="${post.id}">
+                        <label  for="imageFiles" >이미지 추가</label >
                         <input type="file" id="imageFiles" name="imageFiles" multiple>
-                        <button class="btn btn-primary admin-btn" type="submit">이미지 추가</button>
+                    </div>
+                    <div class="col">
+                        <div th:each="img, iterStat : ${post.postImages}" onclick="deleteImage(this)">
+                            <img class="postImage image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="게시물 이미지"
+                                 style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                            <button class="btn btn-danger" onclick="deleteImage(this)">X</button>
+                        </div>
                     </div>
                     <br>
                     <div class="pt-3 pb-5">
@@ -46,15 +52,6 @@
                         <button class="btn btn-primary admin-btn" type="submit">수정완료</button>
                     </div>
                 </form>
-                <div class="col">
-                    <div th:each="img, iterStat : ${post.postImages}">
-                        <img class="image me-3 mb-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
-                             style="width: 14rem; height: 14rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
-                        <form th:action="@{|/post/deleteImage|}" method="post">
-                            <button type="submit" class="btn btn-danger">X</button>
-                        </form>
-                    </div>
-                </div>
             </div>
             <style>
                 hr {
@@ -74,10 +71,25 @@
             </style>
         </div>
     </div>
-    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
-        function uploadImages() {
-            console.log("이미지 버튼이 클릭되었습니다.");
-        }
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript" src="https://code.jquery.com/jquery-3.6.4.min.js">
+        function deleteImage(buttonElement) {
+            var imageElement = $(buttonElement).prev('.postImage');  // 'postImage' 클래스를 가진 형제 중에서 이전 요소 찾기
+            var imageName = imageElement.attr('src').substring(imageElement.attr('src').lastIndexOf('/') + 1);
+
+            $.ajax({
+              url: '/delete-image',  // 서버의 이미지 삭제 엔드포인트
+              method: 'POST',
+              data: { imageName: imageName },  // 삭제할 이미지 파일명 전송
+              success: function(response) {
+                // 서버에서 응답이 성공적으로 온 경우
+                $(imageElement).parent().remove();  // 이미지를 감싸는 부모 요소 삭제
+                alert("이미지가 삭제되었습니다.");
+              },
+              error: function(error) {
+                alert("이미지 삭제에 실패했습니다.");
+              }
+            });
+          }
     </script>
 </div>
 </html>

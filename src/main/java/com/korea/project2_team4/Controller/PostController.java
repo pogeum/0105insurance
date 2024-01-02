@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @Builder
@@ -47,7 +48,6 @@ public class PostController {
     @GetMapping("/main")
     public String main() {
 
-
         return "community_main";
     }
 
@@ -55,7 +55,7 @@ public class PostController {
     public String createPost(Model model, PostForm postForm) {
         List<Tag> allTags = tagService.getAllTags();
         model.addAttribute("allTags", allTags);
-        return "createPost_form";
+        return "Post/createPost_form";
     }
 
     //테스트 데이터
@@ -130,6 +130,7 @@ public class PostController {
                                 @RequestParam(name = "sort", required = false) String sort,
                                 @RequestParam(value = "page", defaultValue = "0") int page,
                                 @RequestParam(name = "TagName", required = false) String TagName) {
+
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -137,7 +138,19 @@ public class PostController {
         Page<Post> allPosts;
         allPosts = postService.postList(page);
 
-        if (category.equals("자유게시판")) {
+        List<Tag> defaultTagList = tagService.getDefaultTags();
+
+        if (category.equals("QnA")) {
+            Page<Post> qnaPosts = postService.getPostsQnA(page,sort,TagName);
+
+            model.addAttribute("category", category);
+            model.addAttribute("TagName", TagName);
+            model.addAttribute("sort", sort);
+            model.addAttribute("paging", qnaPosts);
+            model.addAttribute("defaultTagList", defaultTagList);
+            return "community_main";
+
+        } else if (category.equals("자유게시판")) {
 
             Page<Post> freeboardPosts = postService.getPostsFreeboard(page,sort,TagName);
 
@@ -145,51 +158,19 @@ public class PostController {
             model.addAttribute("TagName", TagName);
             model.addAttribute("sort", sort);
             model.addAttribute("paging", freeboardPosts);
+            model.addAttribute("defaultTagList", defaultTagList);
             return "community_main";
-        }
-
-
-        if (category.equals("QnA")) {
-
-            Page<Post> qnaPosts = postService.getPostsQnA(page,sort,TagName);
+        } else {
+            Page<Post> posts = postService.getAllPosts(page,sort,TagName);
 
             model.addAttribute("category", category);
             model.addAttribute("TagName", TagName);
             model.addAttribute("sort", sort);
-            model.addAttribute("paging", qnaPosts);
+            model.addAttribute("paging", posts);
+            model.addAttribute("defaultTagList", defaultTagList);
             return "community_main";
         }
 
-
-//        if (searchTagName == null) {
-//            searchTagName = "";  // 기본적으로 빈 문자열로 설정
-//        }
-        if (category == null) {
-            category = "";
-        }
-//        if (sort == null) {
-//            sort = "latest";
-//        }
-
-//        if (TagName.equals("전체")) {
-//            if (sort.equals("likeCount")) {
-//                allPosts = postService.getPostsOrderByLikeCount(page);
-//            } else if (sort.equals("commentCount")) {
-//                allPosts = postService.getPostsOrderByCommentCount(page);
-//            } else {
-//                allPosts = postService.postList(page);
-//            }
-//        } else {
-//            allPosts = postService.getPostsBytagAndcategoryAndsort(page, TagName, category, sort);
-//        }
-
-        //sorting 이랑 태그는 ㅇㅋ 근데 카테고리 이상 --> null들어가는거쩔수없음 . 카테고리 필수선택으로 할지?
-
-        model.addAttribute("category", category);
-        model.addAttribute("TagName", TagName);
-        model.addAttribute("sort", sort);
-        model.addAttribute("paging", allPosts);
-        return "community_main";
     }
 
 
@@ -233,7 +214,7 @@ public class PostController {
         model.addAttribute("pagingByTitle", pagingByTitle);
         model.addAttribute("kw", kw);
 
-        return "showMoreTitle_form";
+        return "Search/showMoreTitle_form";
     }
 
     @GetMapping("/showMoreContent")
@@ -245,7 +226,7 @@ public class PostController {
         model.addAttribute("pagingByContent", pagingByContent);
         model.addAttribute("kw", kw);
 
-        return "showMoreContent_form";
+        return "Search/showMoreContent_form";
     }
 
     @GetMapping("/showMoreProfileName")
@@ -257,7 +238,7 @@ public class PostController {
         model.addAttribute("pagingByProfileName", pagingByProfileName);
         model.addAttribute("kw", kw);
 
-        return "showMoreProfileName_form";
+        return "Search/showMoreProfileName_form";
     }
 
     @GetMapping("/showMoreComment")
@@ -269,7 +250,7 @@ public class PostController {
         model.addAttribute("pagingByComment", pagingByComment);
         model.addAttribute("kw", kw);
 
-        return "showMoreComment_form";
+        return "Search/showMoreComment_form";
     }
 
     @GetMapping("/detail/{id}/{hit}")
@@ -292,7 +273,7 @@ public class PostController {
         model.addAttribute("allTags", allTags);
         model.addAttribute("postForm", postForm);
 
-        return "postDetail_form";
+        return "Post/postDetail_form";
     }
 
     @PostMapping("/postLike")
@@ -332,7 +313,8 @@ public class PostController {
 
     @GetMapping("/updatePost/{id}")
     public String updatePost(Principal principal,Model model, @PathVariable("id") Long id) {
-
+        List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
+        model.addAttribute("getPostTags",getPostTags);
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -341,7 +323,7 @@ public class PostController {
         Post post = postService.getPost(id);
         model.addAttribute("post", post);
 
-        return "postUpdate_form";
+        return "Post/postUpdate_form";
     }
 
     @PostMapping(value = "/updatePost/{id}", consumes = {"multipart/form-data"})
@@ -360,7 +342,7 @@ public class PostController {
             tagMapService.deleteTagMapsByPostId(id);
 
             if (imageFiles != null && !imageFiles.isEmpty()) {
-                imageService.uploadPostImage(imageFiles, post);
+                imageService.uploadPostImage(imageFiles, existingPost);
             }
 
             if (selectedTagNames != null && !selectedTagNames.isEmpty()) {
@@ -380,13 +362,16 @@ public class PostController {
         return "redirect:/post/detail/{id}/1";
     }
 
-    @PostMapping("/deleteImage")
-    public String deleteImage(@PathVariable("id") Long id,@PathVariable("imageId") Long imageId) {
-        Post post = this.postService.getPost(id);
-        Long postId = post.getId();
-        imageService.deleteImage(imageId);
-        return "redirect:/post/detail/"+ postId +"/1";
-    }
+//    @PostMapping("delete-image")
+//    @ResponseBody
+//    public String deleteImage(@RequestParam("imageName") String imageName) {
+//        if (imageService.deleteImage(imageName)) {
+//            return "success";
+//        } else {
+//            return "failure";
+//        }
+//    }
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/myPosts")
@@ -406,11 +391,11 @@ public class PostController {
         return "Member/findMyLikedPosts_form";
     }
 
+
+    //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+
+    //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
 }
-
-
-
-
-
-
 

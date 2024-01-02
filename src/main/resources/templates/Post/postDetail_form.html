@@ -76,10 +76,10 @@
                 <br>
                 <div class="pb-2">
                     <div class="row justify-content-end">
-                        <div class="col-md-auto" th:if="${post.author?.id == loginedMember?.id}">
+                        <div class="col-md-auto" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                             <button type="button" class="btn btn-primary admin-btn" style="margin-right: 0.1rem"
                                     data-bs-toggle="modal" th:data-bs-target="'#approveModal' + ${post.id}"
-                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">수정
+                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
                             </button>
                         </div>
                         <div class="col-md-auto"

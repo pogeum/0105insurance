@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <!-- 추가한 CSS 파일 불러오기 -->
-<!--        <link rel="stylesheet" type="text/css" href="/static/btn_selected.css">-->
+        <!--        <link rel="stylesheet" type="text/css" href="/static/btn_selected.css">-->
         <title>Pet Planet!</title>
     </head>
     <body>
@@ -14,10 +14,34 @@
                 <div class="container">
                     <div class="row row-cols-3">
                         <div class="col" style="">
+<!--<<<<<<< HEAD-->
+<!--                            &lt;!&ndash;                            <a type="button"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                               th:href="@{/post/community/main(searchTagName='전체', sort=${sort}, category=${category})}"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                               th:class="'btn btn-outline-warning' + (${category == '전체' ? ' selected' : ''})">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                전체&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            </a>&ndash;&gt;-->
+
+<!--                            <a type="button" class="btn btn-outline-warning"-->
+<!--                               th:href="@{/post/community/main(searchTagName='전체', sort=${sort}, category=${category})}">전체</a>-->
+<!--                            <a type="button" class="btn btn-outline-warning"-->
+<!--                               th:href="@{/post/community/main(searchTagName='강아지', sort=${sort}, category=${category})}">강아지</a>-->
+<!--                            <a type="button" class="btn btn-outline-warning"-->
+<!--                               th:href="@{/post/community/main(searchTagName='고양이', sort=${sort}, category=${category})}">고양이</a>-->
+<!--                            <a type="button" class="btn btn-outline-warning"-->
+<!--                               th:href="@{/post/community/main(searchTagName='기타', sort=${sort}, category=${category})}">기타</a>-->
+<!--                        </div>-->
+
+<!--                        <div class="col" style="">-->
+<!--                            <a type="button" class="btn btn-outline-info"-->
+<!--                               th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='자유게시판')}">자유게시판</a>-->
+<!--                            <a type="button" class="btn btn-outline-info"-->
+<!--                               th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='QnA')}">QnA</a>-->
+<!--=======-->
                             <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='')}">전체</a>
                             <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='강아지')}" >강아지</a>
                             <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='고양이')}" >고양이</a>
                             <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='기타')}" >기타</a>
+<!--&gt;>>>>>> 4572fd511c97f811b5a9a9a3bfcb43000d59e245-->
                         </div>
                         <!--정렬 기능 버튼을 번갈아가면서 누르면 여러개의 태그, 카테고리, 분류 정보가 꼬여서 인식을 못 하는 것 같습니다. 임시로 본래 분류 기능만 사용하도록 수정해서 쓰겠습니다.-->
                     </div>
@@ -25,9 +49,18 @@
                     <!--정렬 기능 버튼을 번갈아가면서 누르면 여러개의 태그, 카테고리, 분류 정보가 꼬여서 인식을 못 하는 것 같습니다. 임시로 본래 분류 기능만 사용하도록 수정해서 쓰겠습니다.-->
                 </div>
                 <div class="btn-group">
+<!--<<<<<<< HEAD-->
+<!--                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='latest', category=${category})}"-->
+<!--                       class="btn btn-primary">최신순</a>-->
+<!--                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='likeCount', category=${category})}"-->
+<!--                       class="btn btn-primary">인기 많은순</a>-->
+<!--                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='commentCount', category=${category})}"-->
+<!--                       class="btn btn-primary">댓글 많은순</a>-->
+<!--=======-->
                     <a th:href="@{/post/community/main(TagName=${TagName}, sort='latest', category=${category})}" class="btn btn-primary">최신순</a>
                     <a th:href="@{/post/community/main(TagName=${TagName}, sort='likeCount', category=${category})}" class="btn btn-primary">인기 많은순</a>
                     <a th:href="@{/post/community/main(TagName=${TagName}, sort='commentCount', category=${category})}" class="btn btn-primary">댓글 많은순</a>
+<!--&gt;>>>>>> 4572fd511c97f811b5a9a9a3bfcb43000d59e245-->
                 </div>
                 <div class="row row-cols-1 align-items-center">
                     <div class="col">
@@ -67,7 +100,9 @@
                                         <div>
                                             <form th:action="@{|/profile/detail|}">
                                                 <input type="hidden" name="postid" th:value="${post.id}">
-                                                <button type="submit" class="btn btn-link" th:text="${post.author.profileName}" style="font-weight:bold; text-decoration:none; color:inherit;"></button>
+                                                <button type="submit" class="btn btn-link"
+                                                        th:text="${post.author.profileName}"
+                                                        style="font-weight:bold; text-decoration:none; color:inherit;"></button>
                                             </form>
                                             <!--                                        <a th:href="@{|/profile/detail|}" th:text="${post.author.profileName}" style="text-decoration:none; color:inherit;"></a>-->
                                             <div>
@@ -81,16 +116,95 @@
                                             <span id="voteCount" th:text="${'좋아요 : '+post.likeMembers.size()}"></span>
                                             <p th:text="|${'댓글 : ' + #lists.size(post.comments)}|"></p>
                                         </div>
-                                        <p style="margin-top: 10px; font-size: 17px; " th:if="${!post.getTagList().isEmpty()}">
-                                            <span th:each="tag, loop : ${post.getTagList()}" th:text="' '+ @{|#${tag.name}|}"></span>
+                                        <p style="margin-top: 10px; font-size: 17px; "
+                                           th:if="${!post.getTagList().isEmpty()}">
+                                            <span th:each="tag, loop : ${post.getTagList()}"
+                                                  th:text="' '+ @{|#${tag.name}|}"></span>
                                         </p>
                                         <div>
-                                            <p th:if="${post.category != '카테고리' && post.category != null}" th:text="${'카테고리 : ' + post.category}"></p>
+                                            <p th:if="${post.category != '카테고리' && post.category != null}"
+                                               th:text="${'카테고리 : ' + post.category}"></p>
                                         </div>
                                         <div>
                                             <p th:text="${'조회수 : ' + post.view}"></p>
                                         </div>
-                                        <div class="col-md-auto" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                        <div class="col-md-auto"
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                            <button type="button" class="btn btn-primary admin-btn"
+                                                    style="margin-right: 0.1rem"
+                                                    data-bs-toggle="modal"
+                                                    th:data-bs-target="'#approveModal' + ${post.id}"
+                                                    th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
+                                            </button>
+                                        </div>
+<!--                                        관리자 게시물 수정 모달창-->
+                                        <div class="modal fade" th:id="'approveModal' + ${post.id}" tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="'approveModalLabel' + ${post.id}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title fw-bold fs-4"
+                                                            th:id="'approveModalLabel' + ${post.id}">게시물
+                                                            수정</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
+                                                        <form th:action="@{|/post/updatePost/${post.id}|}" method="post"
+                                                              th:object="${postForm}"
+                                                              onsubmit="return UpdatePost();">
+                                                            <input type="hidden" name="postId" th:value="${post.id}">
+                                                            <div>
+                                                                <label class="form-label">태그 선택</label>
+                                                                <div th:each="tag : ${post.getDefaultTagsToPostTagList(defaultTagList)}">
+                                                                    <label th:for="${'tag_' + tag.name}">
+                                                                        <input type="checkbox" id="${'tag_' + tag.name}"
+                                                                               name="selectedTagNames"
+                                                                               th:value="${tag.name}"
+                                                                               th:text="${tag.name}"
+                                                                               th:checked="${post.getTagList().contains(tag)}">
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <!--                                        <option selected>카테고리</option>-->
+                                                            카테고리 선택
+                                                            <div>
+                                                                <select id="category" name="category"
+                                                                        class="form-select"
+                                                                        aria-label="Default select example">
+                                                                    <option selected>카테고리</option>
+                                                                    <option value="자유게시판"
+                                                                            th:selected="${post.category == '자유게시판'}">
+                                                                        자유게시판
+                                                                    </option>
+                                                                    <option value="QnA"
+                                                                            th:selected="${post.category == 'QnA'}">QnA
+                                                                    </option>
+                                                                </select>
+                                                            </div>
+                                                            <br>
+                                                            <div class="modal-footer">
+                                                                <button type="submit" class="btn btn-success btn-modal"
+                                                                        style="margin-top: 15px">수정
+                                                                </button>
+                                                                <button type="button"
+                                                                        class="btn btn-secondary btn-modal"
+                                                                        style="margin-top: 15px"
+                                                                        data-bs-dismiss="modal">닫기
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-auto"
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                                             <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
                                                   onsubmit="return deletePost()">
                                                 <button type="submit" class="btn btn-danger admin-btn"
@@ -106,7 +220,12 @@
                         <div th:if="${!paging.isEmpty()}">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+<!--<<<<<<< HEAD-->
+<!--                                    <a class="page-link"-->
+<!--                                       th:href="@{|/post/community/main?page=${paging.number-1}&sort=${sort}&searchTagName=${searchTagName}|}">-->
+<!--=======-->
                                     <a class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${paging.number-1}|}">
+<!--&gt;>>>>>> 4572fd511c97f811b5a9a9a3bfcb43000d59e245-->
                                         <span>이전</span>
                                     </a>
                                 </li>
@@ -114,10 +233,19 @@
                                     th:if="${page >= paging.number-5 and page <= paging.number+5}"
                                     th:classappend="${page == paging.number+1} ? 'active'"
                                     class="page-item">
+<!--<<<<<<< HEAD-->
+<!--                                    <a th:text="${page}" class="page-link"-->
+<!--                                       th:href="@{|/post/community/main?page=${page-1}&sort=${sort}&searchTagName=${searchTagName}|}"></a>-->
+<!--                                </li>-->
+<!--                                <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">-->
+<!--                                    <a class="page-link"-->
+<!--                                       th:href="@{|/post/community/main?page=${paging.number+1}&sort=${sort}&searchTagName=${searchTagName}|}">-->
+<!--=======-->
                                     <a th:text="${page}" class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${page-1}|}"></a>
                                 </li>
                                 <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
                                     <a class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${paging.number+1}|}">
+<!--&gt;>>>>>> 4572fd511c97f811b5a9a9a3bfcb43000d59e245-->
                                         <span>다음</span>
                                     </a>
                                 </li>
@@ -131,11 +259,14 @@
             </div>
         </div>
     </div>
-        <script layout:fragment="script" type='text/javascript'>
-            function deletePost() {
-            return confirm("게시글을 삭제하시겠습니까?");
-            }
-        </script>
+    <script layout:fragment="script" type='text/javascript'>
+        function deletePost() {
+        return confirm("게시글을 삭제하시겠습니까?");
+        }
+        function openApproveModal() {
+        $('#approveModal').modal('show');
+        }
+    </script>
     </body>
 </div>
 </html>

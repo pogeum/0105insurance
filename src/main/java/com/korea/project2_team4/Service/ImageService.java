@@ -200,7 +200,9 @@ public class ImageService {
 
     }
 
-    public void deleteImage(Long imageId) {
-        imageRepository.deleteById(imageId);
-    }
+//    public boolean deleteImage(String imageName) {
+//        imageRepository.deleteByImageName(imageName);
+//        return true;
+//    }
+
 }

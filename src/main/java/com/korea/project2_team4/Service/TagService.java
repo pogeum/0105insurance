@@ -37,6 +37,17 @@ public class TagService {
         return tagRepository.existsByName(tagName);
 
     }
+    public List<Tag> getDefaultTags() {
+        List<Tag> defaultTagList = new ArrayList<>();
+
+        defaultTagList.add(getTagByTagName("강아지"));
+        defaultTagList.add(getTagByTagName("고양이"));
+        defaultTagList.add(getTagByTagName("기타"));
+
+        return defaultTagList;
+    }
+
+
     public List<Tag> getTagListByPost(Post post) {
         List<Tag> getTagList = new ArrayList<>();
         getTagList.addAll(post.getTagList());
@@ -62,3 +73,4 @@ public class TagService {
         return false;
     }
 }
+
