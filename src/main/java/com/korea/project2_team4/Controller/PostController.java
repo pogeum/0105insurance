@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -112,15 +114,22 @@ public class PostController {
             }
         }
 
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postForm.getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
 
-        return "redirect:/post/community/main";
+        return String.format("redirect:/post/community/main?category=%s&sort=%s&TagName=%s",encodedCategory, "", "");
     }
 
     @GetMapping("/community/main")
     public String communityMain(Principal principal, Model model, @RequestParam(name = "category", required = false) String category,
                                 @RequestParam(name = "sort", required = false) String sort,
                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                @RequestParam(name = "searchTagName", required = false) String TagName) {
+                                @RequestParam(name = "TagName", required = false) String TagName) {
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -133,7 +142,7 @@ public class PostController {
             Page<Post> freeboardPosts = postService.getPostsFreeboard(page,sort,TagName);
 
             model.addAttribute("category", category);
-            model.addAttribute("searchTagName", TagName);
+            model.addAttribute("TagName", TagName);
             model.addAttribute("sort", sort);
             model.addAttribute("paging", freeboardPosts);
             return "community_main";
@@ -145,7 +154,7 @@ public class PostController {
             Page<Post> qnaPosts = postService.getPostsQnA(page,sort,TagName);
 
             model.addAttribute("category", category);
-            model.addAttribute("searchTagName", TagName);
+            model.addAttribute("TagName", TagName);
             model.addAttribute("sort", sort);
             model.addAttribute("paging", qnaPosts);
             return "community_main";
@@ -177,7 +186,7 @@ public class PostController {
         //sorting 이랑 태그는 ㅇㅋ 근데 카테고리 이상 --> null들어가는거쩔수없음 . 카테고리 필수선택으로 할지?
 
         model.addAttribute("category", category);
-        model.addAttribute("searchTagName", TagName);
+        model.addAttribute("TagName", TagName);
         model.addAttribute("sort", sort);
         model.addAttribute("paging", allPosts);
         return "community_main";
@@ -309,9 +318,16 @@ public class PostController {
     @PostMapping("/deletePost/{id}")
     public String deletePost(@PathVariable Long id) {
 
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postService.getPost(id).getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
         postService.deleteById(id);
 
-        return "redirect:/post/community/main";
+        return String.format("redirect:/post/community/main?category=%s&sort=%s&TagName=%s",encodedCategory, "", "");
     }
 
     @GetMapping("/updatePost/{id}")
@@ -389,11 +405,6 @@ public class PostController {
         model.addAttribute("paging", myLikedPosts);
         return "Member/findMyLikedPosts_form";
     }
-
-    //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-
-
-    //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 }
 

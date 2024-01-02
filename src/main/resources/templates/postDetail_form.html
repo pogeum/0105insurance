@@ -178,7 +178,7 @@
                     <p  th:text="|${#lists.size(post.comments)}개의 답변이 있습니다.|"
                         style="background-color: #87CEEB; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
                 </div>
-                <div th:onclick="@{window.location='/post/community/main'}">
+                <div th:onclick="@{|window.location='/post/community/main?category=${post.category}&amp;sort=&amp;TagName='|}">
                     <div class="card mb-4 clickable-card" style="width:20%; height: 60px;">
                         <div class="d-flex">
                             <div class="card-body"

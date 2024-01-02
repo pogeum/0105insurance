@@ -14,31 +14,20 @@
                 <div class="container">
                     <div class="row row-cols-3">
                         <div class="col" style="">
-                            <!--                            <a type="button"-->
-                            <!--                               th:href="@{/post/community/main(searchTagName='전체', sort=${sort}, category=${category})}"-->
-                            <!--                               th:class="'btn btn-outline-warning' + (${category == '전체' ? ' selected' : ''})">-->
-                            <!--                                전체-->
-                            <!--                            </a>-->
-
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='', sort=${sort}, category=${category})}">전체</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='강아지', sort=${sort}, category=${category})}" >강아지</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='고양이', sort=${sort}, category=${category})}" >고양이</a>
-                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='기타', sort=${sort}, category=${category})}" >기타</a>
+                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='')}">전체</a>
+                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='강아지')}" >강아지</a>
+                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='고양이')}" >고양이</a>
+                            <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(category=${category}, sort=${sort}, TagName='기타')}" >기타</a>
                         </div>
-
-<!--                        <div class="col" style="">-->
-<!--                            <a type="button" class="btn btn-outline-info" th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='자유게시판')}">자유게시판</a>-->
-<!--                            <a type="button" class="btn btn-outline-info" th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='QnA')}">QnA</a>-->
-<!--                        </div>-->
                         <!--정렬 기능 버튼을 번갈아가면서 누르면 여러개의 태그, 카테고리, 분류 정보가 꼬여서 인식을 못 하는 것 같습니다. 임시로 본래 분류 기능만 사용하도록 수정해서 쓰겠습니다.-->
                     </div>
 
                     <!--정렬 기능 버튼을 번갈아가면서 누르면 여러개의 태그, 카테고리, 분류 정보가 꼬여서 인식을 못 하는 것 같습니다. 임시로 본래 분류 기능만 사용하도록 수정해서 쓰겠습니다.-->
                 </div>
                 <div class="btn-group">
-                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='latest', category=${category})}" class="btn btn-primary">최신순</a>
-                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='likeCount', category=${category})}" class="btn btn-primary">인기 많은순</a>
-                    <a th:href="@{/post/community/main(searchTagName=${searchTagName}, sort='commentCount', category=${category})}" class="btn btn-primary">댓글 많은순</a>
+                    <a th:href="@{/post/community/main(TagName=${TagName}, sort='latest', category=${category})}" class="btn btn-primary">최신순</a>
+                    <a th:href="@{/post/community/main(TagName=${TagName}, sort='likeCount', category=${category})}" class="btn btn-primary">인기 많은순</a>
+                    <a th:href="@{/post/community/main(TagName=${TagName}, sort='commentCount', category=${category})}" class="btn btn-primary">댓글 많은순</a>
                 </div>
                 <div class="row row-cols-1 align-items-center">
                     <div class="col">
@@ -47,10 +36,23 @@
                             <div class="card" style="width: 100%;">
                                 <div class="d-flex">
                                     <!-- 이미지를 표시하려면 post에 이미지 경로 등이 들어있는 속성을 사용해야 합니다. -->
-                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
-                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"
-                                             style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+<!--                                    <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">-->
+<!--                                        <img class="me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"-->
+<!--                                             style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">-->
+<!--                                    </div>-->
+<!--                                    -->
+                                    <div th:if="${not #lists.isEmpty(post.postImages)}">
+                                        <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+                                            <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                        </div>
                                     </div>
+                                    <div th:unless="${post.postImages != null and not #lists.isEmpty(post.postImages)}">
+                                        <!-- Use a default image if post.postImages is empty -->
+                                        <img class="card-img-top" src="no_img.jpg" alt="default image" style="width: 14rem; height: 17rem; border-radius: 1rem; max-width: 100%; max-height: 100%">
+                                    </div>
+
+
+
                                     <div class="card-body">
                                         <!--                                <a th:href="'/post/' + ${post.id}" style="text-decoration: none; color:inherit;">-->
                                         <h5 class="card-title">게시물제목 :
@@ -104,7 +106,7 @@
                         <div th:if="${!paging.isEmpty()}">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-                                    <a class="page-link" th:href="@{|/post/community/main?page=${paging.number-1}&sort=${sort}&searchTagName=${searchTagName}|}">
+                                    <a class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${paging.number-1}|}">
                                         <span>이전</span>
                                     </a>
                                 </li>
@@ -112,10 +114,10 @@
                                     th:if="${page >= paging.number-5 and page <= paging.number+5}"
                                     th:classappend="${page == paging.number+1} ? 'active'"
                                     class="page-item">
-                                    <a th:text="${page}" class="page-link" th:href="@{|/post/community/main?page=${page-1}&sort=${sort}&searchTagName=${searchTagName}|}"></a>
+                                    <a th:text="${page}" class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${page-1}|}"></a>
                                 </li>
                                 <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                                    <a class="page-link" th:href="@{|/post/community/main?page=${paging.number+1}&sort=${sort}&searchTagName=${searchTagName}|}">
+                                    <a class="page-link" th:href="@{|/post/community/main?category=${category}&sort=${sort}&TagName=${TagName}&page=${paging.number+1}|}">
                                         <span>다음</span>
                                     </a>
                                 </li>

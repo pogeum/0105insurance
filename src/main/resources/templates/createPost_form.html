@@ -28,7 +28,6 @@
             <!-- 카테고리 선택 -->
             <div>
                 <select id="category" name="category" class="form-select" aria-label="Default select example">
-                    <option selected>카테고리</option>
                     <option th:selected="${postForm.category == '자유게시판'}" value="자유게시판">자유게시판</option>
                     <option th:selected="${postForm.category == 'QnA'}" value="QnA">QnA</option>
                 </select>
