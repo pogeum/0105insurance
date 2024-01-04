@@ -10,7 +10,7 @@
                     <div class="profile mr-3">
                         <div class="avatar" style="width:30px, height:30px;">
 
-                            <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
+                            <img th:src="@{/files/${profile.profileImage.fileName}}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
                             <form th:action="@{|/profile/deleteProfileImage|}" method="post">
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
                                 <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
