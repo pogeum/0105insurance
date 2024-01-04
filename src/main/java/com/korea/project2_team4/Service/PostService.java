@@ -1,9 +1,7 @@
 package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Model.Entity.*;
-import com.korea.project2_team4.Repository.MemberRepository;
-import com.korea.project2_team4.Repository.PostRepository;
-import com.korea.project2_team4.Repository.ProfileRepository;
+import com.korea.project2_team4.Repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
@@ -19,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Builder
 @Service
@@ -27,6 +26,8 @@ public class PostService {
     private final ProfileRepository profileRepository;
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final TagRepository tagRepository;
+    private final TagMapRepository tagMapRepository;
 
     public void save(Post post) {
         postRepository.save(post);
@@ -71,30 +72,61 @@ public class PostService {
         return postRepository.findByLikeMembers(member, pageable);
 
     }
+////    신고
+//    public void report(Post post, Member member) {
+//        post.getReportMembers().add(member);
+//        this.postRepository.save(post);
+//    }
+//
+//    public void cancelReport(Post post, Member member) {
+//        post.getReportMembers().remove(member);
+//        this.postRepository.save(post);
+//    }
+//
+//    public boolean isReported(Post post, Member member) {
+//        if (post == null) {
+//            return false;
+//        }
+//        return post.getReportMembers().contains(member);
+//    }
+//
 
-    //테스트 데이터
+//    테스트 데이터
     @PostConstruct
     public void init() {
         saveTestPost();
     }
+
 
     //테스트 데이터
     @Transactional
     public void saveTestPost() {
         if (postRepository.findAll().isEmpty()) {
 
-            Member admin = memberRepository.findByUserName("admin").orElse(null);
+//            Member admin = memberRepository.findByUserName("admin").orElse(null);
+//
+//
+//
+//
+//            Profile authorProfile = profileRepository.findByMember(admin)
+//                    .orElseGet(() -> { // admin없으면 실행되는?
+//                        Profile newProfile = new Profile();
+//                        newProfile.setProfileName("관리자");
+//                        return profileRepository.save(newProfile);
+//                    });
+//
+            Tag etcTag = new Tag();
+            etcTag.setName("기타");
+            tagRepository.save(etcTag);
+            Profile authorProfile = profileRepository.findByProfileName("관리자프로필").get();
 
-            Profile authorProfile = profileRepository.findByProfileName("관리자")
-                    .orElseGet(() -> {
-                        Profile newProfile = new Profile();
-                        newProfile.setProfileName("관리자");
-                        return newProfile;
-                    });
 
-            // Profile 저장 (만약 새로 생성한 경우에만 저장)
-            if (!profileRepository.existsById(authorProfile.getId())) {
-                profileRepository.save(authorProfile);
+//            Tag etcTag = tagRepository.findByName("기타").orElse(null);
+
+            if (etcTag == null) {
+                Tag tag = new Tag();
+                tag.setName("기타");
+                etcTag = tagRepository.save(tag);
             }
 
             for (int i = 1; i <= 10; i++) {
@@ -103,10 +135,14 @@ public class PostService {
                 post.setContent("테스트 데이터 내용 입니다.");
                 post.setCreateDate(LocalDateTime.now());
                 post.setCategory("자유게시판");
-
-                post.setAuthor(admin.getProfile());
-
+                post.setAuthor(authorProfile);
                 postRepository.save(post);
+
+                TagMap etcTagMap = new TagMap();
+                etcTagMap.setPost(post);
+                etcTagMap.setTag(etcTag);
+                tagMapRepository.save(etcTagMap);
+
             }
         }
     }
@@ -168,7 +204,7 @@ public class PostService {
         return post.getLikeMembers().contains(member);
     }
 
-    public void deleteById(Long id) {
+    public void     deleteById(Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
 
         if (optionalPost.isPresent()) {

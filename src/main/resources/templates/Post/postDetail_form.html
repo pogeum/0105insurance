@@ -6,15 +6,21 @@
             <div class="container">
                 <div class="row row-cols-3">
                     <div class="col" style="">
-                        <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='전체', sort=${sort}, category=${category})}">전체</a>
-                        <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='강아지', sort=${sort}, category=${category})}" >강아지</a>
-                        <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='고양이', sort=${sort}, category=${category})}" >고양이</a>
-                        <a type="button" class="btn btn-outline-warning" th:href="@{/post/community/main(searchTagName='기타', sort=${sort}, category=${category})}" >기타</a>
+                        <a type="button" class="btn btn-outline-warning"
+                           th:href="@{/post/community/main(searchTagName='전체', sort=${sort}, category=${category})}">전체</a>
+                        <a type="button" class="btn btn-outline-warning"
+                           th:href="@{/post/community/main(searchTagName='강아지', sort=${sort}, category=${category})}">강아지</a>
+                        <a type="button" class="btn btn-outline-warning"
+                           th:href="@{/post/community/main(searchTagName='고양이', sort=${sort}, category=${category})}">고양이</a>
+                        <a type="button" class="btn btn-outline-warning"
+                           th:href="@{/post/community/main(searchTagName='기타', sort=${sort}, category=${category})}">기타</a>
                     </div>
 
                     <div class="col" style="">
-                        <a type="button" class="btn btn-outline-info" th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='자유게시판')}">자유게시판</a>
-                        <a type="button" class="btn btn-outline-info" th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='QnA')}">QnA</a>
+                        <a type="button" class="btn btn-outline-info"
+                           th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='자유게시판')}">자유게시판</a>
+                        <a type="button" class="btn btn-outline-info"
+                           th:href="@{/post/community/main(searchTagName=${searchTagName}, sort=${sort}, category='QnA')}">QnA</a>
                     </div>
                     <!--정렬 기능 버튼을 번갈아가면서 누르면 여러개의 태그, 카테고리, 분류 정보가 꼬여서 인식을 못 하는 것 같습니다. 임시로 본래 분류 기능만 사용하도록 수정해서 쓰겠습니다.-->
                 </div>
@@ -32,10 +38,12 @@
                 </div>
                 <div>
                     <div style="background-color: #f0f0f0; padding: 10px; display: inline-block; border-radius: 1rem;">
+
                         <div >
-                            <form th:action="@{|/profile/detail|}">
-                                <input type="hidden" name="postid" th:value="${post.id}">
-                                <button type="submit" class="btn btn-link" th:text="${post.author.profileName}" style="font-size: 18px; font-weight: bold; color: #333; text-decoration:none; color:inherit;"></button>
+                            <form th:action="@{|/profile/detail/${post.author.profileName}|}">
+<!--                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                <button type="submit" class="btn btn-link" th:text="${post.author.profileName}"
+                                        style="font-size: 18px; font-weight: bold; color: #333; text-decoration:none; color:inherit;"></button>
                             </form>
                         </div>
                         <div>
@@ -82,18 +90,28 @@
                                     th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
                             </button>
                         </div>
+                        <div class="col-md-auto" style="font-size: 15px">
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                    th:data-bs-target="'#reportPostModal'"
+                                    th:onclick="'reportPostModal'">신고하기
+                            </button>
+                            <div th:if="${alreadyReportedMessage}" class="alert alert-warning" role="alert">
+                                <p th:text="${alreadyReportedMessage}"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-auto"
+                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                            <form th:action="@{|/post/updatePost/${post.id}|}" method="get">
+                                <input type="hidden" name="id" th:value="${post.id}" />
+                                <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>
+                            </form>
+                        </div>
                         <div class="col-md-auto"
                              th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                             <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
                                   onsubmit="return DeletePost();">
                                 <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
                                 </button>
-                            </form>
-                        </div>
-                        <div>
-                            <form th:action="@{|/post/updatePost/${post.id}|}" method="get">
-                                <input type="hidden" name="id" th:value="${post.id}" />
-                                <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>
                             </form>
                         </div>
                     </div>
@@ -111,29 +129,29 @@
                                 </div>
                                 <div class="modal-body">
                                     <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
-                                    <form th:action="@{|/post/updatePost/${post.id}|}" method="post"
+                                    <form th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
                                           th:object="${postForm}"
                                           onsubmit="return UpdatePost();">
                                         <input type="hidden" name="postId" th:value="${post.id}"/>
-<!--                                        <div class="font-400 ">-->
-<!--                                            <label for="postTitle" class="form-label fw-bold">제목</label>-->
-<!--                                            <input type="text" id="postTitle" name="title" class="form-control"-->
-<!--                                                   th:value="${post.title}"/>-->
-<!--                                        </div>-->
-<!--                                        <br>-->
-<!--                                        <div class="font-400 ">-->
-<!--                                            <label for="postContent" class="form-label fw-bold">내용</label>-->
-<!--                                            <textarea name="content" class="form-control" id="postContent"-->
-<!--                                                      th:text="${post.content}" style="height: 300px"></textarea>-->
-<!--                                        </div>-->
-<!--                                        <br>-->
-<!--                                        <div>-->
-<!--                                            <label class="form=label">이미지 수정 및 삭제</label>-->
-<!--                                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">-->
-<!--                                                <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"-->
-<!--                                                     style="width: 5rem; height: 5rem; border-radius: 1rem; max-width: 100%; max-height: 100%">-->
-<!--                                            </div>-->
-<!--                                        </div>-->
+                                        <!--                                        <div class="font-400 ">-->
+                                        <!--                                            <label for="postTitle" class="form-label fw-bold">제목</label>-->
+                                        <!--                                            <input type="text" id="postTitle" name="title" class="form-control"-->
+                                        <!--                                                   th:value="${post.title}"/>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <br>-->
+                                        <!--                                        <div class="font-400 ">-->
+                                        <!--                                            <label for="postContent" class="form-label fw-bold">내용</label>-->
+                                        <!--                                            <textarea name="content" class="form-control" id="postContent"-->
+                                        <!--                                                      th:text="${post.content}" style="height: 300px"></textarea>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <br>-->
+                                        <!--                                        <div>-->
+                                        <!--                                            <label class="form=label">이미지 수정 및 삭제</label>-->
+                                        <!--                                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 3}">-->
+                                        <!--                                                <img class="image me-3" th:src="@{|/resources/${img.saveName}|}" alt="리뷰 이미지"-->
+                                        <!--                                                     style="width: 5rem; height: 5rem; border-radius: 1rem; max-width: 100%; max-height: 100%">-->
+                                        <!--                                            </div>-->
+                                        <!--                                        </div>-->
                                         <div>
                                             <label class="form-label">태그 선택</label>
                                             <div th:each="tag : ${getPostTags}">
@@ -146,12 +164,14 @@
                                             </div>
                                         </div>
                                         <br>
-<!--                                        <option selected>카테고리</option>-->
+                                        <!--                                        <option selected>카테고리</option>-->
                                         카테고리 선택
                                         <div>
-                                            <select id="category" name="category" class="form-select" aria-label="Default select example">
+                                            <select id="category" name="category" class="form-select"
+                                                    aria-label="Default select example">
                                                 <option selected>카테고리</option>
-                                                <option value="자유게시판" th:selected="${post.category == '자유게시판'}">자유게시판</option>
+                                                <option value="자유게시판" th:selected="${post.category == '자유게시판'}">자유게시판
+                                                </option>
                                                 <option value="QnA" th:selected="${post.category == 'QnA'}">QnA</option>
                                             </select>
                                         </div>
@@ -169,14 +189,62 @@
                             </div>
                         </div>
                     </div>
+<!--                    게시물 신고 모달 창-->
+                    <!-- Modal Structure -->
+                    <div class="modal fade" id="reportPostModal" tabindex="-1" role="dialog" aria-labelledby="reportPostModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportPostModalLabel">게시글 신고</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form for reporting post -->
+                                    <form th:action="@{|/post/report/${post.id}|}" method="post">
+                                        <!-- Checkboxes for report reasons -->
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                            <label class="form-check-label">부적절한 내용</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                            <label class="form-check-label">광고성 콘텐츠</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                            <label class="form-check-label">개인정보 노출</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                            <label class="form-check-label">저작권 침해</label>
+                                        </div>
+                                        <!-- Add more checkboxes as needed -->
+
+                                        <!-- Textarea for additional comments -->
+                                        <div class="form-group">
+                                            <label for="additionalComments">추가적인 내용</label>
+                                            <textarea class="form-control" id="additionalComments" name="reportPostContent" rows="3"></textarea>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary">신고하기</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!--                    게시물 신고 모달 창 끝-->
                 </div>
             </div>
             <hr>
             <!--       댓글        -->
             <div class="mb-3">
                 <div class="pt-5">
-                    <p  th:text="|${#lists.size(post.comments)}개의 답변이 있습니다.|"
-                        style="background-color: #87CEEB; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
+                    <p th:text="|${#lists.size(post.comments)}개의 답변이 있습니다.|"
+                       style="background-color: #87CEEB; padding: 10px; display: inline-block; border-radius: 1rem;"></p>
                 </div>
                 <div th:onclick="@{|window.location='/post/community/main?category=${post.category}&amp;sort=&amp;TagName='|}">
                     <div class="card mb-4 clickable-card" style="width:20%; height: 60px;">
@@ -198,7 +266,7 @@
                 </form>
                 <hr>
                 <div th:each="comment : ${post.comments}">
-                    <div class="card mb-4" style="width:50%;">
+                    <div class="card mb-4" style="width:40%;">
                         <div class="card-body">
                             <div style="background-color: #f0f0f0; padding: 10px; display: inline-block; border-radius: 1rem;">
                                 <div style="font-size: 18px; font-weight: bold; color: #333;"
@@ -216,12 +284,16 @@
                             </div>
                             <div th:with="fill=${#lists.contains(comment.likeMembers, loginedMember)}">
                                 <input type="hidden" th:id="${'CommentHeart-fill-' + comment.id}" th:value="${fill}">
-                                <form th:id="${'CommentLikeForm-' + comment.id}" class="flex-fill d-flex justify-content-end" th:action="@{|/comment/commentLike|}"
+                                <form th:id="${'CommentLikeForm-' + comment.id}"
+                                      class="flex-fill d-flex justify-content-end" th:action="@{|/comment/commentLike|}"
                                       method="post" onsubmit="return toggleCommentHeartIcon(this)">
                                     <input type="hidden" name="id" th:value="${comment.id}">
-                                    <i th:id="${'CommentHeartIcon-' + comment.id}" class="bi" th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'" th:onclick="CommentHeartSubmit([[${comment.id}]])"
+                                    <i th:id="${'CommentHeartIcon-' + comment.id}" class="bi"
+                                       th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'"
+                                       th:onclick="CommentHeartSubmit([[${comment.id}]])"
                                        style="font-size: 2rem; color:red; cursor:pointer;">
-                                        <span class="badge rounded-pill bg-primary" th:text="${comment.likeMembers.size()}"></span>
+                                        <span class="badge rounded-pill bg-primary"
+                                              th:text="${comment.likeMembers.size()}"></span>
                                     </i>
                                 </form>
                             </div>
@@ -238,6 +310,59 @@
                                             th:onclick="'openApproveCommentModal(' + ${comment.id} + ')'">수정
                                     </button>
                                 </div>
+                                <div class="col-md-auto" style="font-size: 15px">
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            th:data-bs-target="'#reportCommentModal'"
+                                            th:onclick="'reportCommentModal'">신고하기
+                                    </button>
+                                </div>
+<!--                                댓글 신고 모달창-->
+                                <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="reportCommentModalLabel">게시글 신고</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Form for reporting post -->
+                                                <form th:action="@{|/comment/report/${comment.id}|}" method="post">
+                                                    <!-- Checkboxes for report reasons -->
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
+                                                        <label class="form-check-label">부적절한 내용</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="광고성 내용">
+                                                        <label class="form-check-label">광고성 콘텐츠</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="개인정보 노출">
+                                                        <label class="form-check-label">개인정보 노출</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="reasons" value="저작권 침해">
+                                                        <label class="form-check-label">저작권 침해</label>
+                                                    </div>
+                                                    <!-- Add more checkboxes as needed -->
+
+                                                    <!-- Textarea for additional comments -->
+                                                    <div class="form-group">
+                                                        <label for="additionalComments">추가적인 내용</label>
+                                                        <textarea class="form-control" id="reportComments" name="reportCommentContent" rows="3"></textarea>
+                                                    </div>
+
+                                                    <!-- Submit button -->
+                                                    <button type="submit" class="btn btn-primary">신고하기</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+<!--                                댓글 신고 모달창 끝-->
                                 <div class="col-md-auto"
                                      th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                                     <form th:action="@{|/comment/deleteComment/${comment.id}|}" method="post"
@@ -376,7 +501,12 @@
         function CommentHeartSubmit(commentId) {
             document.getElementById('CommentLikeForm-' + commentId).submit();
         }
-
+        function reportPostModal() {
+            $('#reportPostModal').modal('show');
+        }
+        function reportCommentModal() {
+            $('#reportCommentModal').modal('show');
+        }
     </script>
 </div>
 </html>

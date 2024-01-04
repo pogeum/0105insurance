@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,5 +31,8 @@ public class Comment {
 
     @ManyToMany
     private Set<Member> likeMembers;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE )
+    private List<Report> reports;
 
 }

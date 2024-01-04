@@ -1,0 +1,14 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content" class="row py-5 px-4">
+    <div>팔로워리스트</div>
+    <div>
+        <div th:each="profile : ${followerList}">
+            <a th:href="@{|/profile/detail/${profile.profileName}|}">
+<!--                <a th:href="@{|/profile/detail?profileid=${profile.id}|}">-->
+                <div th:text="${profile.profileName}"></div>
+            </a>
+        </div>
+    </div>
+</div>
+</html>

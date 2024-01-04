@@ -5,14 +5,12 @@ import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
-import com.korea.project2_team4.Service.FollowService;
 import com.korea.project2_team4.Service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -25,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
-import javax.swing.*;
 import java.security.Principal;
 import java.util.List;
 
@@ -36,7 +33,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private final FollowService followService;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private HttpSession session;
@@ -228,7 +224,7 @@ public class MemberController {
     }
 
     @GetMapping("/member")
-    public String saveDefaultAdmin() {
+    public String saveDefaultAdmin() throws Exception {
         memberService.saveDefaultAdmin();
 
         return "redirect:/";

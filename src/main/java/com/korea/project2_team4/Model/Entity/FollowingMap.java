@@ -4,28 +4,23 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import org.hibernate.mapping.ToOne;
 
 @Entity
 @Getter
 @Setter
+
+@Table(name = "following_map", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = {"follower_id", "followee_id"}))
 public class FollowingMap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //팔로우 하는 사용자 ID
     @ManyToOne
-    @JoinColumn(name = "follower_id")
-    private Member follower;
+    private Profile follower;
 
-    //팔로우 받는 사용자 ID
     @ManyToOne
-    @JoinColumn(name = "following_id")
-    private Member followee;
+    private Profile followee;
 
-    //팔로우 한 시간
-    private LocalDateTime followedAt;
-}
 }

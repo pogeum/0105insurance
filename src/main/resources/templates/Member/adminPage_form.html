@@ -3,16 +3,17 @@
 
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+        <div>
+            <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
+            <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
+            <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/comments|}" data-page="3">댓글 관리</a>
+        </div>
+        <h2 class="font-700 mt-5r mb-5">유저 리스트</h2>
     <div th:if="${menu==1}">
         <div th:replace="~{member/user_account_content::MemberAccountContentFragment}"></div>
     </div>
-        <div>
-            <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
-            <a class="btn btn-primary btn-block mb-2" href="#" data-page="2">게시글 관리</a>
-            <a class="btn btn-primary btn-block mb-2" href="#" data-page="3">댓글 관리</a>
-        </div>
+
     <div th:if="${!#lists.isEmpty(memberList)}">
-        <h2 class="font-700 mt-5r mb-5">유저 리스트</h2>
         <table class="table">
             <thead>
             <tr>

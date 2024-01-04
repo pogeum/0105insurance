@@ -9,23 +9,31 @@
                 <div class="media align-items-end profile-header">
                     <div class="profile mr-3">
                         <div class="avatar" style="width:30px, height:30px;">
+<<<<<<< HEAD
 
                             <img th:src="@{/files/${profile.profileImage.fileName}}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
                             <form th:action="@{|/profile/deleteProfileImage|}" method="post">
+=======
+                            <img th:src="@{|/img/assortment-of-korean-traditional-dishes-ai-generated-image.jpg|}" alt="기본 이미지" style="width: 200px; height: 170px;">
+                            <img th:src="@{|/files/${profile.profileImage.fileName}|}" alt="user" class="avatar-img rounded-circle" style="width:30px, height:30px;"/>
+                            기본이미지로 변경하는 폼
+                            <form th:action="@{|/profile/deleteProfileImage|}" method="post" th:unless="${'no_img.jpg' == profile.profileImage.fileName}">
+>>>>>>> 0ce57222503cf32e9701bdedb376a4ee953416fe
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
-                                <button type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
+                                <button th:if="${siteUser == profile.member}" type="submit" class="btn btn-link" style="text-decoration:none; color:white;">✕</button>
                             </form>
+                            기본이미지로 변경하는 폼
                         </div>
                     </div>
 
                     <div class="media-body mb-5 text-white">
-                        <a sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">프로필 수정</a>
+                        <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">✎</a>
                         <h4 class="mt-0 mb-0" th:text="${profile.profileName}"></h4>
                         <p class="small mb-4" th:text="${profile.content}"> <i class="fa fa-map-marker mr-2"></i></p>
 
 
                         <!-- Button trigger modal -->
-                        <button sec:authorize="isAuthenticated()" type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <button th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             펫추가
                         </button>
                         <!-- Modal -->
@@ -105,24 +113,44 @@
                 </div>
             </div>
 
-            <div class="bg-light p-4 d-flex justify-content-end text-center">
+            <div class="bg-light p-4 d-flex justify-content-end  text-center">
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item">
                         <h5 class="font-weight-bold mb-0 d-block" th:text="${postList.size}"></h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>게시물</small>
                     </li>
                     <li class="list-inline-item">
-                        <h5 class="font-weight-bold mb-0 d-block">848</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>팔로워</small>
+                        <a th:href="@{|/profile/detail/followers/${profile.id}|}" style="text-decoration:none; color:inherit;"><h5 class="font-weight-bold mb-0 d-block"th:text="${followers.size}"></h5></a>
+                        <small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>팔로워</small>
                     </li>
                     <li class="list-inline-item">
-                        <h5 class="font-weight-bold mb-0 d-block">24</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>팔로잉</small>
+                        <a th:href="@{|/profile/detail/followings/${profile.id}|}" style="text-decoration:none; color:inherit;"><h5 class="font-weight-bold mb-0 d-block" th:text="${followings.size}"></h5></a>
+                        <small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>팔로잉</small>
                     </li>
                 </ul>
+                <ul sec:authorize="isAuthenticated()">
+                    <ul class="list-inline mb-0">
+                        <div th:if="${siteUser != profile.member}" class="d-flex align-items-center">
+                            <small class="text-muted mr-1"><i class="fa fa-user-circle-o"></i></small>
+                            <form th:action="@{|/profile/addfollow|}" method="post">
+                                <input type="hidden" name="profileId" th:value="${profile.id}">
+                                <button type="submit" class="btn btn-primary">팔로우</button>
+                            </form>
+                            <form th:action="@{|/profile/unfollow|}" method="post">
+                                <input type="hidden" name="profileId" th:value="${profile.id}">
+                                <button type="submit" class="btn btn-primary">팔로우취소</button>
+                            </form>
+
+                        </div>
+                    </ul>
+                </ul>
+
+
             </div>
 
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h5 class ="mb-0">Recent photos</h5>
-                    <a th:href="@{|/profile/detail/showall|}" class="btn btn-link text-muted">Show all</a>
+                    <a th:href="@{|/profile/detail/${profile.profileName}/showall|}" class="btn btn-link text-muted">Show all</a>
 <!--                    <form th:action="@{|/profile/showallPostsBy|}">-->
 <!--                        <input type="hidden" name="profileid" th:value="${profile.id}">-->
 <!--                        <button type="submit" class="btn btn-link text-muted" >Show all</button>-->

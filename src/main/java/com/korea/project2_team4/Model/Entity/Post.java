@@ -72,8 +72,27 @@ public class Post {
 //                .collect(Collectors.toList()); // 리스트로 변환
     }
 
+
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE )
+    private List<Report> reports;
+//    public List<String> getPostReportCategories() {
+//        List<String> getReportCategories = new ArrayList<>();
+//        for (Report report : reports) {
+//            getReportCategories.addAll(report.getCategory());
+//        }
+//        return getReportCategories;
+//    }
+//
+//    public String getPostReportContent() {
+//        String getPostReportContent = new String();
+//        for (Report report : reports) {
+//            getPostReportContent = report.getContent();
+//        }
+//        return getPostReportContent;
+//    }
 
 
 }

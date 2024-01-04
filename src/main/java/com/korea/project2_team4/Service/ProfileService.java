@@ -1,10 +1,14 @@
 package com.korea.project2_team4.Service;
 
+import com.korea.project2_team4.Model.Dto.ProfileDto;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Pet;
+import com.korea.project2_team4.Model.Entity.Post;
 import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Repository.ImageRepository;
 import com.korea.project2_team4.Repository.ProfileRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,10 +19,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@Builder
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final ImageService imageService;
+    private final FollowingMapService followingMapService;
+//    private final PostService postService;
+
 
     public boolean deleteExistingFile(String existingFilePath) {
         if (existingFilePath != null && !existingFilePath.isEmpty()) {
@@ -38,6 +45,32 @@ public class ProfileService {
 //        this.petRepository.delete(pet);
 //    }
 
+    public ProfileDto getDefaultProfileDto(Profile profile) {
+        List<Profile> followers = followingMapService.getMyfollowers(profile);
+        List<Profile> followings = followingMapService.getMyfollowings(profile);
+
+        return new ProfileDto(null, null, followers, followings);
+    }
+
+//    public ProfileDto getProfileDtoByNotLogined(Post thispost) {
+//        Profile targetprofile = thispost.getAuthor();
+//        ProfileDto profileDto = getDefaultProfileDto(targetprofile);
+//        List<Post> postList = postService.getPostsbyAuthor(thispost.getAuthor());
+//        profileDto.setProfile(targetprofile);
+//        profileDto.setPostList(postList);
+//
+//        return profileDto;
+//    }
+//
+//    public ProfileDto getProfileDtoByLoginId(Member member) {
+//        ProfileDto profileDto = getDefaultProfileDto(member.getProfile());
+//        List<Post> postList = postService.getPostsbyAuthor(member.getProfile());
+////        profileDto.setProfile(targetprofile);
+//        profileDto.setPostList(postList);
+//
+//        return profileDto;
+//    }
+
 
     public List<Profile> getProfilelist() {
         return this.profileRepository.findAll();
@@ -45,6 +78,10 @@ public class ProfileService {
 
     public Profile getProfileById(Long profileId) {
         return this.profileRepository.findById(profileId).get();
+    }
+
+    public Profile getProfileByName(String profileName) {
+        return this.profileRepository.findByProfileName(profileName).get();
     }
 
     public void updateprofile(Profile profile, String profilename, String content) {
@@ -56,7 +93,7 @@ public class ProfileService {
     public Profile setDefaultProfile(Member member) {
         Profile profile = new Profile();
         profile.setMember(member);
-        profile.setProfileName(member.getUserName());
+        profile.setProfileName(member.getNickName());
         profile.setContent(" ");
 
         this.profileRepository.save(profile);

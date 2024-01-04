@@ -183,6 +183,7 @@ public class ImageService {
         String filepath = profile.getProfileImage().getFilePath();
         deleteExistingFile(filepath);
         this.imageRepository.delete(profileImage);
+
     }
 
     public void createPostImage(String fileName, String saveName, String filePath, Post post) {
@@ -200,9 +201,11 @@ public class ImageService {
 
     }
 
-    public boolean deleteImage(String saveName) {
-        imageRepository.deleteBySaveName(saveName);
-        return true;
+    public void deleteImage(Image image) {
+        imageRepository.delete(image);
     }
 
+    public Image findBySaveName(String saveName) {
+        return imageRepository.findBySaveName(saveName);
+    }
 }

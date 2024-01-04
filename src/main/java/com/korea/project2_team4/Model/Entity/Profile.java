@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,11 +30,7 @@ public class Profile {
     private String profileName;
     private String content;
 
-//    @ManyToMany(mappedBy = "followers")
-//    private List<Profile> following = new ArrayList<>();
-//
-//    @ManyToMany
-//    private List<Profile> followers = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
     private List<Pet> petList;
@@ -42,6 +40,16 @@ public class Profile {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE )
     private List<Comment> commentList;
+
+
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE )
+    private Set<FollowingMap> followerMaps;
+
+    @OneToMany(mappedBy = "followee")
+    private Set<FollowingMap> followeeMaps = new HashSet<>();
+
+
 
     private LocalDateTime modifyDate;
 }
