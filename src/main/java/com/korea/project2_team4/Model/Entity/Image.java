@@ -18,7 +18,7 @@ public class Image {
 
     private String filePath; //파일 저장 경로
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "post_id")
     private Post postImages;
 

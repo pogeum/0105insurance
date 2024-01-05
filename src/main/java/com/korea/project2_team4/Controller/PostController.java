@@ -3,9 +3,11 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.PostForm;
 import com.korea.project2_team4.Repository.PostRepository;
+import com.korea.project2_team4.Repository.ReportRepository;
 import com.korea.project2_team4.Service.*;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
@@ -17,13 +19,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.management.modelmbean.ModelMBeanOperationInfo;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @Builder
@@ -39,11 +45,11 @@ public class PostController {
     private final TagService tagService;
     private final TagMapService tagMapService;
     private final RecentSearchService recentSearchService;
+    private final ReportService reportService;
 
 
     @GetMapping("/main")
     public String main() {
-
 
         return "community_main";
     }
@@ -52,7 +58,7 @@ public class PostController {
     public String createPost(Model model, PostForm postForm) {
         List<Tag> allTags = tagService.getAllTags();
         model.addAttribute("allTags", allTags);
-        return "createPost_form";
+        return "Post/createPost_form";
     }
 
     //테스트 데이터
@@ -85,13 +91,16 @@ public class PostController {
             imageService.uploadPostImage(imageFiles, post);
         }
         if (newTagNames != null && !newTagNames.isEmpty()) {
+
             for (String newTagName : newTagNames) {
-                Tag tag = new Tag();
-                tag.setName(newTagName);
-                tagService.save(tag);
+                if (!tagService.tagExists(newTagName)) {
+                    Tag tag = new Tag();
+                    tag.setName(newTagName);
+                    tagService.save(tag);
+                }
             }
         }
-            postService.save(post);
+        postService.save(post);
 
         if (selectedTagNames != null && !selectedTagNames.isEmpty()) {
             for (String selectedTagName : selectedTagNames) {
@@ -108,52 +117,63 @@ public class PostController {
             }
         }
 
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postForm.getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
 
-        return "redirect:/post/community/main";
+        return String.format("redirect:/post/community/main?category=%s&sort=%s&TagName=%s", encodedCategory, "", "");
     }
 
     @GetMapping("/community/main")
     public String communityMain(Principal principal, Model model, @RequestParam(name = "category", required = false) String category,
                                 @RequestParam(name = "sort", required = false) String sort,
                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                @RequestParam(name = "searchTagName", required = false) String searchTagName) {
+                                @RequestParam(name = "TagName", required = false) String TagName) {
+
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
         }
         Page<Post> allPosts;
-        allPosts = postService.postList(page);//최신순문제잇음
+        allPosts = postService.postList(page);
 
+        List<Tag> defaultTagList = tagService.getDefaultTags();
 
-        if (searchTagName == null) {
-            searchTagName = "";  // 기본적으로 빈 문자열로 설정
-        }
-        if (category == null) {
-            category = "";
-        }
-        if (sort == null) {
-            sort = "latest";
-        }
+        if (category.equals("QnA")) {
+            Page<Post> qnaPosts = postService.getPostsQnA(page, sort, TagName);
 
-        if (searchTagName.equals("전체")) {
-            if (sort.equals("likeCount")) {
-                allPosts = postService.getPostsOrderByLikeCount(page);
-            } else if (sort.equals("commentCount")) {
-                allPosts = postService.getPostsOrderByCommentCount(page);
-            } else {
-                allPosts = postService.postList(page);
-            }
+            model.addAttribute("category", category);
+            model.addAttribute("TagName", TagName);
+            model.addAttribute("sort", sort);
+            model.addAttribute("paging", qnaPosts);
+            model.addAttribute("defaultTagList", defaultTagList);
+            return "community_main";
+
+        } else if (category.equals("자유게시판")) {
+
+            Page<Post> freeboardPosts = postService.getPostsFreeboard(page, sort, TagName);
+
+            model.addAttribute("category", category);
+            model.addAttribute("TagName", TagName);
+            model.addAttribute("sort", sort);
+            model.addAttribute("paging", freeboardPosts);
+            model.addAttribute("defaultTagList", defaultTagList);
+            return "community_main";
         } else {
-            allPosts = postService.getPostsBytagAndcategoryAndsort(page, searchTagName, category, sort);
+            Page<Post> posts = postService.getAllPosts(page, sort, TagName);
+
+            model.addAttribute("category", category);
+            model.addAttribute("TagName", TagName);
+            model.addAttribute("sort", sort);
+            model.addAttribute("paging", posts);
+            model.addAttribute("defaultTagList", defaultTagList);
+            return "community_main";
         }
 
-        //sorting 이랑 태그는 ㅇㅋ 근데 카테고리 이상 --> null들어가는거쩔수없음 . 카테고리 필수선택으로 할지?
-
-        model.addAttribute("category", category);
-        model.addAttribute("searchTagName", searchTagName);
-        model.addAttribute("sort", sort);
-        model.addAttribute("paging", allPosts);
-        return "community_main";
     }
 
 
@@ -194,10 +214,14 @@ public class PostController {
                                 Model model) {
         Page<Post> pagingByTitle = postService.pagingByTitle(kw, page);
 
-        model.addAttribute("pagingByTitle", pagingByTitle);
+//        model.addAttribute("pagingByTitle", pagingByTitle);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreTitle_form";
+        model.addAttribute("searchfor", "제목 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByTitle);
         model.addAttribute("kw", kw);
-
-        return "showMoreTitle_form";
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreContent")
@@ -206,10 +230,16 @@ public class PostController {
                                    Model model) {
         Page<Post> pagingByContent = postService.pagingByContent(kw, page);
 
-        model.addAttribute("pagingByContent", pagingByContent);
-        model.addAttribute("kw", kw);
 
-        return "showMoreContent_form";
+//        model.addAttribute("pagingByContent", pagingByContent);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreContent_form";
+
+        model.addAttribute("searchfor", "내용 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByContent);
+        model.addAttribute("kw", kw);
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreProfileName")
@@ -218,10 +248,15 @@ public class PostController {
                                        Model model) {
         Page<Post> pagingByProfileName = postService.pagingByProfileName(kw, page);
 
-        model.addAttribute("pagingByProfileName", pagingByProfileName);
-        model.addAttribute("kw", kw);
+//        model.addAttribute("pagingByProfileName", pagingByProfileName);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreProfileName_form";
 
-        return "showMoreProfileName_form";
+        model.addAttribute("searchfor", "이름 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByProfileName);
+        model.addAttribute("kw", kw);
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreComment")
@@ -230,14 +265,20 @@ public class PostController {
                                    Model model) {
         Page<Post> pagingByComment = postService.pagingByComment(kw, page);
 
-        model.addAttribute("pagingByComment", pagingByComment);
+//        model.addAttribute("pagingByComment", pagingByComment);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreComment_form";
+        model.addAttribute("searchfor", "댓글 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByComment);
         model.addAttribute("kw", kw);
-
-        return "showMoreComment_form";
+        return "Search/showMore";
     }
 
     @GetMapping("/detail/{id}/{hit}")
     public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit, PostForm postForm) {
+        List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
+        List<Tag> allTags = tagService.getAllTags();
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -248,13 +289,22 @@ public class PostController {
         } else {
             Post post = postService.getPost(id);
             model.addAttribute("post", post);
-
         }
-        List<Tag> allTags = tagService.getAllTags();
+        if (principal != null) {
+            String username = principal.getName();
+            // 이미 해당 사용자가 신고한 게시물인지 확인
+            if (reportService.isAlreadyPostReported(id, username)) {
+                // 이미 신고한 경우, 모델에 메시지 추가
+                model.addAttribute("alreadyPostReportedMessage", "이미 신고한 게시물입니다.");
+                return "Post/postDetail_form"; // 리다이렉트할 뷰 경로
+            }
+        }
+
+        model.addAttribute("getPostTags", getPostTags);
         model.addAttribute("allTags", allTags);
         model.addAttribute("postForm", postForm);
 
-        return "postDetail_form";
+        return "Post/postDetail_form";
     }
 
     @PostMapping("/postLike")
@@ -280,23 +330,59 @@ public class PostController {
     @PostMapping("/deletePost/{id}")
     public String deletePost(@PathVariable Long id) {
 
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postService.getPost(id).getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
         postService.deleteById(id);
 
-        return "redirect:/post/community/main";
+        return String.format("redirect:/post/community/main?category=%s&sort=%s&TagName=%s", encodedCategory, "", "");
+    }
+    @PostMapping("/deleteReportedPost/{id}")
+    public String deleteReportedPost(@PathVariable("id") Long id) {
+        String encodedCategory;
+        try {
+            encodedCategory = URLEncoder.encode(postService.getPost(id).getCategory(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 필요
+            encodedCategory = "";
+        }
+        postService.deleteById(id);
+
+        return "redirect:/report/posts";
     }
 
-    @PostMapping("/updatePost/{id}")
-    public String updatePost(@PathVariable Long id, @ModelAttribute Post updatePost, @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames
-    ) {
+    @GetMapping("/updatePost/{id}")
+    public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {
+        List<Tag> getPostTags = tagService.getTagListByPost(postService.getPost(id));
+        model.addAttribute("getPostTags", getPostTags);
+        if (principal != null) {
+            Member member = this.memberService.getMember(principal.getName());
+            model.addAttribute("loginedMember", member);
+        }
 
+        Post post = postService.getPost(id);
+        model.addAttribute("post", post);
+
+        return "Post/postUpdate_form";
+    }
+    @PostMapping("/updatePostByAdmin/{id}")
+    public String updatePostByAdmin(@PathVariable("id") Long id, @ModelAttribute Post updatePost,
+                             @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames
+    ) throws IOException, NoSuchAlgorithmException {
+
+        Post post = new Post();
         Post existingPost = postRepository.findById(id).orElse(null);
 
         if (existingPost != null) {
-
-            existingPost.setTitle(updatePost.getTitle());
-            existingPost.setContent(updatePost.getContent());
             existingPost.setModifyDate(LocalDateTime.now());
+            existingPost.setCategory(updatePost.getCategory());
             tagMapService.deleteTagMapsByPostId(id);
+
             if (selectedTagNames != null && !selectedTagNames.isEmpty()) {
                 for (String selectedTagName : selectedTagNames) {
                     Tag tag = tagService.getTagByTagName(selectedTagName);
@@ -313,6 +399,57 @@ public class PostController {
 
         return "redirect:/post/detail/{id}/1";
     }
+
+    @PostMapping(value = "/updatePost/{id}", consumes = {"multipart/form-data"})
+    public String updatePost(@PathVariable("id") Long id, @ModelAttribute Post updatePost,
+                             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
+                             @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames
+    ) throws IOException, NoSuchAlgorithmException {
+
+        Post post = new Post();
+        Post existingPost = postRepository.findById(id).orElse(null);
+
+        if (existingPost != null) {
+            existingPost.setTitle(updatePost.getTitle());
+            existingPost.setContent(updatePost.getContent());
+            existingPost.setModifyDate(LocalDateTime.now());
+            existingPost.setCategory(updatePost.getCategory());
+            tagMapService.deleteTagMapsByPostId(id);
+
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                imageService.uploadPostImage(imageFiles, existingPost);
+            }
+
+            if (selectedTagNames != null && !selectedTagNames.isEmpty()) {
+                for (String selectedTagName : selectedTagNames) {
+                    Tag tag = tagService.getTagByTagName(selectedTagName);
+                    TagMap tagMap = new TagMap();
+                    tagMap.setPost(existingPost);
+                    tagMap.setTag(tag);
+                    tagMapService.save(tagMap);
+                }
+            }
+            existingPost.setCategory(updatePost.getCategory());
+
+            postRepository.save(existingPost);
+        }
+
+        return "redirect:/post/detail/{id}/1";
+    }
+
+    @PostMapping("/delete-image")
+    public ResponseEntity<String> deleteImage(@RequestParam String saveName) {
+
+        Image image = imageService.findBySaveName(saveName);
+
+        if (image != null) {
+            imageService.deleteImage(image);
+            return ResponseEntity.ok("success");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("failure");
+        }
+    }
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/myPosts")
@@ -332,16 +469,47 @@ public class PostController {
         return "Member/findMyLikedPosts_form";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/report/{id}")
+    public String reportPost(@PathVariable("id") Long id, @RequestParam(value = "reasons", required = false) List<String> categories,
+                             @RequestParam("reportPostContent") String content, Principal principal) {
+        // 현재 사용자 정보 가져오기
+        if (principal != null) {
+            String username = principal.getName();
+
+            // 이미 해당 사용자가 신고한 게시물인지 확인
+            if (reportService.isAlreadyPostReported(id, username)) {
+                // 이미 신고한 경우, 여기에서 처리할 내용 추가
+                return "redirect:/post/detail/{id}/1"; // 또는 적절한 경로로 리다이렉트
+            }
+        }
+        Report report = new Report();
+        Post post = postService.getPost(id);
+        Member member = memberService.getMember(principal.getName());
+        if (categories != null && !categories.isEmpty()) {
+            report.setCategory(categories);
+            System.out.println("카테고리 : " + categories);
+        } else {
+            report.setCategory(new ArrayList<>());
+        }
+        if (!content.isEmpty() && content != null) {
+            report.setContent(content);
+        } else {
+            report.setContent("");
+        }
+        report.setMember(member);
+        report.setPost(post);
+        report.setReportDate(LocalDateTime.now());
+        reportService.save(report);
+
+        return "redirect:/post/detail/{id}/1";
+    }
+
+
     //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 
     //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 }
-
-
-
-
-
-
 

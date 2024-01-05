@@ -15,28 +15,14 @@
 ```
 ✍ 12/18 layout, navbar적용 안됐던 이유 : 
 build.gradle 에 implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect' 추가했더니 해결됨
-✍ 12/19
-+ 팔로우 기능 db설계 연구 
-+ 참고 : https://gist.github.com/ffbit/3343910
-+ 참고 : https://medium.com/@oluwatolaodunlami19/designing-an-optimal-database-schema-for-a-followers-following-system-in-a-social-media-app-best-2f2cb5ce86ac
-+ Follow라는걸 엔티티로 볼 것이냐, 관계로 볼 것이냐에 따라 설계가 달라짐?
-
-
 ++건의사항 : post에 title속성 빼는게 나을것 같음. 딱히 쓸모x
-
-
-
-⭐ 12/21 할일 ⭐
-+ 기능 추가할거 생각해보기
-+ 여태 만들었던거 피드백, 버그 수정할지, 아니면 새로운기능을 진행할지?
-
 ```
     
 ### 2주차: 기능명세작성 완료, 기능구현 진행 
 ### 3주차: 기능구현 진행 
 ```
 3주차 목표 : 
-+ 1/5 금 까지 지금까지 만들었던 기능 버그,에러 다 완벽하게 수정하기.+ 템플릿도.
+⭐1/5 금 까지 지금까지 만들었던 기능 버그,에러 다 완벽하게 수정하기.+ 템플릿도. ⭐
 ----
 관리자 페이지
 태그

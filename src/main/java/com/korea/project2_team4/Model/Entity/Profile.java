@@ -4,11 +4,14 @@ import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,11 +31,8 @@ public class Profile {
     private String profileName;
     private String content;
 
-//    @ManyToMany(mappedBy = "followers")
-//    private List<Profile> following = new ArrayList<>();
-//
-//    @ManyToMany
-//    private List<Profile> followers = new ArrayList<>();
+    private LocalDateTime modifyDate;
+
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
     private List<Pet> petList;
@@ -43,5 +43,29 @@ public class Profile {
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE )
     private List<Comment> commentList;
 
-    private LocalDateTime modifyDate;
+
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE )
+    private Set<FollowingMap> followerMaps;
+
+    @OneToMany(mappedBy = "followee")
+    private Set<FollowingMap> followeeMaps = new HashSet<>();
+
+
+
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE )
+    private List<Message> myMessages;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE )
+    private List<Message> receivedMessages;
+
+    @OneToOne(mappedBy = "me", cascade = CascadeType.REMOVE)
+    private DmPage myDm;
+
+
+
+
+
+
 }

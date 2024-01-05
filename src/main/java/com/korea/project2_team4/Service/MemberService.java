@@ -1,6 +1,7 @@
 package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Config.UserRole;
+import com.korea.project2_team4.Model.Entity.Image;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
@@ -11,10 +12,12 @@ import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.RepositoryDefinition;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,15 +35,15 @@ import java.util.*;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProfileService profileService;
     private final ProfileRepository profileRepository;
     private final EmailService emailService;
+    private final ProfileService profileService;
+    private final ImageService imageService;
 
 
     // 멤버 생성
     public Member create(MemberCreateForm memberCreateForm) {
         Member member = new Member();
-
         member.setUserName(memberCreateForm.getUserName());
         member.setPassword(passwordEncoder.encode(memberCreateForm.getPassword()));
 
@@ -81,13 +84,13 @@ public class MemberService {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         saveDefaultAdmin();
         saveDefaultUser();
     }
 
     @Transactional
-    public void saveDefaultAdmin() { // 테스트 관리자 아이디 아이디: admin, 비밀 번호 admin123!
+    public void saveDefaultAdmin() throws Exception { // 테스트 관리자 아이디 아이디: admin, 비밀 번호 admin123!
         if (memberRepository.findByUserName("admin").isEmpty()) {
             Member member = new Member();
             member.setUserName("admin");
@@ -98,26 +101,36 @@ public class MemberService {
             member.setRealName("관리자");
             member.setNickName("관리자");
             member.setCreateDate(LocalDateTime.now());
-
-
             memberRepository.save(member);
 
-            Profile adminProfile = profileRepository.findByProfileName("관리자")
-                    .orElseGet(() -> {
-                        Profile newProfile = new Profile();
-                        newProfile.setProfileName("관리자");
-                        return newProfile;
-                    });
 
-            adminProfile.setMember(member);
+            Profile newProfile = new Profile();
+            newProfile.setProfileName("관리자프로필");
+            newProfile.setMember(member);
+            profileRepository.save(newProfile);
 
-            profileRepository.save(adminProfile);
+
+//            member.setProfile(newProfile);
+//            memberRepository.findById(member.getId()).get().setProfile(newProfile);
+
+            Member adminprofile = memberRepository.findById(member.getId()).get();
+            adminprofile.setProfile(newProfile);
+            memberRepository.save(adminprofile);
+            profileRepository.save(newProfile);
+
+
+
+            Profile saveImage = profileRepository.findById(newProfile.getId()).get();
+            imageService.saveDefaultImgsForProfile(saveImage);
+            profileRepository.save(saveImage);
+
+//            imageService.saveDefaultImgsForProfile(profileRepository.findById(newProfile.getId()).get());
 
         }
     }
 
     @Transactional
-    public void saveDefaultUser() { // 테스트 유저 아이디 아이디: test1, 비밀 번호 test123!
+    public void saveDefaultUser() throws Exception { // 테스트 유저 아이디 아이디: test1, 비밀 번호 test123!
         for (int i = 1; i <= 5; i++) {
             String userName = "test" + i;
             if (memberRepository.findByUserName(userName).isEmpty()) {
@@ -127,25 +140,38 @@ public class MemberService {
                 member.setEmail(userName + "@gmail.com");
                 member.setPhoneNum("000-0000-0000");
                 member.setRole("ROLE_USER");
-                member.setRealName("테스트 유저" + i);
-                member.setNickName("테스트 유저" + i);
+                member.setRealName("테스트유저" + i);
+                member.setNickName("테스트유저" + i);
                 member.setCreateDate(LocalDateTime.now());
-
                 memberRepository.save(member);
 
-                final int finalI = i;
+                Profile newProfile = new Profile();
+                newProfile.setProfileName("테스트유저"+ i);
+                newProfile.setMember(member);
+                profileRepository.save(newProfile);
 
-                Profile adminProfile = profileRepository.findByProfileName("테스트 유저" + finalI)
-                        .orElseGet(() -> {
-                            Profile newProfile = new Profile();
-                            newProfile.setProfileName("테스트 유저" + finalI);
-                            return newProfile;
-                        });
+                Member profile = memberRepository.findById(member.getId()).get();
+                profile.setProfile(newProfile);
+                memberRepository.save(profile);
+                profileRepository.save(newProfile);
 
-                // Set the member for the profile
-                adminProfile.setMember(member);
+                Profile saveImage = profileRepository.findById(newProfile.getId()).get();
+                imageService.saveDefaultImgsForProfile(saveImage);
+                profileRepository.save(saveImage);
 
-                profileRepository.save(adminProfile);
+//                final int finalI = i;
+//
+//                Profile adminProfile = profileRepository.findByProfileName("테스트 유저" + finalI)
+//                        .orElseGet(() -> {
+//                            Profile newProfile = new Profile();
+//                            newProfile.setProfileName("테스트 유저" + finalI);
+//                            return newProfile;
+//                        });
+//
+//                // Set the member for the profile
+//                adminProfile.setMember(member);
+//
+//                profileRepository.save(adminProfile);
 
 
             }
@@ -182,7 +208,7 @@ public class MemberService {
     }
 
     public void SendVerificationCode(String email,String verificationCode) {
-        emailService.sendEmail(email,"비마이펫 인증 번호 입니다","인증 번호 : "+verificationCode);
+        emailService.sendEmail(email,"PetPlanet 인증 번호 입니다","인증 번호 : "+verificationCode);
     }
     public static String generateRandomCode() {
         // 100000부터 999999까지의 랜덤 숫자 생성 (6자리)

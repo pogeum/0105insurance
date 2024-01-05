@@ -5,14 +5,12 @@ import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
-import com.korea.project2_team4.Service.FollowService;
 import com.korea.project2_team4.Service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -25,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
-import javax.swing.*;
 import java.security.Principal;
 import java.util.List;
 
@@ -36,7 +33,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private final FollowService followService;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private HttpSession session;
@@ -228,7 +224,7 @@ public class MemberController {
     }
 
     @GetMapping("/member")
-    public String saveDefaultAdmin() {
+    public String saveDefaultAdmin() throws Exception {
         memberService.saveDefaultAdmin();
 
         return "redirect:/";
@@ -236,7 +232,7 @@ public class MemberController {
     }
 
     @GetMapping("/member1")
-    public String saveDefaultUser() {
+    public String saveDefaultUser() throws Exception {
         memberService.saveDefaultUser();
 
         return "redirect:/";
@@ -278,10 +274,17 @@ public class MemberController {
 
     @PostMapping("/findUserName")
     public String findUserName(@RequestParam String verificationCode,
-                               @SessionAttribute("expectedVerificationCode") String expectedVerificationCode,
+//                               @SessionAttribute("expectedVerificationCode") String expectedVerificationCode,
                                SessionStatus sessionStatus,
                                HttpSession session,
                                String realName, String email, Model model) {
+        // 세션에서 expectedVerificationCode 속성 가져오기
+        String expectedVerificationCode = (String) session.getAttribute("expectedVerificationCode");
+
+        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+        if (expectedVerificationCode == null) {
+            return "redirect:/member/findUserName";
+        }
 
         // 클라이언트에게 전송된 인증 코드와 서버에서 예상하는 인증 코드가 일치하는지 확인
         if (verificationCode.equals(expectedVerificationCode)) {
@@ -322,7 +325,7 @@ public class MemberController {
     }
     @PostMapping("/findPassword")
     public String findPassword(@RequestParam String verificationCode,
-                               @SessionAttribute("expectedVerificationCode") String expectedVerificationCode,
+//                               @SessionAttribute("expectedVerificationCode") String expectedVerificationCode,
                                SessionStatus sessionStatus,
                                HttpSession session,
                                String realName,
@@ -330,6 +333,13 @@ public class MemberController {
                                String userName,
                                Model model,
                                EditPasswordForm editPasswordForm) {
+        // 세션에서 expectedVerificationCode 속성 가져오기
+        String expectedVerificationCode = (String) session.getAttribute("expectedVerificationCode");
+
+        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+        if (expectedVerificationCode == null) {
+            return "redirect:/member/findUserName";
+        }
 
         // 클라이언트에게 전송된 인증 코드와 서버에서 예상하는 인증 코드가 일치하는지 확인
         if (verificationCode.equals(expectedVerificationCode)) {

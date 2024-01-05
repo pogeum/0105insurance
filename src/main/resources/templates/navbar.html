@@ -12,10 +12,10 @@
                         커뮤니티
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/post/community/main}">전체</a></li>
-<!--                        <li><hr class="dropdown-divider"></li>-->
-<!--                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>-->
-<!--                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>-->
+                        <li><a class="dropdown-item" th:href="@{/post/community/main(category='', sort='', TagName='')}">전체</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
                     </ul>
                 </li>
 
@@ -62,11 +62,28 @@
                     </li>
 
                     <li sec:authorize="isAuthenticated()">
-                        <a class="nav-link rounded" th:href="@{/profile/detail}">내 프로필</a>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent2">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<!--                                th:if="${#authentication.principal.username != 'admin'}"-->
+                                <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <a class="nav-link rounded" th:href="@{/profile/my}">내 프로필</a>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <!--each 루프돌려서 펫 드롭다운리스트 생성-->
+                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫1</a></li>
+                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫2</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+
                     <li sec:authorize="isAuthenticated()">
                         <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
                     </li>
+
 
                 </ul>
             </div>

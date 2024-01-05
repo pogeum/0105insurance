@@ -1,9 +1,7 @@
 package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Model.Entity.*;
-import com.korea.project2_team4.Repository.MemberRepository;
-import com.korea.project2_team4.Repository.PostRepository;
-import com.korea.project2_team4.Repository.ProfileRepository;
+import com.korea.project2_team4.Repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
@@ -19,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Builder
 @Service
@@ -27,10 +26,13 @@ public class PostService {
     private final ProfileRepository profileRepository;
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final TagRepository tagRepository;
+    private final TagMapRepository tagMapRepository;
 
     public void save(Post post) {
         postRepository.save(post);
     }
+
 
     public Page<Post> postList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -70,30 +72,61 @@ public class PostService {
         return postRepository.findByLikeMembers(member, pageable);
 
     }
+////    신고
+//    public void report(Post post, Member member) {
+//        post.getReportMembers().add(member);
+//        this.postRepository.save(post);
+//    }
+//
+//    public void cancelReport(Post post, Member member) {
+//        post.getReportMembers().remove(member);
+//        this.postRepository.save(post);
+//    }
+//
+//    public boolean isReported(Post post, Member member) {
+//        if (post == null) {
+//            return false;
+//        }
+//        return post.getReportMembers().contains(member);
+//    }
+//
 
-    //테스트 데이터
+//    테스트 데이터
     @PostConstruct
     public void init() {
         saveTestPost();
     }
+
 
     //테스트 데이터
     @Transactional
     public void saveTestPost() {
         if (postRepository.findAll().isEmpty()) {
 
-            Member admin = memberRepository.findByUserName("admin").orElse(null);
+//            Member admin = memberRepository.findByUserName("admin").orElse(null);
+//
+//
+//
+//
+//            Profile authorProfile = profileRepository.findByMember(admin)
+//                    .orElseGet(() -> { // admin없으면 실행되는?
+//                        Profile newProfile = new Profile();
+//                        newProfile.setProfileName("관리자");
+//                        return profileRepository.save(newProfile);
+//                    });
+//
+            Tag etcTag = new Tag();
+            etcTag.setName("기타");
+            tagRepository.save(etcTag);
 
-            Profile authorProfile = profileRepository.findByProfileName("관리자")
-                    .orElseGet(() -> {
-                        Profile newProfile = new Profile();
-                        newProfile.setProfileName("관리자");
-                        return newProfile;
-                    });
 
-            // Profile 저장 (만약 새로 생성한 경우에만 저장)
-            if (!profileRepository.existsById(authorProfile.getId())) {
-                profileRepository.save(authorProfile);
+
+//            Tag etcTag = tagRepository.findByName("기타").orElse(null);
+
+            if (etcTag == null) {
+                Tag tag = new Tag();
+                tag.setName("기타");
+                etcTag = tagRepository.save(tag);
             }
 
             for (int i = 1; i <= 10; i++) {
@@ -101,10 +134,16 @@ public class PostService {
                 post.setTitle(String.format("테스트 데이터 제목 입니다:[%03d].", i));
                 post.setContent("테스트 데이터 내용 입니다.");
                 post.setCreateDate(LocalDateTime.now());
-
-                post.setAuthor(admin.getProfile());
-
+                post.setCategory("자유게시판");
+                Profile authorProfile = profileRepository.findByProfileName("테스트유저1" ).get();
+                post.setAuthor(authorProfile);
                 postRepository.save(post);
+
+                TagMap etcTagMap = new TagMap();
+                etcTagMap.setPost(post);
+                etcTagMap.setTag(etcTag);
+                tagMapRepository.save(etcTagMap);
+
             }
         }
     }
@@ -166,7 +205,7 @@ public class PostService {
         return post.getLikeMembers().contains(member);
     }
 
-    public void deleteById(Long id) {
+    public void     deleteById(Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
 
         if (optionalPost.isPresent()) {
@@ -204,74 +243,115 @@ public class PostService {
         return postRepository.findAllByauthorPage(profile.getProfileName(), pageable);
     }
 
-    public List<Post> getPostslikes(){
-        return this.postRepository.findAllByLikesDesc();
-    }
-
-    public Page<Post> getPostsBycategoryAndsortAndtag(int page, String category, String sort, String tagname) {
-        Pageable pageable = PageRequest.of(page, 10);
-        if (sort.equals("likeCount")) {
-            return postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname, category, pageable);
-        } else {
-            return postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname, category, pageable);
+    public Page<Post> getPostsFreeboard(int page, String sort, String tagname) { //
+        if (tagname == null) {
+            tagname = "";  // 기본적으로 빈 문자열로 설정
         }
-    }
+        if (sort == null) {
+            sort = "latest";
+        }
 
-    public Page<Post> getPostsBytagAndcategoryAndsort(int page, String tagName, String category, String sort) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page,10);
 
-        if ((!tagName.equals("")) || (!category.equals(""))) {
-            if (category.equals("")) { // 태그만 있고 sort 3 가지
-                if (sort.equals("likeCount")) {
-                    return this.postRepository.findAllByTagNameOrderByLikeMembersSizeDesc(tagName, pageable);
-                } else if (sort.equals("commentCount")) {
-                    return this.postRepository.findAllByTagNameOrderByCommentsSizeDesc(tagName, pageable);
-                } else { // 최신순 + 페이징 추가
-                    List<Sort.Order> sorts = new ArrayList<>();
-                    sorts.add(Sort.Order.desc("createDate"));
-                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
-                    return this.postRepository.findAllByTagName(tagName, pageable2);
-                }
-            } else if (tagName.equals("")) { // 카테고리만 있고 sort 3 가지
-                if (sort.equals("likeCount")) {
-                    return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc(category, pageable);
-                } else if (sort.equals("commentCount")) {
-                    return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc(category, pageable);
-                } else { // 최신순 + 페이징 추가
-                    List<Sort.Order> sorts = new ArrayList<>();
-                    sorts.add(Sort.Order.desc("createDate"));
-                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
-                    return this.postRepository.findAllByCategory(category, pageable2);
-                }
-
-            } else { // 태그, 카테고리 둘 다 있고 sort 3 가지
-                if (sort.equals("likeCount")) {
-                    return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagName, category, pageable);
-                } else if (sort.equals("commentCount")) {
-                    return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagName, category, pageable);
-                } else { // 최신순 + 페이징 추가
-                    List<Sort.Order> sorts = new ArrayList<>();
-                    sorts.add(Sort.Order.desc("createDate"));
-                    Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
-                    return this.postRepository.findAllByTagNameAndCategory(tagName, category, pageable);
-                }
-
-            }
-        } else { // 태그, 카테고리 둘 다 ""
-
+        if (tagname.equals("")) {
             if (sort.equals("likeCount")) {
-                return this.postRepository.findAllOrderByLikeMembersSizeDesc(pageable);
+                return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc("자유게시판", pageable);
             } else if (sort.equals("commentCount")) {
-                return this.postRepository.findAllOrderByCommentsSizeDesc(pageable);
-            } else {
+                return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc("자유게시판", pageable);
+            } else { //최신순
                 List<Sort.Order> sorts = new ArrayList<>();
                 sorts.add(Sort.Order.desc("createDate"));
                 Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
-                return this.postRepository.findAll(pageable2);
+                return this.postRepository.findAllByCategory("자유게시판", pageable2);
+            }
+        } else {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname,"자유게시판",pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname,"자유게시판", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByTagNameAndCategory(tagname,"자유게시판", pageable2);
             }
         }
+    }
+
+    public Page<Post> getAllPosts(int page, String sort, String tagname) {
+        if (tagname == null) {
+            tagname = "";  // 기본적으로 빈 문자열로 설정
+        }
+        if (sort == null) {
+            sort = "latest";
+        }
+
+        Pageable pageable = PageRequest.of(page,10);
+
+        if (tagname.equals("")) {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc("", pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc("", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByCategory("", pageable2);
+            }
+        } else {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname,"",pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname,"", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByTagNameAndCategory(tagname,"", pageable2);
+            }
+        }
+    }
+
+    public Page<Post> getPostsQnA(int page, String sort, String tagname) {
+        if (tagname == null) {
+            tagname = "";  // 기본적으로 빈 문자열로 설정
+        }
+        if (sort == null) {
+            sort = "latest";
+        }
+
+        Pageable pageable = PageRequest.of(page,10);
+
+        if (tagname.equals("")) {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByLikeMembersSizeDesc("QnA", pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByCategoryAndOrderByCommentsSizeDesc("QnA", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByCategory("QnA", pageable2);
+            }
+        } else {
+            if (sort.equals("likeCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByLikeMembersSizeDesc(tagname,"QnA",pageable);
+            } else if (sort.equals("commentCount")) {
+                return this.postRepository.findAllByTagNameAndCategoryOrderByCommentsSizeDesc(tagname,"QnA", pageable);
+            } else { //최신순
+                List<Sort.Order> sorts = new ArrayList<>();
+                sorts.add(Sort.Order.desc("createDate"));
+                Pageable pageable2 = PageRequest.of(page, 10, Sort.by(sorts));
+                return this.postRepository.findAllByTagNameAndCategory(tagname,"QnA", pageable2);
+            }
+        }
+    }
 
 
+
+    public List<Post> getPostslikes(){
+        return this.postRepository.findAllByLikesDesc();
     }
 
 

@@ -63,6 +63,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
 
+
 //   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 선영 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     //메인페이지에 쓸 포스트리스트 좋아요순
     @Query("SELECT p FROM Post p ORDER BY SIZE(p.likeMembers) DESC")
@@ -119,7 +120,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByTagNameOrderByCommentsSizeDesc(@Param("tagName") String tagName, Pageable pageable);
 
     //카테고리, 작성일 내림차순
-    @Query("SELECT p FROM Post p WHERE p.category IS NOT NULL AND p.category LIKE %:category%") //"ORDER BY p.createDate DESC"
+    @Query("SELECT p FROM Post p WHERE p.category IS NOT NULL AND p.category LIKE %:category%")
     Page<Post> findAllByCategory(@Param("category") String category, Pageable pageable);
 
     //카테고리, 좋아요 내림차순
@@ -130,7 +131,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //카테고리, 댓글수 내림차순
     @Query("SELECT p FROM Post p WHERE p.category IS NOT NULL AND p.category LIKE %:category% ORDER BY SIZE(p.comments) DESC")
     Page<Post> findAllByCategoryAndOrderByCommentsSizeDesc(@Param("category") String category, Pageable pageable);
-
 
 
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 선영 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
@@ -145,13 +145,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE LOWER(p.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
     Page<Post> findByPostContentWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.author pr " +
-            "WHERE LOWER(pr.profileName) LIKE LOWER(CONCAT('%',:kw,'%')) ")
+    @Query("SELECT p FROM Post p WHERE p.author.profileName LIKE %:kw%")
     Page<Post> findByProfileNameWithPaging(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT p FROM Post p " + "LEFT JOIN p.comments c " +
+    @Query("SELECT DISTINCT p FROM Post p JOIN p.comments c " +
             "WHERE LOWER(c.content) LIKE LOWER(CONCAT('%',:kw,'%')) ")
     Page<Post> findByCommentWithPaging(@Param("kw") String kw, Pageable pageable);
-
 
 }
