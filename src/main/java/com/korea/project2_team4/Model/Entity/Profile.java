@@ -4,6 +4,7 @@ import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -24,12 +25,13 @@ public class Profile {
     private Member member;
 
 
-    @OneToOne(mappedBy = "profileImage")
+    @OneToOne(mappedBy = "profileImage", cascade = CascadeType.REMOVE)
     private Image profileImage;
 
     private String profileName;
     private String content;
 
+    private LocalDateTime modifyDate;
 
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
@@ -51,5 +53,19 @@ public class Profile {
 
 
 
-    private LocalDateTime modifyDate;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE )
+    private List<Message> myMessages;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE )
+    private List<Message> receivedMessages;
+
+    @OneToOne(mappedBy = "me", cascade = CascadeType.REMOVE)
+    private DmPage myDm;
+
+
+
+
+
+
 }

@@ -29,6 +29,11 @@ public class PetService {
     public Pet getpetById(Long petid) {
         return this.petRepository.findById(petid).get();
     }
+
+    public Pet getpetByname(String petName) {
+
+        return this.petRepository.findByPetName(petName);
+    }
     public void savePet(Pet pet) {
         this.petRepository.save(pet);
     }

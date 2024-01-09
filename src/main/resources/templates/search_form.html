@@ -4,23 +4,6 @@
 
     <div class="container">
         <div>
-            <div class="container">
-                <div class="row row-cols-3">
-                    <div class="col" style="">
-                        <a type="button" class="btn btn-outline-warning" href="#">강아지</a>
-                        <a type="button" class="btn btn-outline-warning" href="#">고양이</a>
-                        <a type="button" class="btn btn-outline-warning" href="#">기타</a>
-                    </div>
-                    <div class="col" style="border:1px solid;">
-                        <a href="#">자유/</a>
-                        <a href="#">QnA/</a>
-                        <a href="#">??</a>
-                    </div>
-                    <div class="col" style="border:1px solid;">
-                        <a href="#">글쓰기</a>
-                    </div>
-                </div>
-            </div>
             <!--   조회 결과 창   -->
             <div class="row row-cols-1 align-items-center">
                 <div class="col">
@@ -29,7 +12,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostTitle.size() > 0}"
                          th:each="post : ${searchResultsByPostTitle}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -67,7 +50,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostContent.size() > 0}"
                          th:each="post : ${searchResultsByPostContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -105,7 +88,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByProfileName.size() > 0}"
                          th:each="post : ${searchResultsByProfileName}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -143,7 +126,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByCommentContent.size() > 0}"
                          th:each="post : ${searchResultsByCommentContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -179,7 +162,7 @@
                 <style>
                     hr {
                         height: 4px;
-                        width: 55%;
+                        width: 65%;
                         background-color: black;
                     }
 

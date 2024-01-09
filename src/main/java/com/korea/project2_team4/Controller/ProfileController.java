@@ -1,11 +1,9 @@
 package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Model.Dto.ProfileDto;
-import com.korea.project2_team4.Model.Entity.Member;
-import com.korea.project2_team4.Model.Entity.Pet;
-import com.korea.project2_team4.Model.Entity.Post;
-import com.korea.project2_team4.Model.Entity.Profile;
+import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.ProfileForm;
+import com.korea.project2_team4.Repository.MessageRepository;
 import com.korea.project2_team4.Service.*;
 
 import jakarta.servlet.http.HttpSession;
@@ -20,8 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +38,10 @@ public class ProfileController {
     private final PetService petService;
     private final ImageService imageService;
     private final FollowingMapService followingMapService;
+
+    private final MessageRepository messageRepository; //서비스로 추후수정. 테스트용임
+    private TagService tagService;
+    private TagMapService tagMapService;
 
     @GetMapping("/my")
     public String myProfile(Model model, Principal principal) {
@@ -177,7 +182,6 @@ public class ProfileController {
     public String memberDelete(Principal principal) {
         Member member = this.memberService.getMember(principal.getName());
         memberService.delete(member);
-
         session.invalidate();
         return "redirect:/";
     }
@@ -240,10 +244,26 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/petprofile")
-    public String petprofile(Model model, @RequestParam(name = "petid", required = false) Long petid) {
-        Pet pet = petService.getpetById(petid);
+    @GetMapping("/petprofile/{petName}")
+    public String petprofile(Model model, @PathVariable("petName")String petName) {
+        Pet pet = petService.getpetByname(petName);
+//        List<Post> ownerposts = postService.getPostsbyAuthor(pet.getOwner()); //???
 
+        List<Post> postList = new ArrayList<>();
+
+        if (tagService.tagExists(petName)) {
+            Tag tag = tagService.getTagByTagName(petName);
+            List<TagMap> tagMapList = tagMapService.findTagMapsByTagId(tag.getId());
+            for (TagMap tagMap : tagMapList) {
+                if ( (tagMap.getTag().getName().equals(petName)) && (tagMap.getPost().getAuthor().equals(pet.getOwner()))) {
+                    Post post = tagMap.getPost();
+                    postList.add(post);
+                }
+            }
+        }
+
+
+        model.addAttribute("postList", postList);
         model.addAttribute("pet", pet);
         return "Profile/pet_profile";
     }
@@ -266,6 +286,19 @@ public class ProfileController {
         return "redirect:/profile/petprofile?petid=" + petid;
 
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/createPetPhotos")
+    public String createpetphotos(@RequestParam("petid") Long petid, Principal principal, HttpSession session) {
+
+        Pet pet = petService.getpetById(petid);
+        String petName = pet.getName();
+
+        session.setAttribute("petName", petName);
+        return "redirect:/post/createPost";
+
+    }
+
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓팔로우 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -314,6 +347,48 @@ public class ProfileController {
         model.addAttribute("followingList", followingList);
         return "Profile/followings";
     }
+
+
+    // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    @GetMapping("/dmTo/{profileName}")
+    public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
+        System.out.println(principal.getName());
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile partner = profileService.getProfileByName(profileName);
+        Profile me = sitemember.getProfile();
+        List<Message> messageList = me.getMyMessages();
+        List<Message> receivedmessageList = me.getReceivedMessages();
+        //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
+
+        model.addAttribute("me", me);
+        model.addAttribute("partner", partner);
+        model.addAttribute("messageList", messageList);
+        model.addAttribute("receivedmessageList",receivedmessageList);
+        return "Profile/dmPage";
+    }
+
+
+    @PostMapping("/sendmessageTo/{profileName}")
+    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile partner = profileService.getProfileByName(profileName);
+        Message sendmessage = new Message();
+        sendmessage.setAuthor(sitemember.getProfile());
+        sendmessage.setReceiver(partner);
+        sendmessage.setContent(message);
+        sendmessage.setCreateDate(LocalDateTime.now());
+        messageRepository.save(sendmessage);
+
+        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
+        return "redirect:/profile/dmTo/" + encodedValue;
+    }
+
+    @PostMapping("/sendmessage")
+    public String sendmessage() {
+        return "redirect:/Proflle/dmpage";
+    }
+
+
 
 
 }

@@ -1,0 +1,30 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content" class="row py-5 px-4">
+    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
+        디엠창 To
+        <span th:text="${partner.profileName}"></span>
+        <p>from</p>
+        <span th:text="${me.profileName}"></span>
+        <form th:action="@{|/profile/sendmessageTo/${partner.profileName}|}" method="post">
+<!--            <input type="hidden" name="profileName" th:value="${partner.profileName}">-->
+            <input type="text" name="message">
+            <button type="submit" class="btn btn-primary">전송</button>
+        </form>
+        <div>
+            보낸메시지 :
+            <div th:each="message : ${messageList}">
+                <div th:text="${message.content}"></div>
+            </div>
+        </div>
+
+        <div>
+            받은메시지 :
+            <div th:each="message : ${receivedmessageList}">
+                <div th:text="${message.content}"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</html>

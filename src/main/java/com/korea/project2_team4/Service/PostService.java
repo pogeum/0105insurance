@@ -118,7 +118,7 @@ public class PostService {
             Tag etcTag = new Tag();
             etcTag.setName("기타");
             tagRepository.save(etcTag);
-            Profile authorProfile = profileRepository.findByProfileName("관리자프로필").get();
+
 
 
 //            Tag etcTag = tagRepository.findByName("기타").orElse(null);
@@ -135,6 +135,7 @@ public class PostService {
                 post.setContent("테스트 데이터 내용 입니다.");
                 post.setCreateDate(LocalDateTime.now());
                 post.setCategory("자유게시판");
+                Profile authorProfile = profileRepository.findByProfileName("테스트유저1" ).get();
                 post.setAuthor(authorProfile);
                 postRepository.save(post);
 

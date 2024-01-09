@@ -26,7 +26,10 @@
 
 
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal">
+<!--                        <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn btn-dark btn-sm btn-block text-muted">✎</a>-->
+
+                        <button type="button" class="btn btn-dark btn-sm btn-block text-muted" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()">
                             수정
                         </button>
                         <!-- Modal -->
@@ -68,63 +71,60 @@
                                 </div>
                             </div>
                         </div>
-
-<!--                        <div class="pets-box d-flex">-->
-<!--                            &lt;!&ndash; 펫 카드 &ndash;&gt;-->
-<!--                            <div class="pet-card" th:each="pet : ${profile.petList}" >-->
-<!--                                &lt;!&ndash; 부트스트랩 카드 &ndash;&gt;-->
-<!--                                <div class="d-flex flex-column" style="width: 100%; height:100%; margin:5px;">-->
-<!--                                    <a href="#" class="d-flex align-items-center">-->
-<!--                                        <img th:if="${pet.petImage.fileName != null}" th:src="@{|/files/${pet.petImage.fileName}|}" alt="pet" class="avatar-img rounded-circle" style="width:100px; height:100px; object-fit: cover;" />-->
-<!--                                    </a>-->
-<!--                                    <div style="width:100%; height:10%;">-->
-<!--                                        <p class="small mb-4 " th:text="${pet.name}" style="margin:0;"><i class="fa fa-map-marker mr-2"></i></p>-->
-<!--                                    </div>-->
-<!--                                    <form th:action="@{|/profile/deletepet|}" method="post">-->
-<!--                                        <input type="hidden" name="petid" th:value="${pet.id}">-->
-<!--                                        <button type="submit" class="btn btn-link" style="text-decoration:none; color:inherit;">✕</button>-->
-<!--                                    </form>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
                     </div>
                 </div>
             </div>
 
-<!--            <div class="bg-light p-4 d-flex justify-content-end text-center">-->
-<!--                <ul class="list-inline mb-0">-->
-<!--                    <li class="list-inline-item">-->
-<!--                        <h5 class="font-weight-bold mb-0 d-block" th:text="${postList.size}"></h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>게시물</small>-->
-<!--                    </li>-->
-<!--                    <li class="list-inline-item">-->
-<!--                        <h5 class="font-weight-bold mb-0 d-block">848</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>팔로워</small>-->
-<!--                    </li>-->
-<!--                    <li class="list-inline-item">-->
-<!--                        <h5 class="font-weight-bold mb-0 d-block">24</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>팔로잉</small>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-
             <div class="py-4 px-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h5 class="mb-0">About Me!</h5>
-<!--                    <form th:action="@{|/profile/showallPostsBy|}">-->
-<!--                        <input type="hidden" name="profileid" th:value="${profile.id}">-->
-<!--                        <button type="submit" class="btn btn-link text-muted" >Show all</button>-->
-<!--                    </form>-->
+
+                    <div th:if="${#authentication.principal.username == pet.owner.member.userName}" sec:authorize="isAuthenticated()">
+                        <form th:action="@{|/profile/createPetPhotos|}">
+                            <input type="hidden" name="petid" th:value="${pet.id}">
+                            <button type="submit" class="btn btn-link text-muted" >추가</button>
+                        </form>
+                    </div>
+
                 </div>
-                <div class="row">
-<!--                    <div th:each="post : ${postList}">-->
-<!--                        <div class="col-lg-6 mb-2 pr-lg-1">-->
-<!--                            &lt;!&ndash;                            <div th:text="${post.title}"></div>&ndash;&gt;-->
-<!--                            <a th:href="@{|/post/detail/${post.id}|}">-->
-<!--                                <div th:each="img : ${post.postImages}">-->
-<!--                                    <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm">-->
-<!--                                </div>-->
-<!--                            </a>-->
-<!--                        </div>-->
-<!--                    </div>-->
+
+                <div class="py-4 px-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+<!--                        <a th:href="@{|/profile/detail/${profile.profileName}/showall|}" class="btn btn-link text-muted">Show all</a>-->
+                        <!--                    <form th:action="@{|/profile/showallPostsBy|}">-->
+                        <!--                        <input type="hidden" name="profileid" th:value="${profile.id}">-->
+                        <!--                        <button type="submit" class="btn btn-link text-muted" >Show all</button>-->
+                        <!--                    </form>-->
+                    </div>
+                    <div class="row" >
+                        <div class="col-lg-6 mb-2 pr-lg-1 d-flex" th:each="post, iterStat : ${postList}"
+                             th:if="${post.postImages ne null and not #lists.isEmpty(post.postImages)} and ${iterStat.index < 4}">
+                            <div>
+                                <a th:href="@{|/post/detail/${post.id}/0|}">
+                                    <div >
+                                        <div class="flex-shrink-0" th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
+
+                                            <img th:src="@{|/resources/${img.saveName}|}" alt="no_img" class="img-fluid rounded shadow-sm" style="width:450px; height:300px;">
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
+                <!--                <div class="py-4">-->
+                <!--                    <h5 class="mb-3">Recent posts</h5>-->
+                <!--                    <div class="p-4 bg-light rounded shadow-sm">-->
+                <!--                        <p class="font-italic mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>-->
+                <!--                        <ul class="list-inline small text-muted mt-3 mb-0">-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-comment-o mr-2"></i>12 Comments</li>-->
+                <!--                            <li class="list-inline-item"><i class="fa fa-heart-o mr-2"></i>200 Likes</li>-->
+                <!--                        </ul>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
             </div>
         </div>
     </div>

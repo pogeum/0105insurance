@@ -14,6 +14,9 @@
                     </label>
                     </th:block>
                 </div>
+                <div th:if="${petName}">
+                    <input type="checkbox" id="${'tag_' + tagName}" name="petTagName" th:value="${petName}" th:text="${petName}" checked="checked">
+                </div>
                 <div id="new-tag">
 
                 </div>

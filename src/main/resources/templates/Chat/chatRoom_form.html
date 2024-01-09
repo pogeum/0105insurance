@@ -1,0 +1,98 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+    <div class="container">
+        <div>
+            <div class="row row-cols-1 align-items-center">
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:if="${room}" th:text="${room.roomName}"></span></h2>
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <p>채팅방 ID: <span th:if="${room}" th:text="${room.roomId}"></span></p>
+                        <p>참여자 수: <span th:if="${room}" th:text="${room.userCount}"></span></p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <h2>참여자 목록</h2>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <ul>
+                            <li th:each="user : ${userList}">
+                                <span th:text="${user}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h2>채팅 메시지</h2>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <ul id="chatMessages">
+                            <!-- 메시지는 JavaScript를 사용하여 동적으로 여기에 추가됩니다 -->
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <form id="sendMessageForm" class="d-flex">
+                            <label for="message" class="mr-2" style="width: 50%;">메시지:</label>
+                            <input class="form-control mr-2" type="text" id="message" name="message" required>
+                            <button class="btn btn-primary" type="submit">전송</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+
+        // roomId 파라미터 가져오기
+        const url = new URL(location.href).searchParams;
+        const roomId = url.get('roomId');
+
+        // WebSocket 연결
+        var socket = new SockJS('/ws-stomp');
+        var stompClient = Stomp.over(socket);
+
+        // 채팅 메시지 목록
+        var chatMessages = document.getElementById('chatMessages');
+
+        // WebSocket 연결 시
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            // 특정 채팅방의 메시지 구독
+            stompClient.subscribe('/sub/chat/room?roomId=' + roomId, function (response) {
+                var chat = JSON.parse(response.body);
+                console.log(chat.message);
+                addMessageToChat(chat.sender, chat.message);
+            });
+        });
+
+        // 채팅 메시지 전송
+        document.getElementById('sendMessageForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var messageInput = document.getElementById('message');
+            var message = messageInput.value.trim();
+
+            if (message !== '') {
+                // 메시지 전송
+                stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
+                    type: 'TALK',
+                    roomId: roomId,
+                    sender: 'username',
+                    message: message
+                }));
+
+                // 입력 폼 초기화
+                messageInput.value = '';
+            }
+        });
+
+        // 채팅 메시지를 목록에 추가
+        function addMessageToChat(sender, message) {
+            var messageItem = document.createElement('li');
+            messageItem.textContent = sender + ': ' + message;
+            chatMessages.appendChild(messageItem);
+        }
+
+    </script>
+</div>
+</html>

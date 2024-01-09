@@ -84,7 +84,7 @@
                 <br>
                 <div class="pb-2">
                     <div class="row justify-content-end">
-                        <div class="col-md-auto" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                        <div class="col-md-auto" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                             <button type="button" class="btn btn-primary admin-btn" style="margin-right: 0.1rem"
                                     data-bs-toggle="modal" th:data-bs-target="'#approveModal' + ${post.id}"
                                     th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
@@ -100,14 +100,14 @@
                             </div>
                         </div>
                         <div class="col-md-auto"
-                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                             <form th:action="@{|/post/updatePost/${post.id}|}" method="get">
                                 <input type="hidden" name="id" th:value="${post.id}" />
                                 <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>
                             </form>
                         </div>
                         <div class="col-md-auto"
-                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                             <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
                                   onsubmit="return DeletePost();">
                                 <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
@@ -364,7 +364,7 @@
                                 </div>
 <!--                                댓글 신고 모달창 끝-->
                                 <div class="col-md-auto"
-                                     th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                     th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                                     <form th:action="@{|/comment/deleteComment/${comment.id}|}" method="post"
                                           onsubmit="return DeleteComment();">
                                         <button type="submit" class="btn btn-danger admin-btn"

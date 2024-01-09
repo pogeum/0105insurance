@@ -27,7 +27,7 @@
             </thead>
 <!--            th:if="${member.role != 'ROLE_ADMIN'}"-->
             <tbody class="table-group-divider">
-            <tr th:each="member : ${paging}">
+            <tr th:if="${member.role != 'ROLE_ADMIN'}" th:each="member : ${paging}">
                 <td th:hidden="${member.id}"></td>
                 <td style="width: 8rem" th:text="${member.realName}"></td>
                 <td style="width: 12rem" th:text="${member.userName}"></td>
@@ -38,9 +38,9 @@
                     <form th:action="@{|/member/adminPage/changeMemberRole/${member.id}|}" th:method="post">
                         <input type="hidden" name="id" th:value="${member.id}"/>
 
-                        <label for="user">관리자</label>
-                        <input type="radio" id="admin" name="role" value="ROLE_USER" th:value="ROLE_ADMIN"
-                               th:checked="${member.role == 'ROLE_ADMIN'}"/>
+                        <label for="user">매니저</label>
+                        <input type="radio" id="admin" name="role" value="ROLE_USER" th:value="ROLE_MANAGER"
+                               th:checked="${member.role == 'ROLE_MANAGER'}"/>
                         <label for="user">일반 사용자</label>
                         <input type="radio" id="user" name="role" value="ROLE_USER" th:value="ROLE_USER"
                                th:checked="${member.role == 'ROLE_USER'}"/>

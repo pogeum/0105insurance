@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<div layout:fragment="content" class="content-area d-flex justify-content-center align-items-center">
+
+    <div class="container">
+        <div>
+            <div class="row row-cols-1 align-items-center">
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <h2 class="pt-2 mt-5 mb-5">채팅방 목록</h2>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <form th:action="@{/chatList/createRoom}" method="post">
+                            <label for="name">채팅방 이름:</label>
+                            <input type="text" id="name" name="name" required>
+                            <button class="btn btn-primary" type="submit">채팅방 생성</button>
+                        </form>
+                    </div>
+                    <br>
+                    <div>
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;" th:each="room : ${list}">
+                            <div class="card-body" th:onclick="@{|window.location='/chatList/room?roomId=${room.roomId}'|}">
+                                <span th:text="${room.roomName}"></span>
+                                <span th:text="${room.userCount}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+
+            .card {
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+           }
+
+           .clickable-card {
+               cursor: pointer;
+               transition: box-shadow 0.3s; /* 0.3초 동안 변화하는 트랜지션 설정 */
+           }
+
+           .clickable-card:hover {
+               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 마우스 호버 시 그림자 효과 변경 */
+           }
+        </style>
+    </div>
+    <script layout:fragment="script" type='text/javascript'>
+    </script>
+</div>
+</html>

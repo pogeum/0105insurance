@@ -42,6 +42,11 @@
                     <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
 
                 </li>
+                <li class="nav-item">
+
+                    <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chatList/showList">채팅기능(임시)</a>
+
+                </li>
             </ul>
 
             <div class="d-flex justify-content-end">
@@ -51,6 +56,9 @@
                     <li class="nav-item">
                     <li sec:authorize="hasRole('ROLE_ADMIN')">
                         <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_MANAGER')">
+                        <a class="nav-link rounded" th:href="@{|/member/managePage|}">매니저</a>
                     </li>
                         <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
                         <a class="nav-link rounded" sec:authorize="isAuthenticated()"
@@ -64,17 +72,14 @@
                     <li sec:authorize="isAuthenticated()">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent2">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li class="nav-item dropdown">
+<!--                                th:if="${#authentication.principal.username != 'admin'}"-->
+                                <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                                     <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">
                                     </a>
                                     <ul class="dropdown-menu">
-<!--                                        <li th:if="${authentication != null}">-->
-                                            <a class="nav-link rounded" th:href="@{/profile/my}">내 프로필</a>
-<!--                                        <a class="nav-link rounded" th:if="${authentication != null}" th:href="@{'/profile/detail/' + authentication.name}">내 프로필</a>-->
-
-                                        <!--                                        </li>-->
+                                        <a class="nav-link rounded" th:href="@{/profile/my}">내 프로필</a>
                                         <li><hr class="dropdown-divider"></li>
-<!--                                        each 루프돌려서 펫 드롭다운리스트 생성-->
+                                        <!--each 루프돌려서 펫 드롭다운리스트 생성-->
                                         <li><a class="dropdown-item" th:href="@{|/#|}">펫1</a></li>
                                         <li><a class="dropdown-item" th:href="@{|/#|}">펫2</a></li>
                                     </ul>
@@ -86,6 +91,7 @@
                     <li sec:authorize="isAuthenticated()">
                         <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
                     </li>
+
 
                 </ul>
             </div>

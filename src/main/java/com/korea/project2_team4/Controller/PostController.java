@@ -5,6 +5,7 @@ import com.korea.project2_team4.Model.Form.PostForm;
 import com.korea.project2_team4.Repository.PostRepository;
 import com.korea.project2_team4.Repository.ReportRepository;
 import com.korea.project2_team4.Service.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -55,8 +56,18 @@ public class PostController {
     }
 
     @GetMapping("/createPost")
-    public String createPost(Model model, PostForm postForm) {
+    public String createPost(Model model, PostForm postForm, HttpSession session) {
         List<Tag> allTags = tagService.getAllTags();
+
+        // 세션에서 petName을 가져와 모델에 추가
+        String petName = (String) session.getAttribute("petName");
+        if (petName != null) {
+            model.addAttribute("petName", petName);
+            // 세션에서 "petName" 속성 제거
+            session.removeAttribute("petName");
+        }
+
+
         model.addAttribute("allTags", allTags);
         return "Post/createPost_form";
     }
@@ -76,7 +87,8 @@ public class PostController {
     public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult
             , @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                              @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames,
-                             @RequestParam(value = "newTagNames", required = false) List<String> newTagNames) throws IOException, NoSuchAlgorithmException {
+                             @RequestParam(value = "newTagNames", required = false) List<String> newTagNames,
+                             @RequestParam(value = "petTagName", required = false) List<String> petTagNames) throws IOException, NoSuchAlgorithmException {
         //      Profile testProfile = profileService.getProfilelist().get(0);
 //      profileService.updateprofile(testProfile,profileForm.getProfileName(),profileForm.getContent());
         Post post = new Post();
@@ -114,6 +126,18 @@ public class PostController {
 //                        tagService.deleteById(tagService.getTagByTagName(newTagName).getId());
 //                    }
 //                }
+            }
+        }
+        if (petTagNames !=null && !petTagNames.isEmpty()) {
+            for (String petTagName : petTagNames) {
+                Tag tag = new Tag();
+                tag.setName(petTagName);
+                tagService.save(tag);
+
+                TagMap tagMap = new TagMap();
+                tagMap.setPost(post);
+                tagMap.setTag(tag);
+                tagMapService.save(tagMap);
             }
         }
 
@@ -214,10 +238,14 @@ public class PostController {
                                 Model model) {
         Page<Post> pagingByTitle = postService.pagingByTitle(kw, page);
 
-        model.addAttribute("pagingByTitle", pagingByTitle);
+//        model.addAttribute("pagingByTitle", pagingByTitle);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreTitle_form";
+        model.addAttribute("searchfor", "제목 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByTitle);
         model.addAttribute("kw", kw);
-
-        return "Search/showMoreTitle_form";
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreContent")
@@ -226,10 +254,16 @@ public class PostController {
                                    Model model) {
         Page<Post> pagingByContent = postService.pagingByContent(kw, page);
 
-        model.addAttribute("pagingByContent", pagingByContent);
-        model.addAttribute("kw", kw);
 
-        return "Search/showMoreContent_form";
+//        model.addAttribute("pagingByContent", pagingByContent);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreContent_form";
+
+        model.addAttribute("searchfor", "내용 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByContent);
+        model.addAttribute("kw", kw);
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreProfileName")
@@ -238,10 +272,15 @@ public class PostController {
                                        Model model) {
         Page<Post> pagingByProfileName = postService.pagingByProfileName(kw, page);
 
-        model.addAttribute("pagingByProfileName", pagingByProfileName);
-        model.addAttribute("kw", kw);
+//        model.addAttribute("pagingByProfileName", pagingByProfileName);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreProfileName_form";
 
-        return "Search/showMoreProfileName_form";
+        model.addAttribute("searchfor", "이름 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByProfileName);
+        model.addAttribute("kw", kw);
+        return "Search/showMore";
     }
 
     @GetMapping("/showMoreComment")
@@ -250,10 +289,14 @@ public class PostController {
                                    Model model) {
         Page<Post> pagingByComment = postService.pagingByComment(kw, page);
 
-        model.addAttribute("pagingByComment", pagingByComment);
+//        model.addAttribute("pagingByComment", pagingByComment);
+//        model.addAttribute("kw", kw);
+//
+//        return "Search/showMoreComment_form";
+        model.addAttribute("searchfor", "댓글 검색 결과 조회");
+        model.addAttribute("pagingBy", pagingByComment);
         model.addAttribute("kw", kw);
-
-        return "Search/showMoreComment_form";
+        return "Search/showMore";
     }
 
     @GetMapping("/detail/{id}/{hit}")
