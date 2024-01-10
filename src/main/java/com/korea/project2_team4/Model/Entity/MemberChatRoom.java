@@ -27,8 +27,13 @@ public class MemberChatRoom {
     public MemberChatRoom(Long id, boolean admin, Member member, ChatRoom chatroom){
         this.id = id;
         this.admin = admin;
-        this.changeMember(member);
-        this.changeChatRoom(chatroom);
+        if (member != null) {
+            this.changeMember(member);
+        }
+
+        if (chatroom != null) {
+            this.changeChatRoom(chatroom);
+        }
     }
 
     public void changeMember(Member member){

@@ -13,6 +13,7 @@ import com.korea.project2_team4.Repository.ChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,10 +53,6 @@ public class ChatService {
         return chatRooms;
     }
 
-    // roomID 기준으로 채팅방 찾기
-    public ChatRoom findRoomById (String roomId) {
-        return chatRoomMap.get(roomId);
-    }
 
     // roomName 으로 채팅방 만들기
     public ChatRoom createChatRoom(String roomName, String userName) {
