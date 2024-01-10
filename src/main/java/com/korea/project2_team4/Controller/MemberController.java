@@ -17,6 +17,7 @@ import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -126,8 +127,7 @@ public class MemberController {
         return "redirect:/";
     }
     @GetMapping("/login")
-    public String login() {
-
+    public String login(){
         return "Member/login_form";
     }
 
@@ -154,6 +154,19 @@ public class MemberController {
         model.addAttribute("member", member);
         model.addAttribute("memberList", memberList);
         model.addAttribute("paging", paging);
+        return "Member/adminPage_form";
+    }
+    @GetMapping("/search")
+    public String searchMember(Model model,
+                               Principal principal,
+                               @RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "kw", defaultValue = "") String kw){
+        Member member = memberService.getMember(principal.getName());
+        List<Member> memberList = memberService.getAllMembers();
+        Page<Member> paging = this.memberService.searchMember(page,kw);
+        model.addAttribute("memberList", memberList);
+        model.addAttribute("paging", paging);
+        model.addAttribute("member", member);
         return "Member/adminPage_form";
     }
     @PostMapping("/adminPage/changeMemberRole/{id}")
