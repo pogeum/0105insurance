@@ -3,7 +3,6 @@ package com.korea.project2_team4.Config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
@@ -25,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
     // 간단한 설명
-    // WebSocketConfig는 엔드포인트를 설정하기 위해 만든 config 클래스입니다.
+    // WebSocketConfig 는 엔드포인트를 설정하기 위해 만든 config 클래스입니다.
     // 여기서 엔드포인트는 통신의 도착지점을 말합니다.
     // 즉 통신이 어떤 엔드포인트에 도착 했을 때 어떤 행위를 하게 만들 것이다라는 것입니다.
     // 위에 처럼 엔드 포인틀를 /ws-stomp 로 설정해두면 웹소켓 통신이 /ws-stomp 로 도착할 때 우리는
