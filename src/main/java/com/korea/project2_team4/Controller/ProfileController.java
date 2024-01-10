@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -39,6 +40,8 @@ public class ProfileController {
     private final FollowingMapService followingMapService;
 
     private final MessageRepository messageRepository; //서비스로 추후수정. 테스트용임
+    private TagService tagService;
+    private TagMapService tagMapService;
 
     @GetMapping("/my")
     public String myProfile(Model model, Principal principal) {
@@ -179,7 +182,6 @@ public class ProfileController {
     public String memberDelete(Principal principal) {
         Member member = this.memberService.getMember(principal.getName());
         memberService.delete(member);
-
         session.invalidate();
         return "redirect:/";
     }
@@ -242,10 +244,26 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/petprofile")
-    public String petprofile(Model model, @RequestParam(name = "petid", required = false) Long petid) {
-        Pet pet = petService.getpetById(petid);
+    @GetMapping("/petprofile/{petName}")
+    public String petprofile(Model model, @PathVariable("petName")String petName) {
+        Pet pet = petService.getpetByname(petName);
+//        List<Post> ownerposts = postService.getPostsbyAuthor(pet.getOwner()); //???
 
+        List<Post> postList = new ArrayList<>();
+
+        if (tagService.tagExists(petName)) {
+            Tag tag = tagService.getTagByTagName(petName);
+            List<TagMap> tagMapList = tagMapService.findTagMapsByTagId(tag.getId());
+            for (TagMap tagMap : tagMapList) {
+                if ( (tagMap.getTag().getName().equals(petName)) && (tagMap.getPost().getAuthor().equals(pet.getOwner()))) {
+                    Post post = tagMap.getPost();
+                    postList.add(post);
+                }
+            }
+        }
+
+
+        model.addAttribute("postList", postList);
         model.addAttribute("pet", pet);
         return "Profile/pet_profile";
     }
@@ -268,6 +286,19 @@ public class ProfileController {
         return "redirect:/profile/petprofile?petid=" + petid;
 
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/createPetPhotos")
+    public String createpetphotos(@RequestParam("petid") Long petid, Principal principal, HttpSession session) {
+
+        Pet pet = petService.getpetById(petid);
+        String petName = pet.getName();
+
+        session.setAttribute("petName", petName);
+        return "redirect:/post/createPost";
+
+    }
+
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓팔로우 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓

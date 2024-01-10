@@ -110,6 +110,9 @@ public class ProfileService {
         profile.getPetList().add(pet);
         this.profileRepository.save(profile);
     }
+    public void delete(Profile profile){
+        profileRepository.delete(profile);
+    }
 
 
 }

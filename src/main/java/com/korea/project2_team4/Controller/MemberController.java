@@ -2,10 +2,14 @@ package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Config.OAuth2.OAuth2UserInfo;
 import com.korea.project2_team4.Model.Entity.Member;
+import com.korea.project2_team4.Model.Entity.Post;
+import com.korea.project2_team4.Model.Entity.Tag;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
 import com.korea.project2_team4.Model.Form.MemberCreateForm;
 import com.korea.project2_team4.Model.Form.MemberResetForm;
 import com.korea.project2_team4.Service.MemberService;
+import com.korea.project2_team4.Service.ReportService;
+import com.korea.project2_team4.Service.TagService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8888")
@@ -33,6 +38,8 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final TagService tagService;
+    private final ReportService reportService;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private HttpSession session;
@@ -126,7 +133,20 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(String username, String password) {
+
+
+
+
         return "redirect:/";
+
+    }
+    @GetMapping("/managePage")
+    public String managePage(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
+        Page<Post> reportedPosts = reportService.findPostsLinkedWithReports(page);
+        List<Tag> defaultTagList = tagService.getDefaultTags();
+        model.addAttribute("defaultTagList", defaultTagList);
+        model.addAttribute("paging",reportedPosts);
+        return "Member/findReportedPosts_form";
     }
     @GetMapping("/adminPage")
     public String adminPage(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -352,6 +372,17 @@ public class MemberController {
         }
         return "redirect:/member/findPassword";
     }
+    @PostMapping("/block/{username}")
+    public ResponseEntity<String> blockMember(@PathVariable String username,
+                                              @RequestParam Duration blockDuration) {
+        memberService.blockMember(username, blockDuration);
+        return ResponseEntity.ok("User blocked successfully");
+    }
 
+    @PostMapping("/unblock/{username}")
+    public ResponseEntity<String> unblockUser(@PathVariable String username) {
+        memberService.unblockMember(username);
+        return ResponseEntity.ok("User unblocked successfully");
+    }
 
 }

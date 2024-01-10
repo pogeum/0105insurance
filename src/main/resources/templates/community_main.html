@@ -73,7 +73,7 @@
                                             <p th:text="${'조회수 : ' + post.view}"></p>
                                         </div>
                                         <div class="col-md-auto"
-                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                                             <button type="button" class="btn btn-primary admin-btn"
                                                     style="margin-right: 0.1rem"
                                                     data-bs-toggle="modal"
@@ -98,7 +98,7 @@
                                                     </div>
                                                     <div class="modal-body">
                                                          여기에 승인 폼이나 내용을 추가하세요
-                                                        <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
+                                                        <form th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}" th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
                                                               th:object="${postForm}"
                                                               onsubmit="return UpdatePost();">
                                                             <input type="hidden" name="postId" th:value="${post.id}">
@@ -148,7 +148,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-auto"
-                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                                             <form th:action="@{|/post/deletePost/${post.id}|}" method="post"
                                                   onsubmit="return deletePost()">
                                                 <button type="submit" class="btn btn-danger admin-btn"

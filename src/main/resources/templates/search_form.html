@@ -12,7 +12,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostTitle.size() > 0}"
                          th:each="post : ${searchResultsByPostTitle}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -50,7 +50,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByPostContent.size() > 0}"
                          th:each="post : ${searchResultsByPostContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -88,7 +88,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByProfileName.size() > 0}"
                          th:each="post : ${searchResultsByProfileName}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -126,7 +126,7 @@
                     </div>
                     <div class="col" th:if="${searchResultsByCommentContent.size() > 0}"
                          th:each="post : ${searchResultsByCommentContent}">
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:60%; height: 150px;">
                             <div class="d-flex">
                                 <div class="card-body" th:onclick="@{|window.location='/post/detail/${post.id}/0'|}">
                                     <div class="mb-2" th:text="${#strings.length(post.title) > 50 ? #strings.substring(post.title, 0, 30) + '...' : post.title}"
@@ -162,7 +162,7 @@
                 <style>
                     hr {
                         height: 4px;
-                        width: 55%;
+                        width: 65%;
                         background-color: black;
                     }
 

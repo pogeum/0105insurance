@@ -42,6 +42,11 @@
                     <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
 
                 </li>
+                <li class="nav-item">
+
+                    <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chatList/showList">채팅기능(임시)</a>
+
+                </li>
             </ul>
 
             <div class="d-flex justify-content-end">
@@ -51,6 +56,9 @@
                     <li class="nav-item">
                     <li sec:authorize="hasRole('ROLE_ADMIN')">
                         <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_MANAGER')">
+                        <a class="nav-link rounded" th:href="@{|/member/managePage|}">매니저</a>
                     </li>
                         <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
                         <a class="nav-link rounded" sec:authorize="isAuthenticated()"

@@ -20,8 +20,8 @@ public class TagService {
     }
 
     public Tag getTagByTagName(String tagName) {
-        return tagRepository.findByName(tagName)
-                .orElseThrow(() -> new RuntimeException("Tag not found for name: " + tagName));
+        return tagRepository.findByName(tagName).get();
+//                .orElseThrow(() -> new RuntimeException("Tag not found for name: " + tagName));
     }
 
     public Tag save(Tag tag) {

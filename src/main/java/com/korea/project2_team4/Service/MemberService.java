@@ -1,7 +1,7 @@
 package com.korea.project2_team4.Service;
 
+import com.korea.project2_team4.Config.PrincipalDetails;
 import com.korea.project2_team4.Config.UserRole;
-import com.korea.project2_team4.Model.Entity.Image;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Model.Form.EditPasswordForm;
@@ -12,21 +12,20 @@ import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.RepositoryDefinition;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -179,6 +178,7 @@ public class MemberService {
     }
 
     public void delete(Member member) {
+//        profileService.delete(member.getProfile());
         memberRepository.delete(member);
     }
 
@@ -231,4 +231,32 @@ public class MemberService {
         memberRepository.save(member);
 
     }
+    //유저 차단
+    public void blockMember(String username, Duration blockDuration) {
+        Member member = memberRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        member.setBlocked(true);
+        member.setUnblockDate(LocalDateTime.now().plus(blockDuration));
+        memberRepository.save(member);
+    }
+    //유저 차단 해제
+    public void unblockMember(String username) {
+        Member member = memberRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        member.setBlocked(false);
+        member.setUnblockDate(null);
+        memberRepository.save(member);
+    }
+
+    public Member getMemberFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
+            return ((PrincipalDetails) authentication.getPrincipal()).getMember();
+        }
+        return null;
+    }
+
+
 }

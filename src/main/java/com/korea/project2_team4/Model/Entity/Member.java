@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,9 @@ public class  Member {
     // 아이디
     @Column(unique = true, columnDefinition = "TEXT")
     private String userName;
+
+//    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+//    private Set<ChatMessage> sendMessage = new HashSet<>();
 
     // 패스워드
     private String password;
@@ -57,4 +61,8 @@ public class  Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL )
     private Set<Report> reports;
+    //차단 여부 확인
+    private boolean isBlocked;
+    //차단 해제 날짜
+    private LocalDateTime unblockDate;
 }

@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -21,12 +22,21 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     public PrincipalDetails(Member member) {
         this.member = member;
     }
+    // 차단 여부
+    private boolean isBlocked;
+
+    // 차단 해제 날짜
+    private LocalDateTime unblockDate;
 
     //OAuth 로그인 생성자
-    public PrincipalDetails(Member member, Map<String, Object> attributes ) {
+    public PrincipalDetails(Member member, Map<String, Object> attributes) {
         this.member = member;
         this.attributes = attributes;
+        this.isBlocked = false;
+        this.unblockDate = null;
     }
+    // 차단 여부
+
 
     /**
      * OAuth2Member 인터페이스 메소드
@@ -48,11 +58,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                if(member.getRole().equals("ROLE_ADMIN"))
-                {
+                if (member.getRole().equals("ROLE_ADMIN")) {
                     return String.valueOf(UserRole.ADMIN.getValue());
-                }
-                else {
+                } else if (member.getRole().equals("ROLE_MANAGER")) {
+                    return String.valueOf(UserRole.MANAGER.getValue());
+                } else {
                     return String.valueOf(UserRole.USER.getValue());
                 }
             }

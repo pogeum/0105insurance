@@ -25,7 +25,7 @@ public class Profile {
     private Member member;
 
 
-    @OneToOne(mappedBy = "profileImage")
+    @OneToOne(mappedBy = "profileImage", cascade = CascadeType.REMOVE)
     private Image profileImage;
 
     private String profileName;

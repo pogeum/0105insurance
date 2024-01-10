@@ -29,6 +29,11 @@ public class TagMapService {
         return tagMapRepository.findByPostId(postId);
     }
 
+    public List<TagMap> findTagMapsByTagId(Long tagId) {
+        return tagMapRepository.findByTagId(tagId);
+    }
+
+
 
     public void deleteTagMapsByPostId(Long postId) {
         List<TagMap> tagMaps = findTagMapsByPostId(postId);
