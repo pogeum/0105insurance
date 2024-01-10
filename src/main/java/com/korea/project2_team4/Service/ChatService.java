@@ -3,9 +3,9 @@ package com.korea.project2_team4.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 import com.korea.project2_team4.Model.Dto.ChatRoom;
-import com.korea.project2_team4.Model.Entity.ChatMessage;
+//import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
-import com.korea.project2_team4.Repository.ChatRepository;
+//import com.korea.project2_team4.Repository.ChatRepository;
 import com.korea.project2_team4.Repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -24,7 +24,7 @@ import java.util.*;
 public class ChatService {
     private Map<String, ChatRoom> chatRoomMap;
     private final MemberService memberService;
-    private final ChatRepository chatRepository;
+//    private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
 
     @PostConstruct
@@ -122,20 +122,20 @@ public class ChatService {
         return list;
     }
 
-    public void saveChatMessage(ChatDTO chatDTO) {
-        //ChatDTO 에서 필요한 정보를 추출하여 ChatMessage 엔티티에 저장
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setMessage(chatDTO.getMessage());
-
-        Optional<Member> optionalSender = memberRepository.findByUserName(chatDTO.getSender());
-        Member sender = optionalSender.orElseThrow(() -> new RuntimeException("Member not found"));
-        chatMessage.setSender(sender);
-
-
-        chatMessage.setTime(LocalDateTime.parse(chatDTO.getTime()));
-
-        chatRepository.save(chatMessage);
-    }
+//    public void saveChatMessage(ChatDTO chatDTO) {
+//        //ChatDTO 에서 필요한 정보를 추출하여 ChatMessage 엔티티에 저장
+//
+//        ChatMessage chatMessage = new ChatMessage();
+//        chatMessage.setMessage(chatDTO.getMessage());
+//
+//        Optional<Member> optionalSender = memberRepository.findByUserName(chatDTO.getSender());
+//        Member sender = optionalSender.orElseThrow(() -> new RuntimeException("Member not found"));
+//        chatMessage.setSender(sender);
+//
+//
+//        chatMessage.setTime(LocalDateTime.parse(chatDTO.getTime()));
+//
+//        chatRepository.save(chatMessage);
+//    }
 
 }

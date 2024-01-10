@@ -1,4 +1,4 @@
-package com.korea.project2_team4.Config;
+package com.korea.project2_team4;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -11,17 +11,30 @@ import org.springframework.web.socket.config.annotation.*;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+//    @Override
+//    public void registerStompEndpoints(StompEndpointRegistry registry) {
+//        registry.addEndpoint( "/ws-stomp") // 여기는 연결된 엔드포인드를 말합니다.
+//                .withSockJS(); // SockJS를 연결한다는 설정입니다.
+//    }
+//
+//    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        registry.enableSimpleBroker("/sub"); //메시지를 구독하는 요청 url 입니다.
+//        registry.setApplicationDestinationPrefixes("/pub"); //메시지를 발행하는 요청 url 입니다.
+//    }
+
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint( "/ws-stomp") // 여기는 연결된 엔드포인드를 말합니다.
-                .withSockJS(); // SockJS를 연결한다는 설정입니다.
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/sub"); //메시지를 구독하는 요청 url 입니다.
-        registry.setApplicationDestinationPrefixes("/pub"); //메시지를 발행하는 요청 url 입니다.
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint( "/aaa")
+                .setAllowedOriginPatterns("*").withSockJS();
     }
+
 
 
     // 간단한 설명

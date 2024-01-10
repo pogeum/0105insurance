@@ -26,8 +26,8 @@ public class  Member {
     @Column(unique = true, columnDefinition = "TEXT")
     private String userName;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
-    private Set<ChatMessage> sendMessage = new HashSet<>();
+//    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+//    private Set<ChatMessage> sendMessage = new HashSet<>();
 
     // 패스워드
     private String password;
