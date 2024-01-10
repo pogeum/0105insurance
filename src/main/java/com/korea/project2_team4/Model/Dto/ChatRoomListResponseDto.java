@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 public class ChatRoomListResponseDto {
     private Long id;
     private String roomName;
+    private String adminName;
     @Builder
-    public ChatRoomListResponseDto(String roomName){
+    public ChatRoomListResponseDto(Long id, String roomName, String adminName){
+        this.id = id;
         this.roomName = roomName;
-    }
-
-    public Long getId() {
-        return this.id;
+        this.adminName = adminName;
     }
 
 }

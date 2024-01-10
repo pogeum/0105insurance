@@ -21,6 +21,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,7 +47,9 @@ public class ChatService {
 
         chatRoomRepository.findAll().forEach(chatRoom -> {
             chatRooms.add(ChatRoomListResponseDto.builder()
+                    .id(chatRoom.getId())
                     .roomName(chatRoom.getRoomName())
+                    .adminName(chatRoom.getAdmin().getUserName())
                     .build());
         });
         Collections.reverse(chatRooms);
@@ -55,21 +58,21 @@ public class ChatService {
 
 
     // roomName 으로 채팅방 만들기
-    public ChatRoom createChatRoom(String roomName, String userName) {
-        //채팅룸 이름으로 채팅방을 먼저 생성한다
+    public ChatRoom createChatRoom(String roomName, Principal principal) {
 
-        Member member = memberRepository.findByUserName(userName).orElseThrow(() -> new RuntimeException("Member not found"));
+        Member admin = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+        System.out.println(admin);
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomName(roomName)
+                .admin(admin)
                 .build();
 
         chatRoomRepository.save(chatRoom);
 
-        // create 에서는 admin 권한을 부여
         MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                .admin(true)
                 .chatroom(chatRoom)
-                .member(member)
+                .member(admin)
                 .build();
 
         memberChatRoomRepository.save(memberChatRoom);

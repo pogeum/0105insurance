@@ -30,6 +30,9 @@ public class  Member {
     @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
     private Set<ChatMessage> sendMessage = new HashSet<>();
 
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.REMOVE)
+    private Set<ChatRoom> adminChatRooms = new HashSet<>();
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private Set<MemberChatRoom> memberChatRooms = new HashSet<>();
 

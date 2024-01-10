@@ -12,10 +12,7 @@ public class MemberChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    private boolean admin;
     // 다대일 관계 설정
-
     @ManyToOne
     private Member member;
 
@@ -24,16 +21,11 @@ public class MemberChatRoom {
     private ChatRoom chatroom;
 
     @Builder
-    public MemberChatRoom(Long id, boolean admin, Member member, ChatRoom chatroom){
+    public MemberChatRoom(Long id, Member member, ChatRoom chatroom){
         this.id = id;
-        this.admin = admin;
-        if (member != null) {
-            this.changeMember(member);
-        }
+        this.changeMember(member);
+        this.changeChatRoom(chatroom);
 
-        if (chatroom != null) {
-            this.changeChatRoom(chatroom);
-        }
     }
 
     public void changeMember(Member member){

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,13 +23,21 @@ public class ChatRoom {
 
     private String roomName; // 채팅방 이름
 
+    @ManyToOne
+    private Member admin; // 관리자
+
     @OneToMany(mappedBy = "chatroom")
     private Set<MemberChatRoom> memberChatRooms = new HashSet<>();
 
     @Builder
-    public ChatRoom(Long id, String roomName){
+    public ChatRoom(Long id, String roomName, Member admin) {
         this.id = id;
         this.roomName = roomName;
+        this.admin = admin;
+    }
+    public void changeAdmin(Member admin){
+        this.admin = admin;
+        admin.getAdminChatRooms().add(this);
     }
 
 }

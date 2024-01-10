@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,22 +38,26 @@ public class ChatController {
 
 
     @PostMapping("/createRoom")
-    public String createRoom(@RequestParam("roomName") String roomName, RedirectAttributes rttr, @RequestParam("userName") String userName) {
-
-        ChatRoom room = chatService.createChatRoom(roomName, userName);
-        log.info("CREATE Chat Room {}", room);
-        rttr.addFlashAttribute("roomName", room);
+    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName) {
+        ChatRoom chatRoom = chatService.createChatRoom(roomName, principal);
+        model.addAttribute("chatRoom", chatRoom);
         return "redirect:/chat/chatRoomList";
     }
 
     @GetMapping("/chatRoomList")
-    public String goChatRoom(Model model) {
+    public String showChatRoomList(Model model) {
         List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom();
 
         model.addAttribute("list", chatRooms);
         log.info("SHOW ALL ChatList{}", chatRooms);
 
         return "Chat/chatList_form";
+    }
+
+    @GetMapping("/chatRoom/{id}")
+    public String goChatRoom(Model model, @PathVariable("id") Long id) {
+
+        return "Chat/chatRoom_form";
     }
 
     @MessageMapping("/chat/sendMessage")
