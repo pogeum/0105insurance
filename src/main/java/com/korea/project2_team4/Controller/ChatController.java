@@ -56,6 +56,9 @@ public class ChatController {
 
     @GetMapping("/chatRoom/{id}")
     public String goChatRoom(Model model, @PathVariable("id") Long id) {
+        ChatRoom chatRoomId = chatService.findChatRoomById(id);
+
+        model.addAttribute("chatRoomId", chatRoomId);
 
         return "Chat/chatRoom_form";
     }
