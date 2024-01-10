@@ -8,8 +8,8 @@
                         <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:if="${room}" th:text="${room.roomName}"></span></h2>
                     </div>
                     <div class="d-flex flex-column align-items-end">
-                        <p>채팅방 ID: <span th:if="${room}" th:text="${room.roomId}"></span></p>
-                        <p>참여자 수: <span th:if="${room}" th:text="${room.userCount}"></span></p>
+<!--                        <p>채팅방 ID: <span th:if="${room}" th:text="${room.roomId}"></span></p>-->
+<!--                        <p>참여자 수: <span th:if="${room}" th:text="${room.userCount}"></span></p>-->
                     </div>
                     <div class="d-flex justify-content-end">
                         <h2>참여자 목록</h2>
@@ -88,7 +88,7 @@
 
         // 채팅 메시지를 목록에 추가
         function addMessageToChat(sender, message) {
-            var messageItem = document.createElement('li');
+            var messageItem = document.createElement('div');
             messageItem.textContent = sender + ': ' + message;
             chatMessages.appendChild(messageItem);
         }
