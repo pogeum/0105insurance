@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
 
 <div layout:fragment="content" class="row py-5 px-4">
-    <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+    <div class="col-xl-8 col-md-10 col-sm-14 mx-auto">
         <div>
             <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
             <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
@@ -22,6 +22,7 @@
                 <th scope="col">닉네임</th>
                 <th scope="col">등급</th>
                 <th class="text-center" scope="col">관리</th>
+                <th scope="col">차단 여부 확인</th>
                 <th scope="col">차단</th>
                 <th scope="col">차단 해제</th>
                 <!-- 필요한 다른 컬럼들 추가 -->
@@ -58,6 +59,8 @@
                         </button>
                     </form>
                 </td>
+                <td th:if="${!member.isBlocked}" style="width: 8rem">차단되지 않은 유저</td>
+                <td th:if="${member.isBlocked}" style="width: 8rem" th:text="${member.unblockDate +'일 까지 차단되었습니다.'}"></td>
                 <td style="width: 9rem">
                     <form th:action="@{|/member/block/${member.userName}|}" th:method="post">
 <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
