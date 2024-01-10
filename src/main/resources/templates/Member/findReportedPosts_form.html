@@ -78,6 +78,16 @@
                                         <button type="button" class="btn btn-warning" data-bs-toggle="modal" th:data-bs-target="'#reportModal' + ${post.id}">
                                             신고 정보 보기
                                         </button>
+                                        <div th:if="${post.author.member.getRole != 'ROLE_ADMIN'}" >
+                                            <form th:action="@{|/member/block/${post.author.member.userName}|}" th:method="post">
+                                                <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
+                                                <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>
+                                                <button class="btn btn-danger flex-container admin-btn" style="margin-left: 20px" type="submit"
+                                                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"
+                                                        onclick="confirmUserBlock()">유저 차단
+                                                </button>
+                                            </form>
+                                        </div>
                                         <!-- 신고 모달 -->
                                         <div class="modal fade" th:id="'reportModal' + ${post.id}" tabindex="-1" role="dialog" aria-labelledby="'reportModalLabel' + ${post.id}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
@@ -236,6 +246,9 @@
         }
         function openApproveModal() {
         $('#approveModal').modal('show');
+        }
+        function confirmUserBlock() {
+        return confirm("정말로 해당 유저를 차단하시겠습니까?");
         }
     </script>
     </body>
