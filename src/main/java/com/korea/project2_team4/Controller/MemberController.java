@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
 import java.security.Principal;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 
@@ -219,6 +220,7 @@ public class MemberController {
         }
         model.addAttribute("socialLogin", socialLogin);
 
+
         if (bindingResult.hasErrors()) {
             return "Member/social_signup_form";
         }
@@ -240,6 +242,10 @@ public class MemberController {
 //            }
 
             Member member = memberService.create(memberCreateForm);
+//            if(member.isBlocked()){
+//                model.addAttribute("blockMessage",member.getUnblockDate()+"까지 차단된 아이디입니다");
+//                return "redirect:/signup/social";
+//            }
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");

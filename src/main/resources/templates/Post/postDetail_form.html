@@ -41,7 +41,7 @@
 
                         <div >
                             <form th:action="@{|/profile/detail/${post.author.profileName}|}">
-<!--                                <input type="hidden" name="postid" th:value="${post.id}">-->
+                                <!--                                <input type="hidden" name="postid" th:value="${post.id}">-->
                                 <button type="submit" class="btn btn-link" th:text="${post.author.profileName}"
                                         style="font-size: 18px; font-weight: bold; color: #333; text-decoration:none; color:inherit;"></button>
                             </form>
@@ -58,17 +58,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="pb-5 col-md-12 text-end">
+                <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
                     <input type="hidden" id="heart-fill"
                            th:value="${#lists.contains(post.likeMembers, loginedMember)}">
                     <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"
                           onsubmit="return toggleHeartIcon()">
                         <input type="hidden" name="id" th:value="${post.id}">
-                        <i id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                        <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
                            style="font-size: 2rem; color:red; cursor:pointer;">
                             <span class="badge rounded-pill bg-primary"
                                   th:text="${post.likeMembers.size()}"></span></i>
                     </form>
+                </div>
+                <div class="pb-5 col-md-12 text-end">
+                    <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                       style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill bg-primary"
+                                  th:text="${post.likeMembers.size()}"></span></i>
                 </div>
                 <hr class="mt-1 mb-5">
                 <div class="col">
@@ -90,7 +96,7 @@
                                     th:onclick="'openApproveModal(' + ${post.id} + ')'">관리자 게시물 수정
                             </button>
                         </div>
-                        <div class="col-md-auto" style="font-size: 15px">
+                        <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                     th:data-bs-target="'#reportPostModal'"
                                     th:onclick="'reportPostModal'">신고하기
@@ -127,7 +133,7 @@
                                         <span aria-hidden="true"></span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="modal-body">
                                     <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
                                     <form th:action="@{|/post/updatePostByAdmin/${post.id}|}" method="post"
                                           th:object="${postForm}"
@@ -189,7 +195,7 @@
                             </div>
                         </div>
                     </div>
-<!--                    게시물 신고 모달 창-->
+                    <!--                    게시물 신고 모달 창-->
                     <!-- Modal Structure -->
                     <div class="modal fade" id="reportPostModal" tabindex="-1" role="dialog" aria-labelledby="reportPostModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -203,7 +209,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <!-- Form for reporting post -->
-                                    <form th:action="@{|/post/report/${post.id}|}" method="post">
+                                    <form sec:authorize="isAuthenticated()" th:action="@{|/post/report/${post.id}|}" method="post">
                                         <!-- Checkboxes for report reasons -->
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
@@ -236,7 +242,7 @@
                             </div>
                         </div>
                     </div>
-<!--                    게시물 신고 모달 창 끝-->
+                    <!--                    게시물 신고 모달 창 끝-->
                 </div>
             </div>
             <hr>
@@ -256,7 +262,7 @@
                         </div>
                     </div>
                 </div>
-                <form th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
+                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/create/${post.id}|}" method="post" onsubmit="return WriteComment();">
                     <textarea name="content" class="form-control" id="content" rows="3"
                               placeholder="답변을 작성해 주세요"></textarea>
                     <br>
@@ -284,7 +290,7 @@
                             </div>
                             <div th:with="fill=${#lists.contains(comment.likeMembers, loginedMember)}">
                                 <input type="hidden" th:id="${'CommentHeart-fill-' + comment.id}" th:value="${fill}">
-                                <form th:id="${'CommentLikeForm-' + comment.id}"
+                                <form sec:authorize="isAuthenticated()" th:id="${'CommentLikeForm-' + comment.id}"
                                       class="flex-fill d-flex justify-content-end" th:action="@{|/comment/commentLike|}"
                                       method="post" onsubmit="return toggleCommentHeartIcon(this)">
                                     <input type="hidden" name="id" th:value="${comment.id}">
@@ -296,6 +302,15 @@
                                               th:text="${comment.likeMembers.size()}"></span>
                                     </i>
                                 </form>
+                            </div>
+                            <div class="flex-fill d-flex justify-content-end">
+                            <i sec:authorize="!isAuthenticated()" th:id="${'CommentHeartIcon-' + comment.id}" class="bi"
+                               th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'"
+                               th:onclick="CommentHeartSubmit([[${comment.id}]])"
+                               style="font-size: 2rem; color:red; cursor:pointer;">
+                                        <span class="badge rounded-pill bg-primary"
+                                              th:text="${comment.likeMembers.size()}"></span>
+                            </i>
                             </div>
                             <hr>
                             <br>
@@ -310,13 +325,13 @@
                                             th:onclick="'openApproveCommentModal(' + ${comment.id} + ')'">수정
                                     </button>
                                 </div>
-                                <div class="col-md-auto" style="font-size: 15px">
+                                <div sec:authorize="isAuthenticated()" class="col-md-auto" style="font-size: 15px">
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                             th:data-bs-target="'#reportCommentModal'"
                                             th:onclick="'reportCommentModal'">신고하기
                                     </button>
                                 </div>
-<!--                                댓글 신고 모달창-->
+                                <!--                                댓글 신고 모달창-->
                                 <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -329,7 +344,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <!-- Form for reporting post -->
-                                                <form th:action="@{|/comment/report/${comment.id}|}" method="post">
+                                                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/report/${comment.id}|}" method="post">
                                                     <!-- Checkboxes for report reasons -->
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="reasons" value="부적절한 내용">
@@ -362,7 +377,7 @@
                                         </div>
                                     </div>
                                 </div>
-<!--                                댓글 신고 모달창 끝-->
+                                <!--                                댓글 신고 모달창 끝-->
                                 <div class="col-md-auto"
                                      th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                                     <form th:action="@{|/comment/deleteComment/${comment.id}|}" method="post"
@@ -389,7 +404,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <!-- 여기에 승인 폼이나 내용을 추가하세요 -->
-                                            <form th:action="@{|/comment/updateComment/${comment.id}|}" method="post"
+                                            <form sec:authorize="isAuthenticated()" th:action="@{|/comment/updateComment/${comment.id}|}" method="post"
                                                   onsubmit="return UpdateComment();">
                                                 <input type="hidden" name="commentId" th:value="${comment.id}"/>
                                                 <div class="font-400 ">
