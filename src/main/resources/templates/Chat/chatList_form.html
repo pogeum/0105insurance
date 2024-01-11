@@ -17,11 +17,14 @@
                         </form>
                     </div>
                     <br>
+                    <!--채팅방 입장-->
                     <div>
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;" th:each="room : ${list}">
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;"
+                             th:each="room : ${list}">
                             <div class="card-body" th:onclick="@{|window.location='/chat/chatRoom/${room.id}'|}">
-                                <span th:text="${room.roomName}"></span>
-                                <span th:text="${room.adminName}"></span>
+                                <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
+                                <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>
+                                <div class="d-flex justify-content-end">인원 수 : <span></span></div>
                             </div>
                         </div>
                     </div>

@@ -14,6 +14,7 @@ import com.korea.project2_team4.Repository.ChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class ChatService {
     }
 
 
-    // roomName 으로 채팅방 만들기
+    // 채팅방 만들 때 관리자와 방 번호, 이름 생성
     public ChatRoom createChatRoom(String roomName, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
@@ -79,6 +80,28 @@ public class ChatService {
         memberChatRoomRepository.save(memberChatRoom);
 
         return chatRoom;
+    }
+
+    public void enterChatRoom(Long roomId, Principal principal) {
+
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+
+        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+
+        if (!isUserInChatRoom) {
+            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                    .chatroom(chatRoom)
+                    .member(member)
+                    .build();
+
+            memberChatRoomRepository.save(memberChatRoom);
+        }
+
     }
 
     public void saveChatMessage(ChatDTO chatDTO) {
