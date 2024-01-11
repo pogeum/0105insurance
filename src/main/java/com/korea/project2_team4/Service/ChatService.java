@@ -1,10 +1,8 @@
 package com.korea.project2_team4.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 //import com.korea.project2_team4.Model.Dto.ChatRoom;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
-import com.korea.project2_team4.Model.Dto.ChatRoomResponseDTO;
 import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
@@ -14,15 +12,10 @@ import com.korea.project2_team4.Repository.ChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberChatRoomRepository;
 import com.korea.project2_team4.Repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
