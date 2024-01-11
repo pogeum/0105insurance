@@ -39,6 +39,7 @@ public class ChatController {
     private final MemberService memberService;
 
 
+
     @PostMapping("/createRoom")
     public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName) {
         ChatRoom chatRoom = chatService.createChatRoom(roomName, principal);
@@ -75,6 +76,8 @@ public class ChatController {
         template.convertAndSend("/sub/chat/room?roomId=" + chat.getRoomId(), chat);
 
     }
+
+
 
 
 }
