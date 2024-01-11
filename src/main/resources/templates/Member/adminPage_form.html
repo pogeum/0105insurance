@@ -3,13 +3,6 @@
 
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-8 col-md-10 col-sm-14 mx-auto">
-        <form th:action="@{/member/search}" class="d-flex" role="search">
-            <div class="input-group">
-                <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="찾으시는 회원정보를 입력해주세요." aria-label="Search"
-                       style="width: 330px;" th:value="${kw}">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </div>
-        </form>
         <div>
             <a class="btn btn-primary btn-block mb-2" th:href="@{|/member/adminPage|}" data-page="1">유저 관리</a>
             <a class="btn btn-primary btn-block mb-2" th:href="@{|/report/posts|}" data-page="2">게시글 관리</a>
@@ -19,7 +12,13 @@
     <div th:if="${menu==1}">
         <div th:replace="~{member/user_account_content::MemberAccountContentFragment}"></div>
     </div>
-
+        <form th:action="@{/member/search}" class="d-flex" role="search">
+            <div class="input-group">
+                <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="찾으시는 회원정보를 입력해주세요." aria-label="Search"
+                       style="width: 330px;" th:value="${kw}">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+        </form>
     <div th:if="${!#lists.isEmpty(memberList)}">
         <table class="table">
             <thead>
