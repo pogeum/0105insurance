@@ -29,7 +29,7 @@ public class MemberChatRoom {
     }
 
     public MemberChatRoom() {
-
+        //있어야 회원이 여러개의 방을 만들 때 에러가 안나고 db저장도 잘 된다.
     }
 
     public void changeMember(Member member){
