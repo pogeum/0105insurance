@@ -61,22 +61,23 @@
 <!--            <input type="text" name="message">-->
 <!--            <button type="submit" class="btn btn-primary">전송</button>-->
 <!--        </form>-->
-<!--        <div>-->
-<!--            보낸메시지 :-->
-<!--            <div th:each="message : ${messageList}">-->
-<!--                <div th:text="${message.content}"></div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div>
+            보낸메시지 :
+            <div th:each="message : ${messageList}">
+                <div th:text="${message.content}"></div>
+            </div>
+        </div>
 
-<!--        <div>-->
-<!--            받은메시지 :-->
-<!--            <div th:each="message : ${receivedmessageList}">-->
-<!--                <div th:text="${message.content}"></div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div>
+            받은메시지 :
+            <div th:each="message : ${receivedmessageList}">
+                <div th:text="${message.content}"></div>
+            </div>
+        </div>
 
 <!--    </div>-->
 <!--</div>-->
+
 <div id="main-content" class="container">
     <div class="row">
         <div class="col-md-6">
@@ -87,7 +88,8 @@
             <form class="form-inline">
                 <div class="form-group">
                     <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+<!--                    <button id="connect" class="btn btn-default" type="submit">Connect</button>-->
+                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>
                     <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
                     </button>
                 </div>
@@ -98,8 +100,13 @@
                 <div class="form-group">
                     <!--                    <label for="name">What is your name?</label>-->
                     <!--                    <input type="text" id="name" class="form-control" placeholder="Your name here...">-->
+                    <div>
+                        <a th:href="@{|#|}">뒤로가기</a>
+                    </div>
                     <div th:text="'보내는사람(나) :' + ' ' + ${me.profileName}"></div>
                     <label for="content" th:text="'받는사람 :' + ' ' + ${partner.profileName}">Say something!</label>
+<!--                    <input type="hidden" id="sender" th:value="${me.profileName}">-->
+                    <input type="hidden" id="receiver" th:value="${partner.profileName}">
                     <input type="text" id="content" class="form-control" placeholder="content">
                 </div>
                 <button id="send" class="btn btn-default" type="submit">Send</button>
@@ -115,11 +122,24 @@
                 </tr>
                 </thead>
                 <tbody id="savemessages">
+                    <tr id="Me">
+                        <td></td>
+                    </tr>
+                    <tr id="You" style="text-align:left;">
+                        <td style="text-align:right; color:blue;"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+<script>
+
+    function myConnect(profileName) {
+        connect(profileName);
+    }
+
+</script>
 </body>
 
 </html>

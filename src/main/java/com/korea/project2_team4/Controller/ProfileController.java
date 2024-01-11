@@ -1,8 +1,10 @@
 package com.korea.project2_team4.Controller;
 
 import com.korea.project2_team4.Model.Dto.ProfileDto;
+import com.korea.project2_team4.Model.Dto.SaveMessageDTO;
 import com.korea.project2_team4.Model.Entity.*;
 import com.korea.project2_team4.Model.Form.ProfileForm;
+import com.korea.project2_team4.Repository.DmPageRepository;
 import com.korea.project2_team4.Repository.MessageRepository;
 import com.korea.project2_team4.Repository.SaveMessageRepository;
 import com.korea.project2_team4.Service.*;
@@ -46,6 +48,7 @@ public class ProfileController {
     private final MessageRepository messageRepository; //서비스로 추후수정. 테스트용임
     private TagService tagService;
     private TagMapService tagMapService;
+    private final DmPageService dmPageService;
 
     @GetMapping("/my")
     public String myProfile(Model model, Principal principal) {
@@ -356,12 +359,15 @@ public class ProfileController {
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @GetMapping("/dmTo/{profileName}")
     public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
-        System.out.println(principal.getName());
+
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
+
         List<Message> messageList = me.getMyMessages();
         List<Message> receivedmessageList = me.getReceivedMessages();
+
+        dmPageService.setMyDmPage(me,partner);
         //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
 
         model.addAttribute("me", me);
@@ -395,27 +401,45 @@ public class ProfileController {
 ////////////////////////웹소켓 테스트. 선영추ㅡ가//////////////////////////////////////////
 
     private final SaveMessageRepository saveMessageRepository;
+    private final DmPageRepository dmPageRepository;
 
     @MessageMapping("/hello")
     @SendTo("/topic/messaging")
-    public SaveMessage greeting(SendMessage message, Principal principal) throws Exception {
+    public SaveMessageDTO messaging(SendMessage message, Principal principal) throws Exception {
         // 메시지에서 이름 추출
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile writer = sitemember.getProfile();
+
         String content = message.getContent();
-        String user = principal.getName();
+        String receiver = message.getReceiver();
+//        String sender = message.getSender();
+
+        String author = writer.getProfileName();
+
+        Profile partner = profileService.getProfileByName(receiver);
+
         LocalDateTime timenow = LocalDateTime.now();
+//        방생성과동시엥ㅇ?
+        //dmPage생성, 저장
+        //상대메시지저장 이름불러와서 partner
 
 //        Member sitemember = this.memberService.getMember(principal.getName());
 //        Profile user = sitemember.getProfile();
 
+        DmPage dmPage = dmPageService.getMyDmPage(writer, partner);
+//        DmPage dmPage = new DmPage();
+//       dmPageRepository.save(dmPage);
+        SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), author, receiver, timenow, dmPage); //
+        saveMessageRepository.save(saveMessage);
 
-        SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), user, timenow);
-        SaveMessage savedSaveMessage = saveMessageRepository.save(saveMessage);
-
-        DmPage dmPage = new DmPage();
+        SaveMessageDTO messageDTO = new SaveMessageDTO();
+        messageDTO.setAuthor(saveMessage.getAuthor());
+        messageDTO.setContent(saveMessage.getContent());
+//        dmPageService.addSaveMessages(dmPage, saveMessage);
 
 
         // 저장된 SaveMessage 엔터티 반환
-        return savedSaveMessage;
+        return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
     }
 
 

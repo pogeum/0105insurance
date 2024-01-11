@@ -1,5 +1,6 @@
 package com.korea.project2_team4.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.korea.project2_team4.Repository.ProfileRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -60,8 +61,11 @@ public class Profile {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE )
     private List<Message> receivedMessages;
 
-    @OneToOne(mappedBy = "me", cascade = CascadeType.REMOVE)
-    private DmPage myDm;
+    @OneToMany(mappedBy = "me",cascade = CascadeType.REMOVE)
+    private List<DmPage> myDmpageList;
+
+    @OneToMany(mappedBy = "partner")
+    private List<DmPage> otherDmpageList;
 
 
     //    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE )
