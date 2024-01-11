@@ -4,6 +4,7 @@ import com.korea.project2_team4.Model.Dto.ChatDTO;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
 import com.korea.project2_team4.Model.Entity.Member;
+import com.korea.project2_team4.Model.Entity.MemberChatRoom;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
 import lombok.Builder;
@@ -55,7 +56,8 @@ public class ChatController {
     }
 
     @GetMapping("/chatRoom/{id}")
-    public String goChatRoom(Model model, @PathVariable("id") Long id) {
+    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
+        chatService.enterChatRoom(id, principal);
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
         model.addAttribute("chatRoomId", chatRoomId);
