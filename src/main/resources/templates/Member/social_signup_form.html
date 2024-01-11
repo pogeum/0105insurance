@@ -16,7 +16,7 @@
                             <div class="top-line my-4"></div>
 
                             <span class="font-400">
-                            지금 가입하고 UMMI에서 맛있는 여정을 떠나보세요!
+<!--                            지금 가입하고 UMMI에서 맛있는 여정을 떠나보세요!-->
                         </span>
                         </div>
 
@@ -127,7 +127,9 @@
                             <span>이미 회원이신가요?</span>
                             <a th:href="@{/member/login}">로그인</a>
                         </div>
-
+                        <div th:if="${blockMessage}" class="alert alert-danger">
+                            <p th:text="${blockMessage}"></p>
+                        </div>
                     </div>
                 </div>
             </div>
