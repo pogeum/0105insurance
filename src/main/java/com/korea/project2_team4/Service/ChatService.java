@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 //import com.korea.project2_team4.Model.Dto.ChatRoom;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
+import com.korea.project2_team4.Model.Dto.ChatRoomResponseDTO;
 import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
@@ -96,4 +97,7 @@ public class ChatService {
         chatRepository.save(chatMessage);
     }
 
+    public ChatRoom findChatRoomById(Long id) {
+        return chatRoomRepository.findById(id).orElse(null);
+    }
 }

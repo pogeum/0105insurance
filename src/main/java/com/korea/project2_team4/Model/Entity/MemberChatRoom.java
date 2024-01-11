@@ -28,6 +28,10 @@ public class MemberChatRoom {
 
     }
 
+    public MemberChatRoom() {
+
+    }
+
     public void changeMember(Member member){
         this.member = member;
         member.getMemberChatRooms().add(this);
