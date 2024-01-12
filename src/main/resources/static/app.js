@@ -12,21 +12,21 @@ function setConnected(connected) {
 //    $("#savemessages").html("");
 }
 
-function connect(myprofileName) {
+function connect() {
     var socket = new SockJS('/aaa');
     stompClient = Stomp.over(socket);
     console.log(stompClient);
-    console.log(myprofileName);
 
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        console.log(myprofileName);
         stompClient.subscribe('/topic/messaging', function (messaging) {
-            showMessaging(JSON.parse(messaging.body), myprofileName);
+            showMessaging(JSON.parse(messaging.body));
         });
     });
 }
+
+
 
 function disconnect() {
     if (stompClient !== null) {
@@ -50,7 +50,14 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
 //            'sender' : sender
         };
 
-    stompClient.send("/app/hello", {}, JSON.stringify(message));
+//    stompClient.send("/app/hello", {}, JSON.stringify(message));
+
+    // stompClient가 정의되어 있고 연결이 성공적인 경우에만 send 호출
+    if (stompClient && stompClient.connected) {
+        stompClient.send("/app/hello", {}, JSON.stringify(message));
+    } else {
+        console.error('WebSocket connection is not established.');
+    }
 
 }
 

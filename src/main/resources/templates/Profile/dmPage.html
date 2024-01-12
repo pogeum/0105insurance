@@ -5,6 +5,7 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
 </head>
 <body>
+
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
     enabled. Please enable
     Javascript and reload this page!</h2></noscript>
@@ -28,9 +29,9 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="connect">WebSocket connection:</label>
+<!--                    <label for="connect">WebSocket connection:</label>-->
 
-                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>
+<!--                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>-->
                     <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
                     </button>
                 </div>
@@ -62,9 +63,6 @@
                                             </td>
                                         </tr>
                                     </div>
-
-<!--                                    <p class="pull-left" >-->
-<!--                                    </p>-->
                                 </div>
                             </li>
 
@@ -82,8 +80,6 @@
                                         </tr>
                                     </div>
 
-<!--                                    <p class="pull-right" >-->
-<!--                                    </p>-->
                                 </div>
                             </li>
 
@@ -98,33 +94,27 @@
                                     <input type="text" id="content" class="form-control input-sm" placeholder="content">
                                     <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
                                 </div>
-
                             </form>
-
                     </div>
-
-
                 </div>
-
-<!--                <table id="conversation" class="table table-striped">-->
-
-<!--&lt;!&ndash;                    <tbody id="savemessages">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <tr id="Me">&ndash;&gt;-->
-<!--                            <td></td>-->
-<!--                        </tr>-->
-<!--&lt;!&ndash;                        <tr id="You" style="text-align:left;">&ndash;&gt;-->
-<!--                            <td style="color:blue;"></td>-->
-<!--                        </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--        </div>-->
     </div>
 </div>
 <script>
+    var socket = new SockJS('/aaa');
+    stompClient = Stomp.over(socket);
+    var myprofileName = '[[${me.profileName}]]' ;
 
-    function myConnect(profileName) {
-        connect(profileName);
-    }
+
+
+    stompClient.connect({}, function (frame) {
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        console.log(myprofileName);
+        stompClient.subscribe('/topic/messaging', function (messaging) {
+            showMessaging(JSON.parse(messaging.body), myprofileName);
+        });
+    });
+
 
 </script>
 </body>
