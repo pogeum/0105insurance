@@ -31,7 +31,7 @@ public class MemberChatRoom {
         this.id = id;
         this.changeMember(member);
         this.changeChatRoom(chatroom);
-        this.messages = messages;
+        this.messages = (messages != null) ? messages : new ArrayList<>();
 
     }
 

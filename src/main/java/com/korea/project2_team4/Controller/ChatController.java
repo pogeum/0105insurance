@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 // 채팅을 수신(sub) 하고 송신(pub) 하기위한 Controller
 @Controller
@@ -54,8 +55,13 @@ public class ChatController {
         chatService.enterChatRoom(id, principal);
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
+        Map<String, Object> chatData = chatService.showChatDate(id);
+
         model.addAttribute("chatRoomId", chatRoomId);
         model.addAttribute("chatRoomName", chatRoomId.getRoomName());
+
+        model.addAttribute("members", chatData.get("members"));
+        model.addAttribute("messages", chatData.get("messages"));
 
         return "Chat/chatRoom_form";
     }
