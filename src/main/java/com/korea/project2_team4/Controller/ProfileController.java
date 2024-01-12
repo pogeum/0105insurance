@@ -442,5 +442,10 @@ public class ProfileController {
         return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
     }
 
+    @GetMapping("/chatting")
+    public String chatting() {
+        return "Profile/sample_chatting";
+    }
+
 
 }
