@@ -269,7 +269,7 @@ public class MemberService {
         return memberRepository.findByKeywordInRealNameOrUserNameOrNickName(kw,pageable);
     }
     //휴대폰번호 인증문자 보내기
-    public void PhoneNumberCheck(String to, HttpSession session){
+    public void phoneNumberCheck(String to, HttpSession session){
 
         Random rand = new Random();
         String numStr = "";

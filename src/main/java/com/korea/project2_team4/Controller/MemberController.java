@@ -449,7 +449,7 @@ public class MemberController {
     @PostMapping("/phoneCheck")
     public String memberPhoneCheck(@RequestParam(value = "phoneNum") String to, HttpSession session) {
 
-        memberService.PhoneNumberCheck(to, session);
+        memberService.phoneNumberCheck(to, session);
         return "redirect:/member/signup";
     }
 

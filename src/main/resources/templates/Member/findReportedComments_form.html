@@ -116,7 +116,7 @@
                                         </div>
                                         <!-- 신고 모달 끝 -->
                                         <div class="col-md-auto"
-                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                             th:if="${(#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and comment.author.member.role != 'ROLE_ADMIN'}">
                                             <button type="button" class="btn btn-primary admin-btn"
                                                     style="margin-right: 0.1rem"
                                                     data-bs-toggle="modal"
@@ -193,7 +193,7 @@
 <!--                                        <div class="col-md-auto"-->
 <!--                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
                                             <div class="col-md-auto"
-                                                 th:if="${comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                                 th:if="${(comment.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and comment.author.member.role != 'ROLE_ADMIN'}">
                                                 <form th:action="@{|/comment/deleteReportedComment/${comment.id}|}" method="post"
                                                       onsubmit="return DeleteComment();">
                                                     <button type="submit" class="btn btn-danger admin-btn"

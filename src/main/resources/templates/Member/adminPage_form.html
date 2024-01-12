@@ -56,7 +56,7 @@
                         <button class="btn btn-primary admin-btn" style="margin-left: 10px" type="submit">등급 변경</button>
                     </form>
                     <div th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-                        <p th:text="${member.role == 'ROLE_MANAGER' ? '매니저' : '일반 유저'}"></p>
+                        <p th:text="${member.role == 'ROLE_MANAGER' ? '매니저' : '일반 사용자'}"></p>
                     </div>
                 </td>
                 <td style="width: 9rem">
