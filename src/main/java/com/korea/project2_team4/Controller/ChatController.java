@@ -3,29 +3,21 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
-import com.korea.project2_team4.Model.Entity.Member;
-import com.korea.project2_team4.Model.Entity.MemberChatRoom;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // 채팅을 수신(sub) 하고 송신(pub) 하기위한 Controller
 @Controller
@@ -69,11 +61,14 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(@Payload ChatDTO chat) {
+    public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
 
-        chat.setMessage(chat.getMessage());
-
-        template.convertAndSend("/sub/chat/room?roomId=" + chat.getRoomId(), chat);
+        try {
+            chatService.saveChatMessage(chatDTO, principal);
+            template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
