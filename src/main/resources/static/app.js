@@ -39,15 +39,18 @@ function disconnect() {
 function sendContent() {//이게  sendmessage!!!!!!!!!!
     // content 입력 필드에서 값 가져오기
     var contentValue = $("#content").val();
-
     // 템플릿의 id=receiver 에서 값 가져오기
     var receiverName = $("#receiver").val();
+    var createDate = $("#createDate").val();
+
+    console.log(typeof createDate);
+
 
     // contentValue와 receiverName 포함한 메시지 객체 생성
         var message = {
             'content': contentValue,
-            'receiver': receiverName
-//            'sender' : sender
+            'receiver': receiverName,
+            'createDate' : createDate
         };
 
 //    stompClient.send("/app/hello", {}, JSON.stringify(message));
@@ -66,22 +69,36 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
     let reg = /[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\/ ]/gim;
     let myprofileNameReg = myprofileName.replace(reg, "");
 
+
     console.log(message.author);
     console.log(myprofileNameReg);
     console.log(typeof message.author);
     console.log(typeof myprofileName);
 
+     // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
+     var balloonHTML;
+     if (message.author === myprofileNameReg) {
+         // Me인 경우
+         balloonHTML = '<div id="Me" class="balloon" style="position:relative; margin:50px; width:400px; height:50px; background:pink; border-radius:10px;">' +
+             '<div class="balloon-triangle" style="border-top:10px solid pink; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:0px solid transparent; position:absolute; top:50px; left:350px;"></div>' +
+             '<div class="header">' +
+             '<small class="text-muted"><span class="glyphicon glyphicon-time"></span>' + message.createDate + '</small>' +
+             '<span class="pull-right" th:text="${message.content}">' + message.content + '</span>' +
+             '</div>' +
+             '</div>';
+     } else {
+         // You인 경우
+         balloonHTML = '<div id="You" class="balloon" style="position:relative; margin:50px; width:400px; height:50px; background:beige; border-radius:10px;">' +
+             '<div class="balloon-triangle" style="border-top:10px solid beige; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:0px solid transparent; position:absolute; top:50px; left:50px;"></div>' +
+             '<div class="header">' +
+             '<small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>' + message.createDate + '</small>' +
+             '<span class="pull-left" th:text="${message.content}">' + message.content + '</span>' +
+             '</div>' +
+             '</div>';
+     }
 
-
-    if (message.author === myprofileNameReg) {
-        // author가 현재 로그인한 사용자와 같은 경우, Me라는 id를 가진 tr에 출력
-        console.log('same');
-        $("#savemessages").append("<tr id='Me' class='pull-right'><td style='color: red; '>" + message.content + "</td></tr>");
-    } else {
-        // 그 외의 경우의 기본 출력 처리
-        console.log('다름');
-        $("#savemessages").append("<tr id='You' class='pull-left'><td style='color: blue; '>" + message.content + "</td></tr>");
-    }
+     // 생성된 HTML을 #savemessages에 추가
+     $("#savemessages").append(balloonHTML);
 
 }
 

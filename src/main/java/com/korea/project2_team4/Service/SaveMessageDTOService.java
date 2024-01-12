@@ -14,6 +14,23 @@ import java.util.List;
 public class SaveMessageDTOService {
     private final SaveMessageRepository saveMessageRepository;
 
+//    public List<SaveMessageDTO> getAllDMList(List<SaveMessage> saveMessages) {
+//
+//        List<SaveMessageDTO> mylist = new ArrayList<>();
+//        List<SaveMessage> beforeDTOlist = saveMessageRepository.findAllByNameAnddmPageId(myName , dmPageId);
+//        for (SaveMessage s : beforeDTOlist) {
+//            SaveMessageDTO d = new SaveMessageDTO();
+//            d.setAuthor(s.getAuthor());
+//            d.setReceiver(s.getReceiver());
+//            d.setContent(s.getContent());
+//            d.setCreateDate(s.getCreateDate());
+//
+//            mylist.add(d);
+//        }
+//        return mylist;
+//    }
+
+
     public List<SaveMessageDTO> getMyDMList(String myName, Long dmPageId) {
         List<SaveMessageDTO> mylist = new ArrayList<>();
         List<SaveMessage> beforeDTOlist = saveMessageRepository.findAllByNameAnddmPageId(myName , dmPageId);

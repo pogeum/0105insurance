@@ -373,6 +373,11 @@ public class ProfileController {
         //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
 
         DmPage dmPage = dmPageService.getMyDmPage(me,partner); //없으면새로추가함..
+        //dmpage에서 메시지리스트 다 가져온다음, -> 시간순정렬 -> 내가보낸메시지가 오른쪽으로 붙게 세팅해야함.
+        List<SaveMessage> dmPageMessages = dmPage.getSaveMessages();
+
+
+
         List<SaveMessageDTO> myMessageList = saveMessageDTOService.getMyDMList(me.getProfileName(), dmPage.getId());
         List<SaveMessageDTO> yourMessageList = saveMessageDTOService.getMyDMList(partner.getProfileName(), dmPage.getId());
 
@@ -419,6 +424,7 @@ public class ProfileController {
 
         String content = message.getContent();
         String receiver = message.getReceiver();
+        String sendTime = message.getCreateDate();
 //        String sender = message.getSender();
 
         String author = writer.getProfileName();
@@ -442,6 +448,7 @@ public class ProfileController {
         SaveMessageDTO messageDTO = new SaveMessageDTO();
         messageDTO.setAuthor(saveMessage.getAuthor());
         messageDTO.setContent(saveMessage.getContent());
+        messageDTO.setCreateDate(saveMessage.getCreateDate());
 //        dmPageService.addSaveMessages(dmPage, saveMessage);
 
 

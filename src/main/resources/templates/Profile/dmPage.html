@@ -50,37 +50,49 @@
                 <div class="panel-scrollable" >
                     <div class="panel-body">
                         <ul id="savemessages" class="chat" style="list-style: none; margin: 0; padding: 0;">
-                            <li class="left clearfix" th:each="message : ${receivedmessageList}"><span class="chat-img pull-left">
-                            <img th:src="@{|/files/${partner.profileImage.fileName}|}" alt="User Avatar" class="img-circle" style="width:50px; height:50px;"/>
-                                </span>
-                                <div class="chat-body clearfix">
-                                    <div class="header">
-                                        <strong class="primary-font" th:text="${partner.profileName}"></strong> <small class="pull-right text-muted" th:text="${message.createDate}">
-                                        <span class="glyphicon glyphicon-time"></span></small>
-                                        <tr id="You">
-                                            <td th:text="${message.content}">
-
-                                            </td>
-                                        </tr>
+                            <li class="left clearfix" th:each="message : ${receivedmessageList}">
+                                    <div id="You" class="balloon" style=" position:relative;
+                                                                 margin: 50px;
+                                                                 width:400px;
+                                                                 height:50px;
+                                                                  background:beige;
+                                                                  border-radius: 10px;">
+                                        <div class="balloon:after" style="
+                                                                    border-top: 10px solid beige;
+                                                                     border-left: 10px solid transparent;
+                                                                     border-right: 10px solid transparent;
+                                                                     border-bottom: 0px solid transparent;
+                                                                        position:absolute;
+                                                                        top:50px;
+                                                                        left:50px;"
+                                                                        ></div>
+                                        <div class="header">
+                                            <small class="pull-right text-muted" th:text="${message.createDate}">
+                                            <span class="glyphicon glyphicon-time"></span></small>
+                                            <span class='pull-left' style="" th:text="${message.content}"></span>
+                                        </div>
                                     </div>
-                                </div>
                             </li>
 
-                            <li class="right clearfix" th:each="message : ${messageList}"><span class="chat-img pull-right">
-                            <img th:src="@{|/files/${me.profileImage.fileName}|}" alt="User Avatar" class="img-circle" style="width:50px; height:50px;"/>
-                                </span>
-                                <div class="chat-body clearfix">
-                                    <div class="header">
-                                        <small class=" text-muted"><span class="glyphicon glyphicon-time" th:text="${message.createDate}"></span></small>
-                                        <strong class="pull-right primary-font" th:text="${me.profileName}"></strong>
-                                        <tr id="Me">
-                                            <td th:text="${message.content}">
-
-                                            </td>
-                                        </tr>
+                            <li class="right clearfix" th:each="message : ${messageList}">
+                                    <div id="Me" class="balloon" style=" position:relative;
+                                                                 margin: 50px;
+                                                                 width:400px;
+                                                                 height:50px;
+                                                                  background:pink;
+                                                                  border-radius: 10px;">
+                                        <div class="balloon:after" style="border-top:10px solid pink;
+                                        border-left: 10px solid transparent;
+                                        border-right: 10px solid transparent;
+                                        border-bottom: 0px solid transparent;
+                                        position:absolute;
+                                        top:50px;
+                                        left:350px"></div>
+                                        <div class="header">
+                                            <small class=" text-muted"><span class="glyphicon glyphicon-time" th:text="${message.createDate}"></span></small>
+                                            <span class='pull-right' style="" th:text="${message.content}"></span>
+                                        </div>
                                     </div>
-
-                                </div>
                             </li>
 
                         </ul>
@@ -90,6 +102,8 @@
                         <div class="input-group">
                             <form class="form-inline">
                                 <div class="form-group">
+                                    <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+<!--                                    <input type="hidden" id="createDate" value="aaa">-->
                                     <input type="hidden" id="receiver" th:value="${partner.profileName}">
                                     <input type="text" id="content" class="form-control input-sm" placeholder="content">
                                     <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
