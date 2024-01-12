@@ -245,6 +245,11 @@
                     <!--                    게시물 신고 모달 창 끝-->
                 </div>
             </div>
+            <p style="margin-top: 10px; font-size: 17px; "
+               th:if="${!post.getTagList().isEmpty()}">
+                                            <span th:each="tag, loop : ${post.getTagList()}"
+                                                  th:text="' '+ @{|#${tag.name}|}"></span>
+            </p>
             <hr>
             <!--       댓글        -->
             <div class="mb-3">
