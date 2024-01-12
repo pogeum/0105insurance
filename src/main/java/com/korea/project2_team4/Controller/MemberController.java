@@ -54,30 +54,48 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public String signup(@Valid MemberCreateForm memberCreateForm, BindingResult bindingResult) {
+    public String signup(@Valid MemberCreateForm memberCreateForm, BindingResult bindingResult,
+                         String authenticationCode,
+                         SessionStatus sessionStatus,
+                         HttpSession session) {
+
+        // 세션에서 authenticationCode 속성 가져오기
+        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
+
+        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+        if (expectedAuthenticationCode == null) {
+            return "redirect:/member/signup";
+        }
+        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
+        if (expectedAuthenticationCode.equals(authenticationCode)) {
+            // 검증에 성공하면 세션에서 인증 코드 제거
+            sessionStatus.setComplete();
+
         if (bindingResult.hasErrors()) {
             return "Member/signup_form";
         }
 
-        if (!memberCreateForm.getPassword().equals(memberCreateForm.getRe_password())) {
-            bindingResult.rejectValue("password2", "passwordInCorrect",
-                    "2개의 패스워드가 일치하지 않습니다.");
-            return "Member/signup_form";
-        }
 
-        try {
-            memberService.create(memberCreateForm);
-        } catch (DataIntegrityViolationException e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");
-            return "Member/signup_form";
-        } catch (Exception e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", e.getMessage());
-            return "Member/signup_form";
-        }
+            if (!memberCreateForm.getPassword().equals(memberCreateForm.getRe_password())) {
+                bindingResult.rejectValue("password2", "passwordInCorrect",
+                        "2개의 패스워드가 일치하지 않습니다.");
+                return "Member/signup_form";
+            }
 
-        return "redirect:/";
+            try {
+                memberService.create(memberCreateForm);
+            } catch (DataIntegrityViolationException e) {
+                e.printStackTrace();
+                bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");
+                return "Member/signup_form";
+            } catch (Exception e) {
+                e.printStackTrace();
+                bindingResult.reject("signupFailed", e.getMessage());
+                return "Member/signup_form";
+            }
+           return  "redirect:/";
+        }
+        return "redirect:member/signup";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -127,8 +145,9 @@ public class MemberController {
 
         return "redirect:/";
     }
+
     @GetMapping("/login")
-    public String login(){
+    public String login() {
         return "Member/login_form";
     }
 
@@ -138,14 +157,16 @@ public class MemberController {
         return "redirect:/";
 
     }
+
     @GetMapping("/managePage")
-    public String managePage(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
+    public String managePage(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<Post> reportedPosts = reportService.findPostsLinkedWithReports(page);
         List<Tag> defaultTagList = tagService.getDefaultTags();
         model.addAttribute("defaultTagList", defaultTagList);
-        model.addAttribute("paging",reportedPosts);
+        model.addAttribute("paging", reportedPosts);
         return "Member/findReportedPosts_form";
     }
+
     @GetMapping("/adminPage")
     public String adminPage(Principal principal, Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Member member = memberService.getMember(principal.getName());
@@ -157,19 +178,21 @@ public class MemberController {
         model.addAttribute("paging", paging);
         return "Member/adminPage_form";
     }
+
     @GetMapping("/search")
     public String searchMember(Model model,
                                Principal principal,
                                @RequestParam(value = "page", defaultValue = "0") int page,
-                               @RequestParam(value = "kw", defaultValue = "") String kw){
+                               @RequestParam(value = "kw", defaultValue = "") String kw) {
         Member member = memberService.getMember(principal.getName());
         List<Member> memberList = memberService.getAllMembers();
-        Page<Member> paging = this.memberService.searchMember(page,kw);
+        Page<Member> paging = this.memberService.searchMember(page, kw);
         model.addAttribute("memberList", memberList);
         model.addAttribute("paging", paging);
         model.addAttribute("member", member);
         return "Member/adminPage_form";
     }
+
     @PostMapping("/adminPage/changeMemberRole/{id}")
     public String changeMemberRole(@PathVariable Long id, @RequestParam String[] role) {
         for (String userRole : role) {
@@ -279,15 +302,17 @@ public class MemberController {
     public String findUserName(Model model) {
         return "Member/findUserName_form";
     }
+
     @PostMapping("/delete")
-    public String memberDelete(@RequestParam List<String> userNames){
-        for(String userName : userNames){
+    public String memberDelete(@RequestParam List<String> userNames) {
+        for (String userName : userNames) {
             Member member = this.memberService.getMember(userName);
             memberService.delete(member);
         }
         session.invalidate();
         return "redirect:/";
     }
+
     @PostMapping("/sendVerificationCode")
     public ResponseEntity<String> sendVerificationCode(@RequestParam String realName, @RequestParam String email,
                                                        HttpSession session) {
@@ -344,7 +369,7 @@ public class MemberController {
                                                                      @RequestParam String userName,
                                                                      HttpSession session) {
         try {
-            if (memberService.checkMemberToFindPassword(userName,email, realName)) {
+            if (memberService.checkMemberToFindPassword(userName, email, realName)) {
                 String verificationCode = memberService.generateRandomCode();
                 memberService.SendVerificationCode(email, verificationCode);
 
@@ -359,6 +384,7 @@ public class MemberController {
                     .body("Error sending verification code: " + e.getMessage());
         }
     }
+
     @PostMapping("/findPassword")
     public String findPassword(@RequestParam String verificationCode,
 //                               @SessionAttribute("expectedVerificationCode") String expectedVerificationCode,
@@ -388,6 +414,7 @@ public class MemberController {
         }
         return "redirect:/member/findPassword";
     }
+
     @PostMapping("/block/{username}")
     public String blockMember(@PathVariable String username,
                               @RequestParam Long reportDurationDays) {
@@ -400,6 +427,13 @@ public class MemberController {
     public String unblockMember(@PathVariable String username) {
         memberService.unblockMember(username);
         return "redirect:/member/adminPage";
+    }
+
+    @PostMapping("/phoneCheck")
+    public String memberPhoneCheck(@RequestParam(value = "phoneNum") String to, HttpSession session) {
+
+        memberService.PhoneNumberCheck(to, session);
+        return "redirect:/member/signup";
     }
 
 }
