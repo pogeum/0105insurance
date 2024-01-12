@@ -7,17 +7,16 @@ import com.korea.project2_team4.Model.Entity.ChatMessage;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
 import com.korea.project2_team4.Model.Entity.MemberChatRoom;
-import com.korea.project2_team4.Repository.ChatRepository;
-import com.korea.project2_team4.Repository.ChatRoomRepository;
-import com.korea.project2_team4.Repository.MemberChatRoomRepository;
-import com.korea.project2_team4.Repository.MemberRepository;
+import com.korea.project2_team4.Repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -30,6 +29,8 @@ public class ChatService {
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
+
     @PostConstruct
     private void init() {
         chatRoomMap = new LinkedHashMap<>();
@@ -97,20 +98,24 @@ public class ChatService {
 
     }
 
-    public void saveChatMessage(ChatDTO chatDTO) {
-        //ChatDTO 에서 필요한 정보를 추출하여 ChatMessage 엔티티에 저장
+    @Transactional
+    public void saveChatMessage(ChatDTO chatDTO, Principal principal) {
+        Member sender = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setMessage(chatDTO.getMessage());
-
-        Optional<Member> optionalSender = memberRepository.findByUserName(chatDTO.getSender());
-        Member sender = optionalSender.orElseThrow(() -> new RuntimeException("Member not found"));
-        chatMessage.setSender(sender);
+        MemberChatRoom chatRoom = memberChatRoomRepository.findById(Long.parseLong(chatDTO.getRoomId()))
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
 
 
-        chatMessage.setTime(LocalDateTime.parse(chatDTO.getTime()));
+        ChatMessage chatMessage = ChatMessage.builder()
+                .message(chatDTO.getMessage())
+                .sender(sender)
+                .chatRoom(chatRoom)
+                .time(LocalDateTime.now())
+                .build();
 
-        chatRepository.save(chatMessage);
+        chatMessageRepository.save(chatMessage);
+
     }
 
     public ChatRoom findChatRoomById(Long id) {

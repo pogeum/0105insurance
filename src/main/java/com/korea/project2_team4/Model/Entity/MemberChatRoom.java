@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 public class MemberChatRoom {
@@ -20,11 +23,15 @@ public class MemberChatRoom {
     @ManyToOne
     private ChatRoom chatroom;
 
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatMessage> messages = new ArrayList<>();
+
     @Builder
-    public MemberChatRoom(Long id, Member member, ChatRoom chatroom){
+    public MemberChatRoom(Long id, Member member, ChatRoom chatroom, List<ChatMessage> messages){
         this.id = id;
         this.changeMember(member);
         this.changeChatRoom(chatroom);
+        this.messages = messages;
 
     }
 

@@ -1,6 +1,7 @@
 package com.korea.project2_team4.Model.Entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 public class ChatMessage {
 
     @Id
@@ -18,11 +18,20 @@ public class ChatMessage {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
     private Member sender;
 
     private LocalDateTime time;
 
+    @ManyToOne
+    private MemberChatRoom chatRoom;
 
+    @Builder
+    public ChatMessage (Long id, String message, Member sender, LocalDateTime time, MemberChatRoom chatRoom) {
+        this.id = id;
+        this.message = message;
+        this.sender = sender;
+        this.time = time;
+        this.chatRoom = chatRoom;
+    }
 
 }

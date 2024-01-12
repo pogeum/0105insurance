@@ -40,13 +40,6 @@
                     <div>
                         <h2>참여자 목록</h2>
                     </div>
-                    <div>
-                        <ul>
-                            <li>
-
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -56,7 +49,7 @@
 
         // roomId 파라미터 가져오기
         const url = new URL(location.href).searchParams;
-        const roomId = url.get('roomId');
+        const id = location.pathname.split("/").pop();
 
         // WebSocket 연결
         var socket = new SockJS('/ws-stomp');
@@ -69,10 +62,10 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             // 특정 채팅방의 메시지 구독
-            stompClient.subscribe('/sub/chat/room?roomId=' + roomId, function (response) {
+            stompClient.subscribe('/sub/chat/chatRoom/id/' + id, function (response) {
                 var chat = JSON.parse(response.body);
                 console.log(chat.message);
-                addMessageToChat(chat.sender, chat.message);
+                addMessageToChat(chat.sender, chat.message, chat.time);
             });
         });
 
@@ -87,9 +80,10 @@
                 // 메시지 전송
                 stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
                     type: 'TALK',
-                    roomId: roomId,
+                    roomId: id,
                     sender: 'username',
-                    message: message
+                    message: message,
+                    time: new Date().toLocaleTimeString()
                 }));
 
                 // 입력 폼 초기화
@@ -98,9 +92,9 @@
         });
 
         // 채팅 메시지를 목록에 추가
-        function addMessageToChat(sender, message) {
+        function addMessageToChat(sender, message, time) {
             var messageItem = document.createElement('div');
-            messageItem.textContent = sender + ': ' + message;
+            messageItem.textContent = sender + ': ' + message + ' (' + time + ')';
             chatMessages.appendChild(messageItem);
         }
 
