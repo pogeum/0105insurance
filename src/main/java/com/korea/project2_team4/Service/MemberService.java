@@ -277,7 +277,7 @@ public class MemberService {
             String ran = Integer.toString(rand.nextInt(10));
             numStr += ran;
         }
-        //세션에 인증번호를 추후 확인 하기 위해 authenticationCode 를 저장
+        //인증번호를 추후 확인 하기 위해 세션에 expectedAuthenticationCode 를 저장
         session.setAttribute("expectedAuthenticationCode",numStr);
 
         DefaultMessageService messageService =  NurigoApp.INSTANCE.initialize("NCSBOX6VGDQKOFZ1", "Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV", "https://api.coolsms.co.kr");

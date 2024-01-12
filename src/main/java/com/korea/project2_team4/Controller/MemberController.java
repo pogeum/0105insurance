@@ -71,9 +71,9 @@ public class MemberController {
             // 검증에 성공하면 세션에서 인증 코드 제거
             sessionStatus.setComplete();
 
-        if (bindingResult.hasErrors()) {
-            return "Member/signup_form";
-        }
+            if (bindingResult.hasErrors()) {
+                return "Member/signup_form";
+            }
 
 
             if (!memberCreateForm.getPassword().equals(memberCreateForm.getRe_password())) {
@@ -93,7 +93,7 @@ public class MemberController {
                 bindingResult.reject("signupFailed", e.getMessage());
                 return "Member/signup_form";
             }
-           return  "redirect:/";
+            return "redirect:/";
         }
         return "redirect:member/signup";
     }
@@ -225,36 +225,51 @@ public class MemberController {
     @PostMapping("/signup/social")
     public String signup(@Valid MemberCreateForm memberCreateForm, BindingResult bindingResult,
 //                         @RequestParam(value = "profile-picture", defaultValue = "") String profile,
-                         HttpServletRequest request, Model model) {
+                         HttpServletRequest request, Model model,
+                         String authenticationCode,
+                         SessionStatus sessionStatus) {
 
         HttpSession session = request.getSession();
         OAuth2UserInfo socialLogin = (OAuth2UserInfo) session.getAttribute("SOCIAL_LOGIN");
 
-        if (socialLogin != null) {
-            memberCreateForm.setNickName(socialLogin.getName());
-            memberCreateForm.setUserName(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
-            memberCreateForm.setPassword(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
-            memberCreateForm.setRe_password(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
-            memberCreateForm.setRealName(socialLogin.getName());
-            memberCreateForm.setEmail(socialLogin.getEmail());
-            memberCreateForm.setProvider(socialLogin.getProvider());
-            memberCreateForm.setProviderID(socialLogin.getProviderId());
+        // 세션에서 authenticationCode 속성 가져오기
+        String expectedAuthenticationCode = (String) session.getAttribute("expectedAuthenticationCode");
+
+        // 세션이 없는 경우(이메일 인증을 거치지 않은 경우)
+        if (expectedAuthenticationCode == null) {
+            return "redirect:/member/signup/social";
+        }
+
+        //문자로 발송 되어 기존 세션에 저장된 인증코드와 현재 입력된 인증코드가 일치하는지 확인
+        if (expectedAuthenticationCode.equals(authenticationCode)) {
+            // 검증에 성공하면 세션에서 인증 코드 제거
+            sessionStatus.setComplete();
+
+            if (socialLogin != null) {
+                memberCreateForm.setNickName(socialLogin.getName());
+                memberCreateForm.setUserName(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
+                memberCreateForm.setPassword(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
+                memberCreateForm.setRe_password(socialLogin.getProvider() + "_" + socialLogin.getProviderId());
+                memberCreateForm.setRealName(socialLogin.getName());
+                memberCreateForm.setEmail(socialLogin.getEmail());
+                memberCreateForm.setProvider(socialLogin.getProvider());
+                memberCreateForm.setProviderID(socialLogin.getProviderId());
 //            memberCreateForm.setSnsImage(socialLogin.getImage());
-        }
-        model.addAttribute("socialLogin", socialLogin);
+            }
+            model.addAttribute("socialLogin", socialLogin);
 
 
-        if (bindingResult.hasErrors()) {
-            return "Member/social_signup_form";
-        }
+            if (bindingResult.hasErrors()) {
+                return "Member/social_signup_form";
+            }
 
-        if (!memberCreateForm.getPassword().equals(memberCreateForm.getRe_password())) {
-            bindingResult.rejectValue("password2", "passwordInCorrect",
-                    "2개의 패스워드가 일치하지 않습니다.");
-            return "Member/social_signup_form";
-        }
+            if (!memberCreateForm.getPassword().equals(memberCreateForm.getRe_password())) {
+                bindingResult.rejectValue("password2", "passwordInCorrect",
+                        "2개의 패스워드가 일치하지 않습니다.");
+                return "Member/social_signup_form";
+            }
 
-        try {
+            try {
 
 //            소셜 로그인 프로필 이미지
 //
@@ -264,22 +279,24 @@ public class MemberController {
 //                memberCreateForm.setImageType(1);
 //            }
 
-            Member member = memberService.create(memberCreateForm);
+                Member member = memberService.create(memberCreateForm);
 //            if(member.isBlocked()){
 //                model.addAttribute("blockMessage",member.getUnblockDate()+"까지 차단된 아이디입니다");
 //                return "redirect:/signup/social";
 //            }
-        } catch (DataIntegrityViolationException e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");
-            return "/Member/social_signup_form";
-        } catch (Exception e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", e.getMessage());
-            return "Member/social_signup_form";
+            } catch (DataIntegrityViolationException e) {
+                e.printStackTrace();
+                bindingResult.reject("signupFailed", "이미 등록된 사용자 입니다.");
+                return "/Member/social_signup_form";
+            } catch (Exception e) {
+                e.printStackTrace();
+                bindingResult.reject("signupFailed", e.getMessage());
+                return "Member/social_signup_form";
+            }
+            return "redirect:/";
         }
 
-        return "redirect:/";
+        return "redirect:/member/signup/social";
     }
 
     @GetMapping("/member")
