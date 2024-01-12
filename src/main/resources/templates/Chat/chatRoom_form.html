@@ -18,7 +18,11 @@
                     <h2>채팅 메시지</h2>
                 </div>
                 <div class="d-flex justify-content-center" style="margin-bottom: 30px;">
-                    <div th:text="${message}" id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+                    <div id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+                        <div th:each="message : ${messages}"
+                             th:text="${message.sender.userName + ': ' + message.message
+                             + ' (' + #temporals.format(message.time, (message.time.hour >= 12 ? '오후 ' : '오전 ') + 'h:mm:ss') + ')'}"></div>
+
                     </div>
                 </div>
                 <div class="container">
@@ -37,6 +41,9 @@
                 <div class="d-flex justify-content-center">
                     <div>
                         <h2>참여자 목록</h2>
+                        <ul>
+                            <li th:each="member : ${members}" th:text="${member.userName}"></li>
+                        </ul>
                     </div>
                 </div>
             </div>
