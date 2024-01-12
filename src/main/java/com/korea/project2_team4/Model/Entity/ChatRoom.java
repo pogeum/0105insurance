@@ -27,7 +27,7 @@ public class ChatRoom {
     private Member admin; // 관리자
 
     @OneToMany(mappedBy = "chatroom")
-    private Set<MemberChatRoom> memberChatRooms = new HashSet<>();
+    private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
     @Builder
     public ChatRoom(Long id, String roomName, Member admin) {
