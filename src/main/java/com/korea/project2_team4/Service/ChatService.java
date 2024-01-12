@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -118,7 +119,23 @@ public class ChatService {
 
     }
 
-    public void showChatDate() {
+    public Map<String, Object> showChatDate(Long chatRoomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
+        List<Member> members = chatRoom.getMemberChatRooms()
+                .stream()
+                .map(MemberChatRoom::getMember)
+                .collect(Collectors.toList());
+
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomIdOrderByTime(chatRoomId);
+
+
+        Map<String, Object> chatData = new HashMap<>();
+        chatData.put("members", members);
+        chatData.put("messages", messages);
+
+        return chatData;
 
     }
 
