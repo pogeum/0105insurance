@@ -79,7 +79,7 @@
                                         <button type="button" class="btn btn-warning" data-bs-toggle="modal" th:data-bs-target="'#reportModal' + ${post.id}">
                                             신고 정보 보기
                                         </button>
-                                        <div th:if="${post.author.member.getRole != 'ROLE_ADMIN'}" >
+                                        <div th:if="${post.author.member.getRole != 'ROLE_ADMIN'}">
                                             <form th:action="@{|/member/block/${post.author.member.userName}|}" th:method="post">
                                                 <!--                        <input type="hidden" name="userNames" th:value="${member.userName}"/>-->
                                                 <input type="number" name="reportDurationDays" placeholder="차단 기간(일)" required/>
@@ -115,8 +115,9 @@
                                             </div>
                                         </div>
                                         <!-- 신고 모달 끝 -->
+<!--                                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}"-->
                                         <div class="col-md-auto"
-                                             th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                             th:if="${(#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and post.author.member.role != 'ROLE_ADMIN'}">
                                             <button type="button" class="btn btn-primary admin-btn"
                                                     style="margin-right: 0.1rem"
                                                     data-bs-toggle="modal"
@@ -193,7 +194,7 @@
 
 <!--                                        onsubmit="return deletePost()"-->
                                         <div class="col-md-auto"
-                                             th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                             th:if="${(post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')) and post.author.member.role != 'ROLE_ADMIN'}">
                                             <form th:action="@{|/post/deleteReportedPost/${post.id}|}" method="post"
                                                   onsubmit="return deletePost();">
                                                 <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
