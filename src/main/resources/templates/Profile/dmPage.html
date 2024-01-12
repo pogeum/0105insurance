@@ -1,44 +1,7 @@
-<!--<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">-->
-<!--<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">-->
-<!--<div layout:fragment="content" class="row py-5 px-4">-->
-<!--    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">-->
-<!--        디엠창 To-->
-<!--        <span th:text="${partner.profileName}"></span>-->
-<!--        <p>from</p>-->
-<!--        <span th:text="${me.profileName}"></span>-->
-<!--        <form th:action="@{|/profile/sendmessageTo/${partner.profileName}|}" method="post">-->
-<!--&lt;!&ndash;            <input type="hidden" name="profileName" th:value="${partner.profileName}">&ndash;&gt;-->
-<!--            <input type="text" name="message">-->
-<!--            <button type="submit" class="btn btn-primary">전송</button>-->
-<!--        </form>-->
-<!--        <div>-->
-<!--            보낸메시지 :-->
-<!--            <div th:each="message : ${messageList}">-->
-<!--                <div th:text="${message.content}"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div>-->
-<!--            받은메시지 :-->
-<!--            <div th:each="message : ${receivedmessageList}">-->
-<!--                <div th:text="${message.content}"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--    </div>-->
-<!--</div>-->
-<!--</html>-->
-
-
-
-
-
-
 <html>
 <head>
     <title th:text="${me.profileName} + '➜' + ${partner.profileName}">Hello WebSocket</title>
-<!--    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
-    <link href="/main.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="/webjars/jquery/jquery.min.js"></script>
 </head>
 <body>
@@ -49,88 +12,112 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="/app.js"></script>
-<!--<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">-->
-<!--<div layout:fragment="content" class="row py-5 px-4">-->
-<!--    <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">-->
-<!--        디엠창 To-->
-<!--        <span th:text="${partner.profileName}"></span>-->
-<!--        <p>from</p>-->
-<!--        <span th:text="${me.profileName}"></span>-->
-<!--        <form th:action="@{|/profile/sendmessageTo/${partner.profileName}|}" method="post">-->
-<!--            &lt;!&ndash;            <input type="hidden" name="profileName" th:value="${partner.profileName}">&ndash;&gt;-->
-<!--            <input type="text" name="message">-->
-<!--            <button type="submit" class="btn btn-primary">전송</button>-->
-<!--        </form>-->
-        <div>
-            보낸메시지 :
-            <div th:each="message : ${messageList}">
-                <div th:text="${message.content}"></div>
-            </div>
-        </div>
 
-        <div>
-            받은메시지 :
-            <div th:each="message : ${receivedmessageList}">
-                <div th:text="${message.content}"></div>
-            </div>
-        </div>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
-<!--    </div>-->
-<!--</div>-->
-
-<div id="main-content" class="container">
+<div id="main-content" class="container" style="max-width: 940px;
+    padding: 2em 3em;
+    margin: 0 auto 20px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;">
     <div class="row">
         <div class="col-md-6">
-            <!--            <div th:text="${messageList}"></div>-->
-            <!--            <div th:text="${receivedmessageList}"></div>-->
-
-
             <form class="form-inline">
                 <div class="form-group">
                     <label for="connect">WebSocket connection:</label>
-<!--                    <button id="connect" class="btn btn-default" type="submit">Connect</button>-->
+
                     <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>
                     <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
                     </button>
                 </div>
             </form>
         </div>
-        <div class="col-md-6">
-            <form class="form-inline">
-                <div class="form-group">
-                    <!--                    <label for="name">What is your name?</label>-->
-                    <!--                    <input type="text" id="name" class="form-control" placeholder="Your name here...">-->
-                    <div>
-                        <a th:href="@{|#|}">뒤로가기</a>
-                    </div>
-                    <div th:text="'보내는사람(나) :' + ' ' + ${me.profileName}"></div>
-                    <label for="content" th:text="'받는사람 :' + ' ' + ${partner.profileName}">Say something!</label>
-<!--                    <input type="hidden" id="sender" th:value="${me.profileName}">-->
-                    <input type="hidden" id="receiver" th:value="${partner.profileName}">
-                    <input type="text" id="content" class="form-control" placeholder="content">
-                </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
-            </form>
-        </div>
     </div>
+    <div class="container">
+
     <div class="row">
-        <div class="col-md-12">
-            <table id="conversation" class="table table-striped">
-                <thead>
-                <tr>
-                    <th>SaveMessage</th>
-                </tr>
-                </thead>
-                <tbody id="savemessages">
-                    <tr id="Me">
-                        <td></td>
-                    </tr>
-                    <tr id="You" style="text-align:left;">
-                        <td style="color:blue;"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <div class="col-md-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading" >
+                    <span class="glyphicon glyphicon-comment"><p th:text="${me.profileName} + '➜' + ${partner.profileName}"></p>
+</span>
+                </div>
+                <div class="panel-scrollable" >
+                    <div class="panel-body">
+                        <ul id="savemessages" class="chat" style="list-style: none; margin: 0; padding: 0;">
+                            <li class="left clearfix" th:each="message : ${receivedmessageList}"><span class="chat-img pull-left">
+                            <img th:src="@{|/files/${partner.profileImage.fileName}|}" alt="User Avatar" class="img-circle" style="width:50px; height:50px;"/>
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font" th:text="${partner.profileName}"></strong> <small class="pull-right text-muted" th:text="${message.createDate}">
+                                        <span class="glyphicon glyphicon-time"></span></small>
+                                        <tr id="You">
+                                            <td th:text="${message.content}">
+
+                                            </td>
+                                        </tr>
+                                    </div>
+
+<!--                                    <p class="pull-left" >-->
+<!--                                    </p>-->
+                                </div>
+                            </li>
+
+                            <li class="right clearfix" th:each="message : ${messageList}"><span class="chat-img pull-right">
+                            <img th:src="@{|/files/${me.profileImage.fileName}|}" alt="User Avatar" class="img-circle" style="width:50px; height:50px;"/>
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <small class=" text-muted"><span class="glyphicon glyphicon-time" th:text="${message.createDate}"></span></small>
+                                        <strong class="pull-right primary-font" th:text="${me.profileName}"></strong>
+                                        <tr id="Me">
+                                            <td th:text="${message.content}">
+
+                                            </td>
+                                        </tr>
+                                    </div>
+
+<!--                                    <p class="pull-right" >-->
+<!--                                    </p>-->
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="input-group">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <input type="hidden" id="receiver" th:value="${partner.profileName}">
+                                    <input type="text" id="content" class="form-control input-sm" placeholder="content">
+                                    <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
+                                </div>
+
+                            </form>
+
+                    </div>
+
+
+                </div>
+
+<!--                <table id="conversation" class="table table-striped">-->
+
+<!--&lt;!&ndash;                    <tbody id="savemessages">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <tr id="Me">&ndash;&gt;-->
+<!--                            <td></td>-->
+<!--                        </tr>-->
+<!--&lt;!&ndash;                        <tr id="You" style="text-align:left;">&ndash;&gt;-->
+<!--                            <td style="color:blue;"></td>-->
+<!--                        </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--        </div>-->
     </div>
 </div>
 <script>

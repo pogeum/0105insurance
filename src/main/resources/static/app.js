@@ -3,13 +3,13 @@ var stompClient = null;
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-    $("#savemessages").html("");
+//    if (connected) {
+//        $("#conversation").show();
+//    }
+//    else {
+//        $("#conversation").hide();
+//    }
+//    $("#savemessages").html("");
 }
 
 function connect(myprofileName) {
@@ -56,8 +56,8 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
 
 function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
-let reg = /[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\/ ]/gim;
-let myprofileNameReg = myprofileName.replace(reg, "");
+    let reg = /[`~!@#$%^&*()_|+\-=?;:'"<>\{\}\[\]\\\/ ]/gim;
+    let myprofileNameReg = myprofileName.replace(reg, "");
 
     console.log(message.author);
     console.log(myprofileNameReg);
@@ -69,11 +69,11 @@ let myprofileNameReg = myprofileName.replace(reg, "");
     if (message.author === myprofileNameReg) {
         // author가 현재 로그인한 사용자와 같은 경우, Me라는 id를 가진 tr에 출력
         console.log('same');
-        $("#savemessages").append("<tr id='Me'><td style='color: red;'>" + message.content + "</td></tr>");
+        $("#savemessages").append("<tr id='Me' class='pull-right'><td style='color: red; '>" + message.content + "</td></tr>");
     } else {
         // 그 외의 경우의 기본 출력 처리
         console.log('다름');
-        $("#savemessages").append("<tr id='You'><td style='color: blue;'>" + message.content + "</td></tr>");
+        $("#savemessages").append("<tr id='You' class='pull-left'><td style='color: blue; '>" + message.content + "</td></tr>");
     }
 
 }
@@ -84,5 +84,5 @@ $(function () {
     });
 //    $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendContent(); });
+    $( "#btn-chat" ).click(function() { sendContent(); });
 });
