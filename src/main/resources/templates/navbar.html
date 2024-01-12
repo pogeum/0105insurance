@@ -57,7 +57,7 @@
                         <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>
                     </li>
                     <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-                        <a class="nav-link rounded" th:href="@{|/member/managePage|}">매니저</a>
+                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">매니저</a>
                     </li>
                         <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
                         <a class="nav-link rounded" sec:authorize="isAuthenticated()"
