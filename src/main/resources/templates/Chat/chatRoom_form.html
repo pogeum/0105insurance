@@ -18,9 +18,7 @@
                     <h2>채팅 메시지</h2>
                 </div>
                 <div class="d-flex justify-content-center" style="margin-bottom: 30px;">
-                    <div id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
-                        <!-- 메시지는 JavaScript를 사용하여 동적으로 여기에 추가됩니다 -->
-                        <!-- 새로운 메시지가 추가될 때마다 스크롤이 자동으로 아래로 이동합니다 -->
+                    <div th:text="${message}" id="chatMessages" style="width: 500px; height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
                     </div>
                 </div>
                 <div class="container">
@@ -61,6 +59,9 @@
         // WebSocket 연결 시
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
+
+            var username = frame.headers['user-name'];
+
             // 특정 채팅방의 메시지 구독
             stompClient.subscribe('/sub/chat/chatRoom/id/' + id, function (response) {
                 var chat = JSON.parse(response.body);

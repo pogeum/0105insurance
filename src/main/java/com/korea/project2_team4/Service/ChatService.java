@@ -118,6 +118,10 @@ public class ChatService {
 
     }
 
+    public void showChatDate() {
+
+    }
+
     public ChatRoom findChatRoomById(Long id) {
         return chatRoomRepository.findById(id).orElse(null);
     }

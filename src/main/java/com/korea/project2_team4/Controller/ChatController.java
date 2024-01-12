@@ -64,6 +64,9 @@ public class ChatController {
     public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
 
         try {
+
+            chatDTO.setSender(principal.getName());
+
             chatService.saveChatMessage(chatDTO, principal);
             template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatDTO);
         } catch (Exception e) {
