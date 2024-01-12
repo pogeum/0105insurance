@@ -25,6 +25,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // 채팅을 수신(sub) 하고 송신(pub) 하기위한 Controller
 @Controller
@@ -36,6 +37,7 @@ public class ChatController {
 
     private final ChatService chatService;
     private final MemberService memberService;
+
 
 
     @PostMapping("/createRoom")
@@ -61,19 +63,21 @@ public class ChatController {
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
         model.addAttribute("chatRoomId", chatRoomId);
+        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
 
         return "Chat/chatRoom_form";
     }
 
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chat) {
-        log.info("Chat {}", chat);
 
         chat.setMessage(chat.getMessage());
 
         template.convertAndSend("/sub/chat/room?roomId=" + chat.getRoomId(), chat);
 
     }
+
+
 
 
 }

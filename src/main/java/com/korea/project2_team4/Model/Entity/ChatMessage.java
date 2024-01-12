@@ -18,7 +18,7 @@ public class ChatMessage {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", referencedColumnName = "userName")
+    @JoinColumn(name = "sender_id")
     private Member sender;
 
     private LocalDateTime time;

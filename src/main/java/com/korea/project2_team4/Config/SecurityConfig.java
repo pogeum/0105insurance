@@ -30,8 +30,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/member/sendVerificationCode")).permitAll())
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/chat/**")
-                )
+                        .ignoringRequestMatchers("/chat/**"))
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
