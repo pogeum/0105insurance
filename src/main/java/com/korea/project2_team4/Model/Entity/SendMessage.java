@@ -1,9 +1,12 @@
 package com.korea.project2_team4.Model.Entity;
 
 
+import java.time.LocalDateTime;
+
 public class SendMessage {
     private String content;
     private String receiver;
+    private String createDate;
 
 
 
@@ -33,4 +36,11 @@ public class SendMessage {
     }
 
 
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 }

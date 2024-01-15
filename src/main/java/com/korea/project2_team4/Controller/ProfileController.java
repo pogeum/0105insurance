@@ -357,6 +357,8 @@ public class ProfileController {
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+    private final SaveMessageDTOService saveMessageDTOService;
     @GetMapping("/dmTo/{profileName}")
     public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
 
@@ -364,16 +366,26 @@ public class ProfileController {
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
 
-        List<Message> messageList = me.getMyMessages();
-        List<Message> receivedmessageList = me.getReceivedMessages();
+//        List<Message> messageList = me.getMyMessages();
+//        List<Message> receivedmessageList = me.getReceivedMessages();
 
-        dmPageService.setMyDmPage(me,partner);
+
         //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
+
+        DmPage dmPage = dmPageService.getMyDmPage(me,partner); //없으면새로추가함..
+        //dmpage에서 메시지리스트 다 가져온다음, -> 시간순정렬 -> 내가보낸메시지가 오른쪽으로 붙게 세팅해야함.
+        List<SaveMessage> dmPageMessages = dmPage.getSaveMessages();
+
+
+
+        List<SaveMessageDTO> myMessageList = saveMessageDTOService.getMyDMList(me.getProfileName(), dmPage.getId());
+        List<SaveMessageDTO> yourMessageList = saveMessageDTOService.getMyDMList(partner.getProfileName(), dmPage.getId());
 
         model.addAttribute("me", me);
         model.addAttribute("partner", partner);
-        model.addAttribute("messageList", messageList);
-        model.addAttribute("receivedmessageList",receivedmessageList);
+        model.addAttribute("messageList", myMessageList);
+        model.addAttribute("receivedmessageList",yourMessageList);
+        System.out.println(myMessageList.size());
         return "Profile/dmPage";
     }
 
@@ -412,6 +424,7 @@ public class ProfileController {
 
         String content = message.getContent();
         String receiver = message.getReceiver();
+        String sendTime = message.getCreateDate();
 //        String sender = message.getSender();
 
         String author = writer.getProfileName();
@@ -435,11 +448,17 @@ public class ProfileController {
         SaveMessageDTO messageDTO = new SaveMessageDTO();
         messageDTO.setAuthor(saveMessage.getAuthor());
         messageDTO.setContent(saveMessage.getContent());
+        messageDTO.setCreateDate(saveMessage.getCreateDate());
 //        dmPageService.addSaveMessages(dmPage, saveMessage);
 
 
         // 저장된 SaveMessage 엔터티 반환
         return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
+    }
+
+    @GetMapping("/chatting")
+    public String chatting() {
+        return "Profile/sample_chatting";
     }
 
 
