@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class SaveMessageDTO {
-
+    private Long authorId;
     private String author;
     private String receiver;
     private String content;

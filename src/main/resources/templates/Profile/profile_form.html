@@ -1,5 +1,22 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
-<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <style>
+        body, html {
+           height: 100%;
+           margin: 0;
+       }
+
+      body {
+       background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+         background-size: cover;
+         background-attachment: fixed;
+         color: #555;
+        font-family: sans-serif;
+      }
+    </style>
+</head>
+
 <div layout:fragment="content" class="row py-5 px-4">
     <form th:object="${profileForm}" method="post" enctype="multipart/form-data" id="myForm">
 
