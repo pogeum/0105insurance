@@ -78,23 +78,20 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
      // author가 myprofileNameReg와 일치하는지 확인하여 조건에 따라 id가 Me 또는 You인 balloon을 동적으로 생성
      var balloonHTML;
      if (message.author === myprofileNameReg) {
-         // Me인 경우
-         balloonHTML = '<div id="Me" class="balloon" style="position:relative; margin:50px; width:400px; height:50px; background:pink; border-radius:10px;">' +
-             '<div class="balloon-triangle" style="border-top:10px solid pink; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:0px solid transparent; position:absolute; top:50px; left:350px;"></div>' +
-             '<div class="header">' +
-             '<small class="text-muted"><span class="glyphicon glyphicon-time"></span>' + message.createDate + '</small>' +
-             '<span class="pull-right" th:text="${message.content}">' + message.content + '</span>' +
-             '</div>' +
-             '</div>';
+         // 보낸메시지
+         balloonHTML = '<div class="mine messages">' +
+                       '<div class="message last">' +
+                       '<span  th:text="${message.content}">' + message.content + '</span>' +
+                       '</div>' +
+                       '</div>';
+
      } else {
-         // You인 경우
-         balloonHTML = '<div id="You" class="balloon" style="position:relative; margin:50px; width:400px; height:50px; background:beige; border-radius:10px;">' +
-             '<div class="balloon-triangle" style="border-top:10px solid beige; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:0px solid transparent; position:absolute; top:50px; left:50px;"></div>' +
-             '<div class="header">' +
-             '<small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>' + message.createDate + '</small>' +
-             '<span class="pull-left" th:text="${message.content}">' + message.content + '</span>' +
-             '</div>' +
-             '</div>';
+         // 받은메시지
+         balloonHTML = '<div class="yours messages">' +
+                       '<div class="message last">' +
+                       '<span  th:text="${message.content}">' + message.content + '</span>' +
+                       '</div>' +
+                       '</div>';
      }
 
      // 생성된 HTML을 #savemessages에 추가

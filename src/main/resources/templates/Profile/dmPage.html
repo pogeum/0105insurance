@@ -126,119 +126,34 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;">
-    <div class="row">
-        <div class="col-md-6">
-<!--            <form class="form-inline">-->
-<!--                <div class="form-group">-->
-<!--&lt;!&ndash;                    <label for="connect">WebSocket connection:</label>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>&ndash;&gt;-->
-<!--                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </form>-->
-        </div>
-    </div>
+<!--    <div class="row">-->
+<!--        <div class="col-md-6">-->
+<!--        </div>-->
+<!--    </div>-->
     <div class="container">
-        <div class="chat">
-            <div class="mine messages">
-                <div class="message last">
-                    Dude
-                </div>
-            </div>
-            <div class="yours messages">
-                <div class="message">
-                    Hey!
-                </div>
-                <div class="message">
-                    You there?
-                </div>
-                <div class="message last">
-                    Hello, how's it going?
-                </div>
-            </div>
-            <div class="mine messages">
-                <div class="message">
-                    Great thanks!
-                </div>
-                <div class="message last">
-                    How about you?
+        <div id="savemessages" class="chat">
+            <div th:each="message : ${dmPageMessages}">
+                <div th:class="${message.authorId == me.getId} ? 'mine messages' : 'yours messages'">
+                    <div class="message last">
+                        <span th:text="${message.content}"></span>
+                    </div>
                 </div>
             </div>
         </div>
 
-    <div class="row">
-        <div class="col-md-5">
-            <div class="panel panel-primary">
-                <div class="panel-heading" >
-                    <span class="glyphicon glyphicon-comment"><p th:text="${me.profileName} + '➜' + ${partner.profileName}" style="display: inline;"></p>
-</span>
-                </div>
-                <div class="panel-scrollable" >
-                    <div class="panel-body">
-                        <div class="scroll" style="overflow:auto;">
-                            <ul id="savemessages" class="chat" style="list-style: none; margin: 0; padding: 0;">
-                                <li class="left clearfix" th:each="message : ${receivedmessageList}">
-                                    <div id="You" class="balloon" style=" position:relative;
-                                                                 margin: 50px;
-                                                                 width:400px;
-                                                                 height:50px;
-                                                                  background:beige;
-                                                                  border-radius: 10px;">
-                                        <div class="balloon:after" style="
-                                                                    border-top: 10px solid beige;
-                                                                     border-left: 10px solid transparent;
-                                                                     border-right: 10px solid transparent;
-                                                                     border-bottom: 0px solid transparent;
-                                                                        position:absolute;
-                                                                        top:50px;
-                                                                        left:50px;"
-                                        ></div>
-                                        <div class="header">
-                                            <small class="pull-right text-muted" th:text="${message.createDate}">
-                                                <span class="glyphicon glyphicon-time"></span></small>
-                                            <span class='pull-left' style="" th:text="${message.content}"></span>
-                                        </div>
-                                    </div>
-                                </li>
+        <form class="form-inline">
+            <div class="form-group">
+                <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+                <!--                                    <input type="hidden" id="createDate" value="aaa">-->
+                <input type="hidden" id="receiver" th:value="${partner.profileName}">
+                <input type="text" id="content" class="form-control input-sm" placeholder="content">
+                <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
+            </div>
+        </form>
 
-                                <li class="right clearfix" th:each="message : ${messageList}">
-                                    <div id="Me" class="balloon" style=" position:relative;
-                                                                 margin: 50px;
-                                                                 width:400px;
-                                                                 height:50px;
-                                                                  background:pink;
-                                                                  border-radius: 10px;">
-                                        <div class="balloon:after" style="border-top:10px solid pink;
-                                        border-left: 10px solid transparent;
-                                        border-right: 10px solid transparent;
-                                        border-bottom: 0px solid transparent;
-                                        position:absolute;
-                                        top:50px;
-                                        left:350px"></div>
-                                        <div class="header">
-                                            <small class=" text-muted"><span class="glyphicon glyphicon-time" th:text="${message.createDate}"></span></small>
-                                            <span class='pull-right' style="" th:text="${message.content}"></span>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+<!--    <div class="row">-->
+<!--        <div class="col-md-5">-->
 
-                    <div class="panel-footer">
-                        <div class="input-group">
-                            <form class="form-inline">
-                                <div class="form-group">
-                                    <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
-<!--                                    <input type="hidden" id="createDate" value="aaa">-->
-                                    <input type="hidden" id="receiver" th:value="${partner.profileName}">
-                                    <input type="text" id="content" class="form-control input-sm" placeholder="content">
-                                    <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
-                                </div>
-                            </form>
-                    </div>
-                </div>
     </div>
 </div>
 <script>
