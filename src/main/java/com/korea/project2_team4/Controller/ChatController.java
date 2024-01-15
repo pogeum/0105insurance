@@ -3,27 +3,22 @@ package com.korea.project2_team4.Controller;
 import com.korea.project2_team4.Model.Dto.ChatDTO;
 import com.korea.project2_team4.Model.Dto.ChatRoomListResponseDto;
 import com.korea.project2_team4.Model.Entity.ChatRoom;
-import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Service.ChatService;
 import com.korea.project2_team4.Service.MemberService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 // 채팅을 수신(sub) 하고 송신(pub) 하기위한 Controller
 @Controller
@@ -56,18 +51,33 @@ public class ChatController {
     }
 
     @GetMapping("/chatRoom/{id}")
-    public String goChatRoom(Model model, @PathVariable("id") Long id) {
+    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
+        chatService.enterChatRoom(id, principal);
+        ChatRoom chatRoomId = chatService.findChatRoomById(id);
+
+        Map<String, Object> chatData = chatService.showChatDate(id);
+
+        model.addAttribute("chatRoomId", chatRoomId);
+        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
+
+        model.addAttribute("members", chatData.get("members"));
+        model.addAttribute("messages", chatData.get("messages"));
 
         return "Chat/chatRoom_form";
     }
 
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(@Payload ChatDTO chat) {
-        log.info("Chat {}", chat);
+    public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
 
-        chat.setMessage(chat.getMessage());
+        try {
 
-        template.convertAndSend("/sub/chat/room?roomId=" + chat.getRoomId(), chat);
+            chatDTO.setSender(principal.getName());
+
+            chatService.saveChatMessage(chatDTO, principal);
+            template.convertAndSend("/sub/chat/chatRoom/id/" + chatDTO.getRoomId(), chatDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
