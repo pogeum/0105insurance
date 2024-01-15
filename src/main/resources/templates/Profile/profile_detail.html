@@ -1,5 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
 
@@ -134,9 +135,13 @@
                                 <input type="hidden" name="profileId" th:value="${profile.id}">
                                 <button type="submit" class="btn btn-primary">팔로우취소</button>
                             </form>
+
+                            <script>
+
+                            </script>
                             <form th:action="@{|/profile/dmTo/${profile.profileName}|}">
 <!--                                <input type="hidden" name="profileId" th:value="${profile.id}">-->
-                                <button type="submit" class="btn btn-info">DM</button>
+                                <button type="submit" class="btn btn-info" >DM</button>
                             </form>
 
                         </div>
@@ -205,6 +210,7 @@
 <!--        });-->
 <!--    </script>-->
 </div>
+
 <script>
 <!--    function submitForm(petid) {-->
 <!--        var formId = 'petForm' + petid;-->
@@ -220,8 +226,7 @@
             } else {
                 console.error('Form not found:', formId);
             }
-    }
-
+        }
 
 </script>
 

@@ -27,7 +27,17 @@ public class DmPageService {
     }
 
     public DmPage getMyDmPage(Profile me, Profile partner) {
-       return this.dmPageRepository.findByMeAndPartner(me.getId(), partner.getId());
+        if ((!dmPageRepository.existsByMeAndPartner(me, partner)) && (!dmPageRepository.existsByMeAndPartner(partner, me))) {
+            DmPage dmPage = new DmPage();
+            dmPage.setCreateDate(LocalDateTime.now());
+            dmPage.setMe(me);
+            dmPage.setPartner(partner);
+            return this.dmPageRepository.save(dmPage);
+        } else if (dmPageRepository.existsByMeAndPartner(me, partner)){
+            return this.dmPageRepository.findByMeAndPartner(me.getId(), partner.getId());
+        } else {
+            return this.dmPageRepository.findByMeAndPartner(partner.getId(), me.getId());
+        }
     }
 
     public void addSaveMessages(DmPage dmpage, SaveMessage saveMessage) {
