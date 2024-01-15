@@ -80,7 +80,7 @@ public class ChatService {
         return chatRoom;
     }
 
-    public void enterChatRoom(Long roomId, Principal principal) {
+    public void enterChatRoom(Long roomId, String password, Principal principal) {
 
         Member member = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -88,16 +88,21 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 
-        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
 
-        if (!isUserInChatRoom) {
-            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                    .chatroom(chatRoom)
-                    .member(member)
-                    .build();
+            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
 
-            memberChatRoomRepository.save(memberChatRoom);
+            if (!isUserInChatRoom) {
+                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                        .chatroom(chatRoom)
+                        .member(member)
+                        .build();
+
+                memberChatRoomRepository.save(memberChatRoom);
+            }
+        } else {
+            throw new RuntimeException("비밀번호가 틀립니다.");
         }
 
     }
