@@ -50,9 +50,14 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
-    @GetMapping("/chatRoom/{id}")
-    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
-        chatService.enterChatRoom(id, principal);
+    @PostMapping("/chatRoom")
+    public String goChatRoom(Model model,Principal principal, @RequestPart("roomId") Long id, @RequestPart("password") String password) {
+        System.out.println(id);
+        System.out.println(password);
+        if (password != null) {
+            chatService.enterChatRoom(id, password, principal);
+        }
+
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
         Map<String, Object> chatData = chatService.showChatDate(id);
