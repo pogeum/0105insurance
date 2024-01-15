@@ -3,6 +3,107 @@
     <title th:text="${me.profileName} + '➜' + ${partner.profileName}">Hello WebSocket</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="/webjars/jquery/jquery.min.js"></script>
+    <style>
+        body {
+  font-family: helvetica;
+  display: flex ;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat {
+  width: 300px;
+  border: solid 1px #EEE;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.messages {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.yours {
+  align-items: flex-start;
+}
+
+.yours .message {
+  margin-right: 25%;
+  background-color: #eee;
+  position: relative;
+}
+
+.yours .message.last:before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  left: -7px;
+  height: 20px;
+  width: 20px;
+  background: #eee;
+  border-bottom-right-radius: 15px;
+}
+.yours .message.last:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  height: 20px;
+  background: white;
+  border-bottom-right-radius: 10px;
+}
+
+.mine {
+  align-items: flex-end;
+}
+
+.mine .message {
+  color: white;
+  margin-left: 25%;
+  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+.mine .message.last:before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  right: -8px;
+  height: 20px;
+  width: 20px;
+  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  background-attachment: fixed;
+  border-bottom-left-radius: 15px;
+}
+
+.mine .message.last:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  height: 20px;
+  background: white;
+  border-bottom-left-radius: 10px;
+}
+
+    </style>
 </head>
 <body>
 
@@ -12,7 +113,7 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<script src="/app.js"></script>
+<script src="/socket.js"></script>
 
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -27,30 +128,57 @@
     border-radius: 5px;">
     <div class="row">
         <div class="col-md-6">
-            <form class="form-inline">
-                <div class="form-group">
-<!--                    <label for="connect">WebSocket connection:</label>-->
+<!--            <form class="form-inline">-->
+<!--                <div class="form-group">-->
+<!--&lt;!&ndash;                    <label for="connect">WebSocket connection:</label>&ndash;&gt;-->
 
-<!--                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>-->
-                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
-                    </button>
-                </div>
-            </form>
+<!--&lt;!&ndash;                    <button id="connect" class="btn btn-default" type="submit" th:onclick="myConnect('[[${me.profileName}]]')">Connect</button>&ndash;&gt;-->
+<!--                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </form>-->
         </div>
     </div>
     <div class="container">
+        <div class="chat">
+            <div class="mine messages">
+                <div class="message last">
+                    Dude
+                </div>
+            </div>
+            <div class="yours messages">
+                <div class="message">
+                    Hey!
+                </div>
+                <div class="message">
+                    You there?
+                </div>
+                <div class="message last">
+                    Hello, how's it going?
+                </div>
+            </div>
+            <div class="mine messages">
+                <div class="message">
+                    Great thanks!
+                </div>
+                <div class="message last">
+                    How about you?
+                </div>
+            </div>
+        </div>
 
     <div class="row">
         <div class="col-md-5">
             <div class="panel panel-primary">
                 <div class="panel-heading" >
-                    <span class="glyphicon glyphicon-comment"><p th:text="${me.profileName} + '➜' + ${partner.profileName}"></p>
+                    <span class="glyphicon glyphicon-comment"><p th:text="${me.profileName} + '➜' + ${partner.profileName}" style="display: inline;"></p>
 </span>
                 </div>
                 <div class="panel-scrollable" >
                     <div class="panel-body">
-                        <ul id="savemessages" class="chat" style="list-style: none; margin: 0; padding: 0;">
-                            <li class="left clearfix" th:each="message : ${receivedmessageList}">
+                        <div class="scroll" style="overflow:auto;">
+                            <ul id="savemessages" class="chat" style="list-style: none; margin: 0; padding: 0;">
+                                <li class="left clearfix" th:each="message : ${receivedmessageList}">
                                     <div id="You" class="balloon" style=" position:relative;
                                                                  margin: 50px;
                                                                  width:400px;
@@ -65,16 +193,16 @@
                                                                         position:absolute;
                                                                         top:50px;
                                                                         left:50px;"
-                                                                        ></div>
+                                        ></div>
                                         <div class="header">
                                             <small class="pull-right text-muted" th:text="${message.createDate}">
-                                            <span class="glyphicon glyphicon-time"></span></small>
+                                                <span class="glyphicon glyphicon-time"></span></small>
                                             <span class='pull-left' style="" th:text="${message.content}"></span>
                                         </div>
                                     </div>
-                            </li>
+                                </li>
 
-                            <li class="right clearfix" th:each="message : ${messageList}">
+                                <li class="right clearfix" th:each="message : ${messageList}">
                                     <div id="Me" class="balloon" style=" position:relative;
                                                                  margin: 50px;
                                                                  width:400px;
@@ -93,9 +221,9 @@
                                             <span class='pull-right' style="" th:text="${message.content}"></span>
                                         </div>
                                     </div>
-                            </li>
-
-                        </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="panel-footer">
@@ -114,7 +242,7 @@
     </div>
 </div>
 <script>
-    var socket = new SockJS('/aaa');
+    var socket = new SockJS('/ws-stomp');
     stompClient = Stomp.over(socket);
     var myprofileName = '[[${me.profileName}]]' ;
 
@@ -124,7 +252,7 @@
         setConnected(true);
         console.log('Connected: ' + frame);
         console.log(myprofileName);
-        stompClient.subscribe('/topic/messaging', function (messaging) {
+        stompClient.subscribe('/sub/messaging', function (messaging) {
             showMessaging(JSON.parse(messaging.body), myprofileName);
         });
     });

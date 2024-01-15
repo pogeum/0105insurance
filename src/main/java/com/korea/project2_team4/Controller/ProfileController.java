@@ -416,7 +416,7 @@ public class ProfileController {
     private final DmPageRepository dmPageRepository;
 
     @MessageMapping("/hello")
-    @SendTo("/topic/messaging")
+    @SendTo("/sub/messaging")
     public SaveMessageDTO messaging(SendMessage message, Principal principal) throws Exception {
         // 메시지에서 이름 추출
         Member sitemember = this.memberService.getMember(principal.getName());

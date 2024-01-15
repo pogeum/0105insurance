@@ -13,14 +13,14 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/aaa');
+    var socket = new SockJS('/ws-stomp');
     stompClient = Stomp.over(socket);
     console.log(stompClient);
 
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/messaging', function (messaging) {
+        stompClient.subscribe('/sub/messaging', function (messaging) {
             showMessaging(JSON.parse(messaging.body));
         });
     });
@@ -57,7 +57,7 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
 
     // stompClient가 정의되어 있고 연결이 성공적인 경우에만 send 호출
     if (stompClient && stompClient.connected) {
-        stompClient.send("/app/hello", {}, JSON.stringify(message));
+        stompClient.send("/pub/hello", {}, JSON.stringify(message));
     } else {
         console.error('WebSocket connection is not established.');
     }
