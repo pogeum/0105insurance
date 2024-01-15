@@ -11,6 +11,7 @@ import com.korea.project2_team4.Repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     private void init() {
@@ -55,7 +57,7 @@ public class ChatService {
 
 
     // 채팅방 만들 때 관리자와 방 번호, 이름 생성
-    public ChatRoom createChatRoom(String roomName, Principal principal) {
+    public ChatRoom createChatRoom(String roomName, String password, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -63,6 +65,7 @@ public class ChatService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomName(roomName)
                 .admin(admin)
+                .password(passwordEncoder.encode(password))
                 .build();
 
         chatRoomRepository.save(chatRoom);
