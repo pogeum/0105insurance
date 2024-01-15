@@ -79,19 +79,25 @@ function showMessaging(message, myprofileName) { //이게  savemessage인듯
      var balloonHTML;
      if (message.author === myprofileNameReg) {
          // 보낸메시지
-         balloonHTML = '<div class="mine messages">' +
-                       '<div class="message last">' +
-                       '<span  th:text="${message.content}">' + message.content + '</span>' +
-                       '</div>' +
+         balloonHTML =  '<div class="msg right-msg">' +
+                        '<div class="msg-bubble">' +
+
+                         '<div class="msg-text" th:text="${message.content}">' +
+                             message.content +
+                         '</div>' +
+                       '</div>'
                        '</div>';
 
      } else {
          // 받은메시지
-         balloonHTML = '<div class="yours messages">' +
-                       '<div class="message last">' +
-                       '<span  th:text="${message.content}">' + message.content + '</span>' +
-                       '</div>' +
-                       '</div>';
+        balloonHTML =  '<div class="msg left-msg">' +
+                                '<div class="msg-bubble">' +
+
+                                 '<div class="msg-text" th:text="${message.content}">' +
+                                     message.content +
+                                 '</div>' +
+                               '</div>'
+                               '</div>';
      }
 
      // 생성된 HTML을 #savemessages에 추가

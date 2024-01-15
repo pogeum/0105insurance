@@ -337,18 +337,18 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/detail/followers/{profileid}")
-    public String followers(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followers/{profileName}")
+    public String followers(Model model, @PathVariable("profileName") String profileName) {//@RequestParam(value = "profileId")Long profileId
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followerList = followingMapService.getMyfollowers(targetprofile);
 
         model.addAttribute("followerList", followerList);
         return "Profile/followers";
     }
 
-    @GetMapping("/detail/followings/{profileid}")
-    public String followings(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followings/{profileName}")
+    public String followings(Model model, @PathVariable("profileName") String profileName) {
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followingList = followingMapService.getMyfollowings(targetprofile);
 
         model.addAttribute("followingList", followingList);

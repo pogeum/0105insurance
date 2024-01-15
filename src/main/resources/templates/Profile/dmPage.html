@@ -4,105 +4,143 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="/webjars/jquery/jquery.min.js"></script>
     <style>
+       :root {
+          --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          --msger-bg: #fff;
+          --border: 2px solid #ddd;
+          --left-msg-bg: #ececec;
+          --right-msg-bg: #579ffb;
+        }
+
+        html {
+          box-sizing: border-box;
+        }
+
+        *,
+        *:before,
+        *:after {
+          margin-bottom: 3;
+          padding: 0;
+          box-sizing: inherit;
+        }
+
         body {
-  font-family: helvetica;
-  display: flex ;
-  flex-direction: column;
-  align-items: center;
-}
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+          background-attachment: fixed;
+          font-family: Helvetica, sans-serif;
+        }
 
-.chat {
-  width: 300px;
-  border: solid 1px #EEE;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-}
+        .msger {
+          display: flex;
+          flex-flow: column wrap;
+          justify-content: space-between;
+          width: 100%;
+          max-width: 867px;
+          margin: 25px 10px;
+          height: calc(100% - 50px);
+          border: var(--border);
+          border-radius: 5px;
+          background: var(--msger-bg);
+          box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+        }
 
-.messages {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-}
+        .msger-header {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px;
+          border-bottom: var(--border);
+          background: #eee;
+          color: #666;
+        }
 
-.message {
-  border-radius: 20px;
-  padding: 8px 15px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  display: inline-block;
-}
+        .msger-chat {
+          flex: 1;
+          overflow-y: auto;
+          padding: 10px;
+        }
+        .msger-chat::-webkit-scrollbar {
+          width: 6px;
+        }
+        .msger-chat::-webkit-scrollbar-track {
+          background: #ddd;
+        }
+        .msger-chat::-webkit-scrollbar-thumb {
+          background: #bdbdbd;
+        }
+        .msg {
+          display: flex;
+          align-items: flex-end;
+          margin-bottom: 10px;
+        }
+        .msg:last-of-type {
+          margin: 0;
+        }
 
-.yours {
-  align-items: flex-start;
-}
+        .msg-bubble {
+          max-width: 450px;
+          padding: 15px;
+          border-radius: 15px;
+          background: var(--left-msg-bg);
+        }
 
-.yours .message {
-  margin-right: 25%;
-  background-color: #eee;
-  position: relative;
-}
+        .msg-info-name {
+          margin-right: 10px;
+          font-weight: bold;
+        }
+        .msg-info-time {
+          font-size: 0.85em;
+        }
 
-.yours .message.last:before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  bottom: 0;
-  left: -7px;
-  height: 20px;
-  width: 20px;
-  background: #eee;
-  border-bottom-right-radius: 15px;
-}
-.yours .message.last:after {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: -10px;
-  width: 10px;
-  height: 20px;
-  background: white;
-  border-bottom-right-radius: 10px;
-}
+        .left-msg .msg-bubble {
+          border-bottom-left-radius: 0;
+        }
 
-.mine {
-  align-items: flex-end;
-}
+        .right-msg {
+          flex-direction: row-reverse;
+        }
+        .right-msg .msg-bubble {
+          background: var(--right-msg-bg);
+          color: #fff;
+          border-bottom-right-radius: 0;
+        }
 
-.mine .message {
-  color: white;
-  margin-left: 25%;
-  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
-  background-attachment: fixed;
-  position: relative;
-}
 
-.mine .message.last:before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  bottom: 0;
-  right: -8px;
-  height: 20px;
-  width: 20px;
-  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
-  background-attachment: fixed;
-  border-bottom-left-radius: 15px;
-}
+        .msger-inputarea {
+          display: flex;
+          padding: 10px;
+          border-top: var(--border);
+          background: #eee;
+        }
+        .msger-inputarea * {
+          padding: 10px;
+          border: none;
+          border-radius: 3px;
+          font-size: 1em;
+        }
+        .msger-input {
+          flex: 1;
+          background: #ddd;
+        }
+        .msger-send-btn {
+          margin-left: 10px;
+          background: rgb(0, 196, 65);
+          color: #fff;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background 0.23s;
+        }
+        .msger-send-btn:hover {
+          background: rgb(0, 180, 50);
+        }
 
-.mine .message.last:after {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  right: -10px;
-  width: 10px;
-  height: 20px;
-  background: white;
-  border-bottom-left-radius: 10px;
-}
-
+        .msger-chat {
+          background-color: #fcfcfe;
+          );
+        }
     </style>
 </head>
 <body>
@@ -118,44 +156,47 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
-<div id="main-content" class="container" style="max-width: 940px;
-    padding: 2em 3em;
-    margin: 0 auto 20px;
-    background-color: #fff;
-    border: 1px solid #e5e5e5;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;">
-<!--    <div class="row">-->
-<!--        <div class="col-md-6">-->
-<!--        </div>-->
-<!--    </div>-->
-    <div class="container">
-        <div id="savemessages" class="chat">
-            <div th:each="message : ${dmPageMessages}">
-                <div th:class="${message.authorId == me.getId} ? 'mine messages' : 'yours messages'">
-                    <div class="message last">
-                        <span th:text="${message.content}"></span>
-                    </div>
-                </div>
+<div class="container" >
+    <div class="msger">
+        <div class="msger-header">
+            <div class="msger-header-title">
+                <span> <img th:src="@{|/files/${partner.profileImage.fileName}|}" style="width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  background: #ddd;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;"> <div th:text="${partner.profileName}" style="display:inline;"></div>
+                </span>
+
+
+            </div>
+            <div class="msger-header-options">
+                <span><i class="fas fa-cog"></i></span>
             </div>
         </div>
 
-        <form class="form-inline">
-            <div class="form-group">
-                <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
-                <!--                                    <input type="hidden" id="createDate" value="aaa">-->
-                <input type="hidden" id="receiver" th:value="${partner.profileName}">
-                <input type="text" id="content" class="form-control input-sm" placeholder="content">
-                <span class="input-group-btn"> <button id="btn-chat" class="btn btn-default" type="submit">Send</button></span>
+        <div class="msger-chat" id="savemessages" >
+            <div th:each="message : ${dmPageMessages}">
+                <div th:class="${message.authorId == me.getId} ? 'msg right-msg' : 'msg left-msg'">
+                    <div class="msg-bubble">
+
+                        <div class="msg-text" th:text="${message.content}">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
 
-<!--    <div class="row">-->
-<!--        <div class="col-md-5">-->
+        </div>
 
+            <div class="msger-inputarea">
+                <input type="hidden" id="createDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+                <input type="hidden" id="receiver" th:value="${partner.profileName}">
+                <input type="text" id="content" class="msger-input" placeholder="Enter your message...">
+                <button type="submit" id="btn-chat" class="msger-send-btn">✔</button>
+            </div>
     </div>
-</div>
 <script>
     var socket = new SockJS('/ws-stomp');
     stompClient = Stomp.over(socket);
