@@ -34,8 +34,8 @@ public class ChatController {
 
 
     @PostMapping("/createRoom")
-    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName) {
-        ChatRoom chatRoom = chatService.createChatRoom(roomName, principal);
+    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName, @RequestParam("password") String password) {
+        ChatRoom chatRoom = chatService.createChatRoom(roomName, password,principal);
         model.addAttribute("chatRoom", chatRoom);
         return "redirect:/chat/chatRoomList";
     }
@@ -80,8 +80,5 @@ public class ChatController {
         }
 
     }
-
-
-
 
 }

@@ -192,5 +192,16 @@ public class CommentController {
         return "redirect:/report/comments";
     }
 
+    //대댓글 생성 메서드
+    @PostMapping("reply/{id}")
+    public String addReply(@PathVariable("id") Long commentId,
+                           @RequestParam(value = "content") String content, Principal principal) {
+        Comment comment = commentService.getComment(commentId);
+        Member member = this.memberService.getMember(principal.getName());
+        commentService.createCommentReply(commentId,content, member.getProfile());
+
+        return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
+    }
+
 
 }
