@@ -29,11 +29,14 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatroom")
     private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
+    private String password;
+
     @Builder
-    public ChatRoom(Long id, String roomName, Member admin) {
+    public ChatRoom(Long id, String roomName, Member admin, String password) {
         this.id = id;
         this.roomName = roomName;
         this.admin = admin;
+        this.password = password;
     }
     public void changeAdmin(Member admin){
         this.admin = admin;
