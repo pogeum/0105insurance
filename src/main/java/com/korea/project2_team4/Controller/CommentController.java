@@ -35,7 +35,7 @@ public class CommentController {
         Post post = this.postService.getPost(id);
         Member member = this.memberService.getMember(principal.getName());
         commentService.create(post, content, member.getProfile());
-//        Comment comment =
+
 
 
         return "redirect:/post/detail/" + id + "/1";
