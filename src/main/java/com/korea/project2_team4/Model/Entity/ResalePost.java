@@ -38,7 +38,7 @@ public class ResalePost {
     private LocalDateTime modifyDate;
 
     @ManyToMany
-    private Set<Member> wishMembers;
+    private Set<Profile> wishProfiles;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
