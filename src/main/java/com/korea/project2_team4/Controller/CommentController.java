@@ -202,10 +202,10 @@ public class CommentController {
     //대댓글 생성 메서드
     @PostMapping("reply/{id}")
     public String addReply(@PathVariable("id") Long commentId,
-                           @RequestParam(value = "content") String content, Principal principal) {
+                           @RequestParam(value = "commentreply", required = false) String commentreply, Principal principal) {
         Comment comment = commentService.getComment(commentId);
         Member member = this.memberService.getMember(principal.getName());
-        commentService.createCommentReply(commentId,content, member.getProfile());
+        commentService.createCommentReply(commentId,commentreply, member.getProfile());
 
         return "redirect:/post/detail/" + comment.getPost().getId() + "/1";
     }
