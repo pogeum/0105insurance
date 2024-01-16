@@ -30,6 +30,7 @@ public class ChatRoom {
     private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
     private String password;
+
     @Builder
     public ChatRoom(Long id, String roomName, Member admin, String password) {
         this.id = id;

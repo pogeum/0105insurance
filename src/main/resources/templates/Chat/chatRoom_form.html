@@ -9,7 +9,8 @@
 <!--            메인 채팅창-->
             <div class="col">
                 <div class="d-flex justify-content-center">
-                    <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:text="${chatRoomName}"></span></h2>
+                    <h2 class="pt-2 mt-5 mb-5">채팅방: <span th:text="${chatRoomName}"></span>
+                        <span style="display: none" th:text="${chatRoomId}" id="chatRoomId" name="chatRoomId"></span></h2>
                 </div>
                 <div class="d-flex flex-column align-items-end">
                     <!-- 채팅방 ID와 참여자 수 표시 -->
@@ -40,7 +41,7 @@
             <div class="col">
                 <div class="d-flex flex-column mt-5">
                     <div class="d-flex justify-content-center">
-                        <form th:action="@{|/chat/deleteChatRoom/${id}|}" method="post">
+                        <form th:action="@{|/chat/deleteChatRoom/${chatRoomId}|}" method="post">
                             <button class="btn btn-danger" type="submit" onsubmit="return confirmDeleteChatRoom()">채팅방 삭제</button>
                         </form>
                     </div>
@@ -63,6 +64,8 @@
         const url = new URL(location.href).searchParams;
         const id = location.pathname.split("/").pop();
 
+        const chatRoomId = document.getElementById('chatRoomId').textContent;
+
         // WebSocket 연결
         var socket = new SockJS('/ws-stomp');
         var stompClient = Stomp.over(socket);
@@ -75,9 +78,8 @@
             console.log('Connected: ' + frame);
 
             var username = frame.headers['user-name'];
-
             // 특정 채팅방의 메시지 구독
-            stompClient.subscribe('/sub/chat/chatRoom/id/' + id, function (response) {
+            stompClient.subscribe('/sub/chat/chatRoom/id/' + chatRoomId, function (response) {
                 var chat = JSON.parse(response.body);
                 console.log(chat.message);
                 addMessageToChat(chat.sender, chat.message, chat.time);
@@ -90,12 +92,11 @@
 
             var messageInput = document.getElementById('message');
             var message = messageInput.value.trim();
-
             if (message !== '') {
                 // 메시지 전송
                 stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
                     type: 'TALK',
-                    roomId: id,
+                    roomId: chatRoomId,
                     sender: 'username',
                     message: message,
                     time: new Date().toLocaleTimeString()

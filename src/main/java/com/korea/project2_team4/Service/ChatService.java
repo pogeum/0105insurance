@@ -40,7 +40,10 @@ public class ChatService {
 
     // 전체 채팅방 조회
     // 채팅방 생성 순서를 최근 순으로 반환
-    public List<ChatRoomListResponseDto> findAllRoom() {
+    public List<ChatRoomListResponseDto> findAllRoom(Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
         List<ChatRoomListResponseDto> chatRooms = new ArrayList<>();
 
         chatRoomRepository.findAll().forEach(chatRoom -> {
@@ -48,6 +51,8 @@ public class ChatService {
                     .id(chatRoom.getId())
                     .roomName(chatRoom.getRoomName())
                     .adminName(chatRoom.getAdmin().getUserName())
+                    .memberCount(chatRoom.getMemberChatRooms().size())
+                    .inChatRoom(memberChatRoomRepository.findByChatroomAndMember(chatRoom, member).isPresent())
                     .build());
         });
         Collections.reverse(chatRooms);
@@ -79,30 +84,8 @@ public class ChatService {
         return chatRoom;
     }
 
-    public void enterChatRoom(Long roomId, Principal principal) {
-
-        Member member = memberRepository.findByUserName(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-
-
-        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
-
-        if (!isUserInChatRoom) {
-            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                    .chatroom(chatRoom)
-                    .member(member)
-                    .build();
-
-            memberChatRoomRepository.save(memberChatRoom);
-        }
-
-    }
-
-//    public void enterChatRoom(Long roomId, String password, Principal principal) {
+// 비밀번호 설정 전 코드
+//    public void enterChatRoom(Long roomId, Principal principal) {
 //
 //        Member member = memberRepository.findByUserName(principal.getName())
 //                .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -110,24 +93,47 @@ public class ChatService {
 //        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
 //                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 //
-//        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
 //
-//            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-//                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+//        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+//                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
 //
-//            if (!isUserInChatRoom) {
-//                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-//                        .chatroom(chatRoom)
-//                        .member(member)
-//                        .build();
+//        if (!isUserInChatRoom) {
+//            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+//                    .chatroom(chatRoom)
+//                    .member(member)
+//                    .build();
 //
-//                memberChatRoomRepository.save(memberChatRoom);
-//            }
-//        } else {
-//            throw new RuntimeException("비밀번호가 틀립니다.");
+//            memberChatRoomRepository.save(memberChatRoom);
 //        }
 //
 //    }
+
+    public void enterChatRoom(Long roomId, String password, Principal principal) {
+
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+
+        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
+
+            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+
+            if (!isUserInChatRoom) {
+                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                        .chatroom(chatRoom)
+                        .member(member)
+                        .build();
+
+                memberChatRoomRepository.save(memberChatRoom);
+            }
+        } else {
+            throw new RuntimeException("비밀번호가 틀립니다.");
+        }
+
+    }
 
     @Transactional
     public void saveChatMessage(ChatDTO chatDTO, Principal principal) {
