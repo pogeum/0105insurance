@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <br>
-                    <!--채팅방 입장-->
+                    <!--채팅방 입장 비밀번호 설정 전-->
 <!--                    <div>-->
 <!--                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;"-->
 <!--                             th:each="room : ${list}">-->
@@ -62,13 +62,16 @@
 <!--                            </div>-->
 <!--                        </div>-->
 <!--                    </div>-->
+
+                                                    <!--채팅 모달-->
                     <div>
-                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;"
+                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 200px;"
                              th:each="room : ${list}">
-                            <div class="card-body" th:attr="onclick='openEnterChatRoomModal(\'' + ${room.id} + '\')'">
+                            <div class="card-body" th:attr="onclick='openEnterChatRoomModal(\'' + ${room.id} + '\', \'' + ${room.inChatRoom} + '\')'">
                                 <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
                                 <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>
-                                <div class="d-flex justify-content-end">인원 수 : <span></span></div>
+                                <div class="mb-3">참석 여부  : <span th:text="${room.inChatRoom}"></span></div>
+                                <div class="d-flex justify-content-end">인원 수 : <span th:text="${room.memberCount}"></span><span></span></div>
                             </div>
                         </div>
                     </div>
@@ -84,8 +87,9 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form th:action="@{|/chat/chatRoom|}" method="post" >
-                                        <input type="hidden" name="roomId" id="roomIdInput" >
+                                    <form th:action="@{|/chat/chatRoom|}" method="post" id="enterChatRoomForm">
+                                        <input type="hidden" name="roomId" id="roomIdInput">
+                                        <input type="hidden" name="inChat" id="inChat">
                                         <div>
                                             <label for="enterChatRoomPassword"></label>
                                             <input type="password" class="form-control" name="password" id="enterChatRoomPassword"
@@ -129,11 +133,16 @@
         function openCreateChatRoomModal() {
             $('#createChatRoomModal').modal('show');
         }
-        function openEnterChatRoomModal(roomId) {
-<!--            여기가 roomid를 모달의 roomidinput에 넣어주는 거 -->
+        function openEnterChatRoomModal(roomId, inChatRoom) {
+            $('#inChat').val(inChatRoom);
             $('#roomIdInput').val(roomId);
-
-            $('#enterChatRoomModal').modal('show');
+            if (inChatRoom === "true") {
+                var enterChatRoomForm = document.getElementById('enterChatRoomForm');
+                enterChatRoomForm.submit();
+            }
+            else {
+                $('#enterChatRoomModal').modal('show');
+            }
         }
         function enterChatRoom() {
             return confirm("채팅방을 입장하시겠습니까?");
