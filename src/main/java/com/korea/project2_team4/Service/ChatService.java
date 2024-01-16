@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class ChatService {
     private Map<String, ChatRoom> chatRoomMap;
     private final MemberService memberService;
-    private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
@@ -56,7 +55,7 @@ public class ChatService {
     }
 
 
-    // 채팅방 만들 때 관리자와 방 번호, 이름 생성
+    // 채팅방 만들 때 관리자와 방 번호, 이름 생성, 비빌번호 설정
     public ChatRoom createChatRoom(String roomName, String password, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
@@ -80,7 +79,7 @@ public class ChatService {
         return chatRoom;
     }
 
-    public void enterChatRoom(Long roomId, String password, Principal principal) {
+    public void enterChatRoom(Long roomId, Principal principal) {
 
         Member member = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -88,24 +87,47 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 
-        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
 
-            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
 
-            if (!isUserInChatRoom) {
-                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                        .chatroom(chatRoom)
-                        .member(member)
-                        .build();
+        if (!isUserInChatRoom) {
+            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                    .chatroom(chatRoom)
+                    .member(member)
+                    .build();
 
-                memberChatRoomRepository.save(memberChatRoom);
-            }
-        } else {
-            throw new RuntimeException("비밀번호가 틀립니다.");
+            memberChatRoomRepository.save(memberChatRoom);
         }
 
     }
+
+//    public void enterChatRoom(Long roomId, String password, Principal principal) {
+//
+//        Member member = memberRepository.findByUserName(principal.getName())
+//                .orElseThrow(() -> new RuntimeException("Member not found"));
+//
+//        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+//                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+//
+//        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
+//
+//            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+//                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+//
+//            if (!isUserInChatRoom) {
+//                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+//                        .chatroom(chatRoom)
+//                        .member(member)
+//                        .build();
+//
+//                memberChatRoomRepository.save(memberChatRoom);
+//            }
+//        } else {
+//            throw new RuntimeException("비밀번호가 틀립니다.");
+//        }
+//
+//    }
 
     @Transactional
     public void saveChatMessage(ChatDTO chatDTO, Principal principal) {
@@ -149,5 +171,9 @@ public class ChatService {
 
     public ChatRoom findChatRoomById(Long id) {
         return chatRoomRepository.findById(id).orElse(null);
+    }
+
+    public void deleteChatRoom(Long id) {
+        chatRoomRepository.deleteById(id);
     }
 }

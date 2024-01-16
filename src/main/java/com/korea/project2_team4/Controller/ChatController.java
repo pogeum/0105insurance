@@ -50,14 +50,10 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
-    @PostMapping("/chatRoom")
-    public String goChatRoom(Model model,Principal principal, @RequestPart("roomId") Long id, @RequestPart("password") String password) {
-        System.out.println(id);
-        System.out.println(password);
-        if (password != null) {
-            chatService.enterChatRoom(id, password, principal);
-        }
+    @GetMapping("/chatRoom/{id}")
+    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
 
+        chatService.enterChatRoom(id, principal);
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
         Map<String, Object> chatData = chatService.showChatDate(id);
@@ -70,6 +66,28 @@ public class ChatController {
 
         return "Chat/chatRoom_form";
     }
+
+
+//    @PostMapping("/chatRoom/{id}")
+//    public String goChatRoom(Model model,Principal principal, @RequestParam("roomId") Long id, @RequestParam("password") String password) {
+//        System.out.println("Received roomId: " + id);
+//
+//        if (password != null) {
+//            chatService.enterChatRoom(id, password, principal);
+//        }
+//
+//        ChatRoom chatRoomId = chatService.findChatRoomById(id);
+//
+//        Map<String, Object> chatData = chatService.showChatDate(id);
+//
+//        model.addAttribute("chatRoomId", chatRoomId);
+//        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
+//
+//        model.addAttribute("members", chatData.get("members"));
+//        model.addAttribute("messages", chatData.get("messages"));
+//
+//        return "Chat/chatRoom_form";
+//    }
 
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
@@ -84,6 +102,12 @@ public class ChatController {
             e.printStackTrace();
         }
 
+    }
+
+    @PostMapping("/deleteChatRoom/{id}")
+    public String deleteChatRoom(@PathVariable Long id) {
+        chatService.deleteChatRoom(id);
+        return "redirect:/chat/chatRoomList";
     }
 
 }

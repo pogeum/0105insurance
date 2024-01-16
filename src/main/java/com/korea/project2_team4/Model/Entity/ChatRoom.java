@@ -26,11 +26,10 @@ public class ChatRoom {
     @ManyToOne
     private Member admin; // 관리자
 
-    @OneToMany(mappedBy = "chatroom")
+    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.REMOVE)
     private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
     private String password;
-
     @Builder
     public ChatRoom(Long id, String roomName, Member admin, String password) {
         this.id = id;
