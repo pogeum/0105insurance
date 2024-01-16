@@ -34,6 +34,8 @@ public class Profile {
 
     private LocalDateTime modifyDate;
 
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.REMOVE )
+    private List<ResalePost> resalePostList;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE )
     private List<Pet> petList;
