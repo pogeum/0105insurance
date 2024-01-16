@@ -16,20 +16,8 @@ import java.util.List;
 public class DmPageService {
     private final DmPageRepository dmPageRepository;
 
-    public void setMyDmPage(Profile me, Profile partner){
-        if (!dmPageRepository.existsByMeAndPartner(me, partner)) {
-            DmPage dmPage = new DmPage();
-            dmPage.setCreateDate(LocalDateTime.now());
-            dmPage.setMe(me);
-            dmPage.setPartner(partner);
-            this.dmPageRepository.save(dmPage);
-        } else {
-            System.out.println("이미존재하는dm창입니다.");
-        }
-    }
-
     public DmPage getMyDmPage(Profile me, Profile partner) {
-        if ((!dmPageRepository.existsByMeAndPartner(me, partner)) && (!dmPageRepository.existsByMeAndPartner(partner, me))) {
+        if ((!dmPageRepository.existsByMeAndPartner(me, partner)) && (!dmPageRepository.existsByMeAndPartner(partner, me)) && (me.getId() != partner.getId())) {
             DmPage dmPage = new DmPage();
             dmPage.setCreateDate(LocalDateTime.now());
             dmPage.setMe(me);
@@ -42,8 +30,23 @@ public class DmPageService {
         }
     }
 
-    public void addSaveMessages(DmPage dmpage, SaveMessage saveMessage) {
-        this.dmPageRepository.findById(dmpage.getId()).get().getSaveMessages().add(saveMessage);
+    public List<DmPage> getMyDmPageList(Profile me) {
+        List<DmPage> list = this.dmPageRepository.findAllMyDMPageList(me.getId());
+        Profile temp = new Profile();
+        for (DmPage d : list ) {
+            if (d.getPartner().getId() == me.getId()) {
+
+                temp = d.getMe();
+                d.setPartner(temp);
+                d.setMe(me);
+
+            }
+        }
+
+        return list;
     }
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.korea.project2_team4.Service;
 
 
+import com.korea.project2_team4.Config.PrincipalDetails;
 import com.korea.project2_team4.Config.UserRole;
 import com.korea.project2_team4.Model.Entity.Member;
 import com.korea.project2_team4.Repository.MemberRepository;
@@ -61,6 +62,7 @@ public class MemberSecurityService implements UserDetailsService {
         else {
             authorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));
         }
-        return new User(member.getUserName(), member.getPassword(), authorities);
+//        return new User(member.getUserName(), member.getPassword(), authorities);
+        return new PrincipalDetails(member);
     }
 }

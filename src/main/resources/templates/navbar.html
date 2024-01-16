@@ -25,13 +25,13 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        기능추가
+                        중고거래
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{|#|}">1</a></li>
-                        <li><a class="dropdown-item" th:href="@{|/#|}">2</a></li>
+                        <li><a class="dropdown-item" th:href="@{|#|}">팔아요</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li><a class="dropdown-item" href="#">내 마켓 보기</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -76,11 +76,13 @@
                                     <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <a class="nav-link rounded" th:href="@{/profile/my}">내 프로필</a>
+                                        <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>
                                         <li><hr class="dropdown-divider"></li>
                                         <!--each 루프돌려서 펫 드롭다운리스트 생성-->
-                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫1</a></li>
-                                        <li><a class="dropdown-item" th:href="@{|/#|}">펫2</a></li>
+                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>
+                                            <div id="alarm" style="display:inline;">🔔</div>
+                                        </li>
+<!--                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>-->
                                     </ul>
                                 </li>
                             </ul>

@@ -2,18 +2,6 @@
 <head>
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-
-       body {
-background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
-          background-size: cover;
-          background-attachment: fixed;
-          color: #555;
-         font-family: sans-serif;
-       }
         .transparent-button {
             background-color: rgba(0, 0, 0, 0); /* 빨간색 배경색, 투명도 0.5 (50%) */
             border: none; /* 기본 테두리 제거 (선택적) */
@@ -70,7 +58,7 @@ background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
 <!--                            기본이미지로 변경하는 폼-->
                             <form th:action="@{|/profile/deleteProfileImage|}" method="post" th:unless="${'no_img.jpg' == profile.profileImage.fileName}">
                                 <input type="hidden" name="profileid" th:value="${profile.id}">
-                                <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2" style="text-decoration:none; color:white;">✕</button>
+                                <button th:if="${siteUser == profile.member}" type="submit" class="btn-gradient-2">✕</button>
                             </form>
 <!--                            기본이미지로 변경하는 폼-->
                         </div>
@@ -78,7 +66,7 @@ background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
 
                     <div class="media-body mb-5 ">
                         <span>
-                            <a class="btn-gradient-2" th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" style="font-size:1em; text-decoration:none; color:inherit;  padding: 0rem 0.2rem;">✎</a>
+                            <a th:if="${siteUser == profile.member}" sec:authorize="isAuthenticated()" th:href="@{|/profile/update|}" class="btn-gradient-2">✎</a>
                         <h4 class="mt-0 mb-0" th:text="${profile.profileName}" style="color:black;"></h4>
                         </span>
 
