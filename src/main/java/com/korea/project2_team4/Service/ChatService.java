@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class ChatService {
     private Map<String, ChatRoom> chatRoomMap;
     private final MemberService memberService;
-    private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
@@ -41,7 +40,10 @@ public class ChatService {
 
     // 전체 채팅방 조회
     // 채팅방 생성 순서를 최근 순으로 반환
-    public List<ChatRoomListResponseDto> findAllRoom() {
+    public List<ChatRoomListResponseDto> findAllRoom(Principal principal) {
+        Member member = memberRepository.findByUserName(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
         List<ChatRoomListResponseDto> chatRooms = new ArrayList<>();
 
         chatRoomRepository.findAll().forEach(chatRoom -> {
@@ -49,6 +51,8 @@ public class ChatService {
                     .id(chatRoom.getId())
                     .roomName(chatRoom.getRoomName())
                     .adminName(chatRoom.getAdmin().getUserName())
+                    .memberCount(chatRoom.getMemberChatRooms().size())
+                    .inChatRoom(memberChatRoomRepository.findByChatroomAndMember(chatRoom, member).isPresent())
                     .build());
         });
         Collections.reverse(chatRooms);
@@ -56,7 +60,7 @@ public class ChatService {
     }
 
 
-    // 채팅방 만들 때 관리자와 방 번호, 이름 생성
+    // 채팅방 만들 때 관리자와 방 번호, 이름 생성, 비빌번호 설정
     public ChatRoom createChatRoom(String roomName, String password, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
@@ -79,6 +83,30 @@ public class ChatService {
 
         return chatRoom;
     }
+
+// 비밀번호 설정 전 코드
+//    public void enterChatRoom(Long roomId, Principal principal) {
+//
+//        Member member = memberRepository.findByUserName(principal.getName())
+//                .orElseThrow(() -> new RuntimeException("Member not found"));
+//
+//        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+//                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+//
+//
+//        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+//                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+//
+//        if (!isUserInChatRoom) {
+//            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+//                    .chatroom(chatRoom)
+//                    .member(member)
+//                    .build();
+//
+//            memberChatRoomRepository.save(memberChatRoom);
+//        }
+//
+//    }
 
     public void enterChatRoom(Long roomId, String password, Principal principal) {
 
@@ -149,5 +177,9 @@ public class ChatService {
 
     public ChatRoom findChatRoomById(Long id) {
         return chatRoomRepository.findById(id).orElse(null);
+    }
+
+    public void deleteChatRoom(Long id) {
+        chatRoomRepository.deleteById(id);
     }
 }

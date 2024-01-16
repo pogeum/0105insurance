@@ -23,7 +23,7 @@ public class MemberChatRoom {
     @ManyToOne
     private ChatRoom chatroom;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder

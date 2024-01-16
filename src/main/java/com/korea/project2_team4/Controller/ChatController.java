@@ -41,8 +41,8 @@ public class ChatController {
     }
 
     @GetMapping("/chatRoomList")
-    public String showChatRoomList(Model model) {
-        List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom();
+    public String showChatRoomList(Model model, Principal principal) {
+        List<ChatRoomListResponseDto> chatRooms = chatService.findAllRoom(principal);
 
         model.addAttribute("list", chatRooms);
         log.info("SHOW ALL ChatList{}", chatRooms);
@@ -50,11 +50,32 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
+// 비밀번호 설정 전 코드
+//    @GetMapping("/chatRoom/{id}")
+//    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
+//
+//        chatService.enterChatRoom(id, principal);
+//        ChatRoom chatRoomId = chatService.findChatRoomById(id);
+//
+//        Map<String, Object> chatData = chatService.showChatDate(id);
+//
+//        model.addAttribute("chatRoomId", chatRoomId);
+//        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
+//
+//        model.addAttribute("members", chatData.get("members"));
+//        model.addAttribute("messages", chatData.get("messages"));
+//
+//        return "Chat/chatRoom_form";
+//    }
+
+
     @PostMapping("/chatRoom")
-    public String goChatRoom(Model model,Principal principal, @RequestPart("roomId") Long id, @RequestPart("password") String password) {
-        System.out.println(id);
-        System.out.println(password);
-        if (password != null) {
+    public String goChatRoom(Model model,Principal principal, @RequestParam("roomId") Long id,
+                             @RequestParam(value = "password", required = false) String password,
+                             @RequestParam(value = "inChat") Boolean inChat) {
+        System.out.println("Received roomId: " + id);
+
+        if (!inChat) {
             chatService.enterChatRoom(id, password, principal);
         }
 
@@ -62,7 +83,7 @@ public class ChatController {
 
         Map<String, Object> chatData = chatService.showChatDate(id);
 
-        model.addAttribute("chatRoomId", chatRoomId);
+        model.addAttribute("chatRoomId", id);
         model.addAttribute("chatRoomName", chatRoomId.getRoomName());
 
         model.addAttribute("members", chatData.get("members"));
@@ -84,6 +105,12 @@ public class ChatController {
             e.printStackTrace();
         }
 
+    }
+
+    @PostMapping("/deleteChatRoom/{id}")
+    public String deleteChatRoom(@PathVariable Long id) {
+        chatService.deleteChatRoom(id);
+        return "redirect:/chat/chatRoomList";
     }
 
 }
