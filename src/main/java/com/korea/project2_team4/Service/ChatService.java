@@ -84,29 +84,6 @@ public class ChatService {
         return chatRoom;
     }
 
-// 비밀번호 설정 전 코드
-//    public void enterChatRoom(Long roomId, Principal principal) {
-//
-//        Member member = memberRepository.findByUserName(principal.getName())
-//                .orElseThrow(() -> new RuntimeException("Member not found"));
-//
-//        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-//                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-//
-//
-//        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-//                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
-//
-//        if (!isUserInChatRoom) {
-//            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-//                    .chatroom(chatRoom)
-//                    .member(member)
-//                    .build();
-//
-//            memberChatRoomRepository.save(memberChatRoom);
-//        }
-//
-//    }
 
     public void enterChatRoom(Long roomId, String password, Principal principal) {
 
