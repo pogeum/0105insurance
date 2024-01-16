@@ -1,11 +1,28 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
-<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<head>
+    <style>
+        body, html {
+           height: 100%;
+           margin: 0;
+       }
+
+      body {
+background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+         background-size: cover;
+         background-attachment: fixed;
+         color: #555;
+        font-family: sans-serif;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+</head>
+
 <div layout:fragment="content" class="row py-5 px-4">
     <div class="col-xl-6 col-md-8 col-sm-10 mx-auto">
 
         <!-- Profile widget -->
         <div class="bg-white shadow rounded overflow-hidden">
-            <div class="px-4 pt-0 pb-4 bg-secondary" >
+            <div class="px-4 pt-0 pb-4" style="background-image: linear-gradient(to top, #d9ded8 0%,  #ebc0fd 100%);">
                 <div class="media align-items-end profile-header">
                     <div class="profile mr-3">
                         <div class="avatar" style="width:30px, height:30px;">
@@ -130,6 +147,9 @@
                             <form th:action="@{|/profile/unfollow|}" method="post">
                                 <input type="hidden" name="profileId" th:value="${profile.id}">
                                 <button type="submit" class="btn btn-primary">팔로우취소</button>
+                            </form>
+                            <form th:action="@{|/profile/dmTo/${profile.profileName}|}">
+                                <button type="submit" class="btn btn-info" >DM</button>
                             </form>
 
                         </div>

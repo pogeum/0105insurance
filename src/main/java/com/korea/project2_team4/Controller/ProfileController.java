@@ -337,18 +337,18 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/detail/followers/{profileid}")
-    public String followers(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followers/{profileName}")
+    public String followers(Model model, @PathVariable("profileName") String profileName) {//@RequestParam(value = "profileId")Long profileId
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followerList = followingMapService.getMyfollowers(targetprofile);
 
         model.addAttribute("followerList", followerList);
         return "Profile/followers";
     }
 
-    @GetMapping("/detail/followings/{profileid}")
-    public String followings(Model model, @PathVariable("profileid") Long profileid) {//@RequestParam(value = "profileId")Long profileId
-        Profile targetprofile = profileService.getProfileById(profileid);
+    @GetMapping("/detail/followings/{profileName}")
+    public String followings(Model model, @PathVariable("profileName") String profileName) {
+        Profile targetprofile = profileService.getProfileByName(profileName);
         List<Profile> followingList = followingMapService.getMyfollowings(targetprofile);
 
         model.addAttribute("followingList", followingList);
@@ -357,6 +357,8 @@ public class ProfileController {
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 1:1 디엠 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+    private final SaveMessageDTOService saveMessageDTOService;
     @GetMapping("/dmTo/{profileName}")
     public String dmPage(Principal principal, Model model,@PathVariable("profileName") String profileName) {
 
@@ -364,16 +366,13 @@ public class ProfileController {
         Profile partner = profileService.getProfileByName(profileName);
         Profile me = sitemember.getProfile();
 
-        List<Message> messageList = me.getMyMessages();
-        List<Message> receivedmessageList = me.getReceivedMessages();
 
-        dmPageService.setMyDmPage(me,partner);
-        //위에 두개 메시지 리스트 붙여서 재조합해서, 시간순으로 정렬해서 리스트 새로 만들기
+        DmPage dmPage = dmPageService.getMyDmPage(me,partner); //없으면새로추가함..
+        List<SaveMessageDTO> dmPageMessages = saveMessageDTOService.getDmPageMessages(dmPage.getId());
 
         model.addAttribute("me", me);
         model.addAttribute("partner", partner);
-        model.addAttribute("messageList", messageList);
-        model.addAttribute("receivedmessageList",receivedmessageList);
+        model.addAttribute("dmPageMessages",dmPageMessages);
         return "Profile/dmPage";
     }
 
@@ -404,7 +403,7 @@ public class ProfileController {
     private final DmPageRepository dmPageRepository;
 
     @MessageMapping("/hello")
-    @SendTo("/topic/messaging")
+    @SendTo("/sub/messaging")
     public SaveMessageDTO messaging(SendMessage message, Principal principal) throws Exception {
         // 메시지에서 이름 추출
         Member sitemember = this.memberService.getMember(principal.getName());
@@ -412,6 +411,7 @@ public class ProfileController {
 
         String content = message.getContent();
         String receiver = message.getReceiver();
+        String sendTime = message.getCreateDate();
 //        String sender = message.getSender();
 
         String author = writer.getProfileName();
@@ -432,14 +432,23 @@ public class ProfileController {
         SaveMessage saveMessage = new SaveMessage(HtmlUtils.htmlEscape(content), author, receiver, timenow, dmPage); //
         saveMessageRepository.save(saveMessage);
 
+        Profile profile = profileService.getProfileByName(saveMessage.getAuthor());
+
         SaveMessageDTO messageDTO = new SaveMessageDTO();
+        messageDTO.setAuthorId(profile.getId());
         messageDTO.setAuthor(saveMessage.getAuthor());
         messageDTO.setContent(saveMessage.getContent());
+        messageDTO.setCreateDate(saveMessage.getCreateDate());
 //        dmPageService.addSaveMessages(dmPage, saveMessage);
 
 
         // 저장된 SaveMessage 엔터티 반환
         return messageDTO; //화면 출력하는거 JSON으로전달해서 ?
+    }
+
+    @GetMapping("/chatting")
+    public String chatting() {
+        return "Profile/sample_chatting";
     }
 
 

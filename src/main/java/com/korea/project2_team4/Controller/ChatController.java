@@ -34,8 +34,8 @@ public class ChatController {
 
 
     @PostMapping("/createRoom")
-    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName) {
-        ChatRoom chatRoom = chatService.createChatRoom(roomName, principal);
+    public String createRoom(Model model, Principal principal, @RequestParam("roomName") String roomName, @RequestParam("password") String password) {
+        ChatRoom chatRoom = chatService.createChatRoom(roomName, password,principal);
         model.addAttribute("chatRoom", chatRoom);
         return "redirect:/chat/chatRoomList";
     }
@@ -50,9 +50,14 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
-    @GetMapping("/chatRoom/{id}")
-    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
-        chatService.enterChatRoom(id, principal);
+    @PostMapping("/chatRoom")
+    public String goChatRoom(Model model,Principal principal, @RequestPart("roomId") Long id, @RequestPart("password") String password) {
+        System.out.println(id);
+        System.out.println(password);
+        if (password != null) {
+            chatService.enterChatRoom(id, password, principal);
+        }
+
         ChatRoom chatRoomId = chatService.findChatRoomById(id);
 
         Map<String, Object> chatData = chatService.showChatDate(id);
@@ -80,8 +85,5 @@ public class ChatController {
         }
 
     }
-
-
-
 
 }

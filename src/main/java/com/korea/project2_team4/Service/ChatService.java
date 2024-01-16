@@ -11,6 +11,7 @@ import com.korea.project2_team4.Repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     private void init() {
@@ -55,7 +57,7 @@ public class ChatService {
 
 
     // 채팅방 만들 때 관리자와 방 번호, 이름 생성
-    public ChatRoom createChatRoom(String roomName, Principal principal) {
+    public ChatRoom createChatRoom(String roomName, String password, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -63,6 +65,7 @@ public class ChatService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomName(roomName)
                 .admin(admin)
+                .password(passwordEncoder.encode(password))
                 .build();
 
         chatRoomRepository.save(chatRoom);
@@ -77,7 +80,7 @@ public class ChatService {
         return chatRoom;
     }
 
-    public void enterChatRoom(Long roomId, Principal principal) {
+    public void enterChatRoom(Long roomId, String password, Principal principal) {
 
         Member member = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -85,16 +88,21 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 
-        boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
-                .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
+        if (passwordEncoder.matches(password, chatRoom.getPassword())) {
 
-        if (!isUserInChatRoom) {
-            MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                    .chatroom(chatRoom)
-                    .member(member)
-                    .build();
+            boolean isUserInChatRoom = chatRoom.getMemberChatRooms().stream()
+                    .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
 
-            memberChatRoomRepository.save(memberChatRoom);
+            if (!isUserInChatRoom) {
+                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                        .chatroom(chatRoom)
+                        .member(member)
+                        .build();
+
+                memberChatRoomRepository.save(memberChatRoom);
+            }
+        } else {
+            throw new RuntimeException("비밀번호가 틀립니다.");
         }
 
     }
