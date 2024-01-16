@@ -58,6 +58,7 @@ public class MemberService {
         member.setRealName(memberCreateForm.getRealName());
         member.setNickName(memberCreateForm.getNickName());
         member.setPhoneNum(memberCreateForm.getPhoneNum());
+        member.setSubscribed(false);
 
         memberRepository.save(member);
         member.setProfile(profileService.setDefaultProfile(member));
@@ -281,13 +282,13 @@ public class MemberService {
         session.setAttribute("expectedAuthenticationCode",numStr);
 
         DefaultMessageService messageService =  NurigoApp.INSTANCE.initialize("NCSBOX6VGDQKOFZ1", "Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV", "https://api.coolsms.co.kr");
-// Message 패키지가 중복될 경우 net.nurigo.sdk.message.model.Message로 치환하여 주세요
+        // Message 패키지가 중복될 경우 net.nurigo.sdk.message.model.Message로 치환하여 주세요
         //API Key = NCSBOX6VGDQKOFZ1 , API Secret = Y79GYYHL6G3816HNTTTDFPS2JGT4GIXV
         Message message = new Message();
         message.setFrom("01023519538");
         message.setTo(to);
         message.setText("펫플래닛 회원가입 인증번호 : "+ numStr);
-// message.setSubject("문자 제목 입력"); // LMS, MMS 전용 옵션, SMS에서 해당 파라미터 추가될 경우 자동으로 LMS로 변환됩니다!
+        // message.setSubject("문자 제목 입력"); // LMS, MMS 전용 옵션, SMS에서 해당 파라미터 추가될 경우 자동으로 LMS로 변환됩니다!
 
         try {
             // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
