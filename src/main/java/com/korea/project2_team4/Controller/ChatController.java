@@ -50,23 +50,6 @@ public class ChatController {
         return "Chat/chatList_form";
     }
 
-// 비밀번호 설정 전 코드
-//    @GetMapping("/chatRoom/{id}")
-//    public String goChatRoom(Model model,Principal principal, @PathVariable("id") Long id) {
-//
-//        chatService.enterChatRoom(id, principal);
-//        ChatRoom chatRoomId = chatService.findChatRoomById(id);
-//
-//        Map<String, Object> chatData = chatService.showChatDate(id);
-//
-//        model.addAttribute("chatRoomId", chatRoomId);
-//        model.addAttribute("chatRoomName", chatRoomId.getRoomName());
-//
-//        model.addAttribute("members", chatData.get("members"));
-//        model.addAttribute("messages", chatData.get("messages"));
-//
-//        return "Chat/chatRoom_form";
-//    }
 
 
     @PostMapping("/chatRoom")

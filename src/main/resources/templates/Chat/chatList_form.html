@@ -51,19 +51,8 @@
                         </div>
                     </div>
                     <br>
-                    <!--채팅방 입장 비밀번호 설정 전-->
-<!--                    <div>-->
-<!--                        <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 150px;"-->
-<!--                             th:each="room : ${list}">-->
-<!--                            <div class="card-body" th:onclick="@{|window.location='/chat/chatRoom/${room.id}'|}">-->
-<!--                                <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>-->
-<!--                                <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>-->
-<!--                                <div class="d-flex justify-content-end">인원 수 : <span></span></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
 
-                                                    <!--채팅 모달-->
+                                                    <!--채팅방 목록-->
                     <div>
                         <div class="card mb-3 mx-auto clickable-card" style="width:50%; height: 200px;"
                              th:each="room : ${list}">
@@ -71,7 +60,7 @@
                                 <div class="mb-3" style="font-weight: bold;" th:text="${room.roomName}"></div>
                                 <div class="mb-3">방장 : <span th:text="${room.adminName}"></span></div>
                                 <div class="mb-3">참석 여부  : <span th:text="${room.inChatRoom}"></span></div>
-                                <div class="d-flex justify-content-end">인원 수 : <span th:text="${room.memberCount}"></span><span></span></div>
+                                <div class="d-flex justify-content-end">인원 수 : <span th:text="${room.memberCount}"></span></div>
                             </div>
                         </div>
                     </div>
@@ -133,10 +122,17 @@
         function openCreateChatRoomModal() {
             $('#createChatRoomModal').modal('show');
         }
-        function openEnterChatRoomModal(roomId, inChatRoom) {
+        function openEnterChatRoomModal(roomId, inChatRoom, memberCount, maxMemberCount) {
+            const maxAllowedMemberCount = 50;
+
             $('#inChat').val(inChatRoom);
             $('#roomIdInput').val(roomId);
+
             if (inChatRoom === "true") {
+                if (memberCount >= maxMemberCount) {
+                    alert("방의 인원이 가득차 참여할 수 없습니다..");
+                    return;
+                }
                 var enterChatRoomForm = document.getElementById('enterChatRoomForm');
                 enterChatRoomForm.submit();
             }
