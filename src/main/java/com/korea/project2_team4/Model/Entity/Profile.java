@@ -23,13 +23,17 @@ public class Profile {
     private Long id;
 
     @OneToOne
+//    @JoinColumn(name = "member_id") // 연관 관계의 주인을 명시
     private Member member;
 
 
     @OneToOne(mappedBy = "profileImage", cascade = CascadeType.REMOVE)
     private Image profileImage;
 
+    @Column(unique = true, nullable = false)
     private String profileName;
+
+
     private String content;
 
     private LocalDateTime modifyDate;

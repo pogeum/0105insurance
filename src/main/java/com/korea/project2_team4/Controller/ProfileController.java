@@ -10,6 +10,7 @@ import com.korea.project2_team4.Repository.SaveMessageRepository;
 import com.korea.project2_team4.Service.*;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -123,8 +124,11 @@ public class ProfileController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public String profileupdate(ProfileForm profileForm, @RequestParam(value = "profileImage") MultipartFile newprofileImage,
+    public String profileupdate(@Valid ProfileForm profileForm, @RequestParam(value = "profileImage") MultipartFile newprofileImage,
                                 BindingResult bindingResult, Principal principal) throws Exception {
+//        if (bindingResult.hasErrors()) {
+//            return "Profile/profile_form";
+//        }
         Member sitemember = this.memberService.getMember(principal.getName());
 
         if (profileForm.getProfileImage() != null && !profileForm.getProfileImage().isEmpty()) {
@@ -132,6 +136,14 @@ public class ProfileController {
         }
 
         profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+
+//
+//        try {
+//            profileService.updateprofile(sitemember.getProfile(), profileForm.getProfileName(), profileForm.getContent());
+//        } catch () {
+//
+//        }
+
 
         String encodedProfileName = URLEncoder.encode(sitemember.getProfile().getProfileName(), "UTF-8");
         return "redirect:/profile/detail/" + encodedProfileName;
@@ -376,26 +388,51 @@ public class ProfileController {
         return "Profile/dmPage";
     }
 
-
-    @PostMapping("/sendmessageTo/{profileName}")
-    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
+    @GetMapping("/dmTo/{profileName}/delete")
+    public String deleteDmPage(Principal principal,@PathVariable("profileName") String profileName) throws UnsupportedEncodingException {
         Member sitemember = this.memberService.getMember(principal.getName());
         Profile partner = profileService.getProfileByName(profileName);
-        Message sendmessage = new Message();
-        sendmessage.setAuthor(sitemember.getProfile());
-        sendmessage.setReceiver(partner);
-        sendmessage.setContent(message);
-        sendmessage.setCreateDate(LocalDateTime.now());
-        messageRepository.save(sendmessage);
+        Profile me = sitemember.getProfile();
 
-        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
-        return "redirect:/profile/dmTo/" + encodedValue;
+        List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
+        DmPage dmPage = dmPageService.getMyDmPage(me,partner);
+        myDmList.remove(dmPage); //어케할지,.
+
+        String encodedProfileName = URLEncoder.encode(me.getProfileName(), "UTF-8");
+        return "redirect:/profile/myDmPages/" + encodedProfileName;
     }
 
-    @PostMapping("/sendmessage")
-    public String sendmessage() {
-        return "redirect:/Proflle/dmpage";
+
+    @GetMapping("/myDmPages/{profileName}")
+    public String myDmPages(Principal principal, Model model,@PathVariable("profileName") String profileName) {
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile me = sitemember.getProfile();
+        List<DmPage> myDmList = dmPageService.getMyDmPageList(me);
+
+        model.addAttribute("myDmList",myDmList);
+        return "Profile/myDmPages";
     }
+
+
+//    @PostMapping("/sendmessageTo/{profileName}")
+//    public String sendmessage(Principal principal, Model model, @PathVariable("profileName") String profileName, @RequestParam(value = "message") String message) {
+//        Member sitemember = this.memberService.getMember(principal.getName());
+//        Profile partner = profileService.getProfileByName(profileName);
+//        Message sendmessage = new Message();
+//        sendmessage.setAuthor(sitemember.getProfile());
+//        sendmessage.setReceiver(partner);
+//        sendmessage.setContent(message);
+//        sendmessage.setCreateDate(LocalDateTime.now());
+//        messageRepository.save(sendmessage);
+//
+//        String encodedValue = URLEncoder.encode(profileName, StandardCharsets.UTF_8);
+//        return "redirect:/profile/dmTo/" + encodedValue;
+//    }
+//
+//    @PostMapping("/sendmessage")
+//    public String sendmessage() {
+//        return "redirect:/Proflle/dmpage";
+//    }
 
 ////////////////////////웹소켓 테스트. 선영추ㅡ가//////////////////////////////////////////
 
