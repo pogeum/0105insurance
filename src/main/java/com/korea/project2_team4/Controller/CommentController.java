@@ -35,8 +35,15 @@ public class CommentController {
         Post post = this.postService.getPost(id);
         Member member = this.memberService.getMember(principal.getName());
         commentService.create(post, content, member.getProfile());
+//        Comment comment =
+
 
         return "redirect:/post/detail/" + id + "/1";
+    }
+    private String getUserDeviceToken(Long memberId) {
+        // 사용자의 FCM 디바이스 토큰을 데이터베이스에서 가져오는 로직
+        // 실제 구현은 데이터베이스에 따라 다를 수 있습니다.
+        return "USER_DEVICE_TOKEN";
     }
 
     @PostMapping("/commentLike")
