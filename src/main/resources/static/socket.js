@@ -26,6 +26,10 @@ function connect() {
     });
 }
 
+function sendConnectionStatus(status) {
+        stompClient.send("/pub/connect-status", {}, status.toString());
+    }
+
 
 
 function disconnect() {
@@ -58,11 +62,17 @@ function sendContent() {//이게  sendmessage!!!!!!!!!!
     // stompClient가 정의되어 있고 연결이 성공적인 경우에만 send 호출
     if (stompClient && stompClient.connected) {
         stompClient.send("/pub/hello", {}, JSON.stringify(message));
+        stompClient.send("/pub/connect-status", {}, JSON.stringify(message));
     } else {
         console.error('WebSocket connection is not established.');
     }
 
 }
+
+function sendConnectionStatus(status) {
+        var status = 'sender.connected';
+        stompClient.send("/pub/connect-status", {}, status.toString());
+    }
 
 function showMessaging(message, myprofileName) { //이게  savemessage인듯
 
@@ -113,3 +123,31 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#btn-chat" ).click(function() { sendContent(); });
 });
+
+
+
+// 클라이언트 1
+const ws1 = new WebSocket('ws://서버주소');
+ws1.onopen = function() {
+    // 서버에 연결 상태 전송
+    sendConnectionStatus(true);
+};
+ws1.onclose = function() {
+    // 서버에 연결 상태 전송
+    sendConnectionStatus(false);
+};
+
+function sendConnectionStatus(status) {
+    // 서버에 연결 상태 전송
+    ws1.send(JSON.stringify({ type: 'connection_status', isConnected: status }));
+}
+
+// 클라이언트 2
+const ws2 = new WebSocket('ws://서버주소');
+ws2.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'connection_status') {
+        // 다른 클라이언트의 연결 상태를 확인
+        console.log('다른 클라이언트의 연결 상태:', data.isConnected);
+    }
+};

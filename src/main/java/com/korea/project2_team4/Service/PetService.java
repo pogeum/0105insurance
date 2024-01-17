@@ -1,6 +1,7 @@
 package com.korea.project2_team4.Service;
 
 import com.korea.project2_team4.Model.Entity.Pet;
+import com.korea.project2_team4.Model.Entity.Profile;
 import com.korea.project2_team4.Repository.PetRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.List;
 
 @Service
 @Getter
@@ -58,6 +60,24 @@ public class PetService {
     }
 
 
+    public boolean isLiked(Pet pet, Profile profile) {
+        if (pet == null) {
+            return false;
+        }
+        return pet.getLikes().contains(profile);
+    }
 
+    public void unLike(Pet pet, Profile profile) {
+        pet.getLikes().remove(profile);
+        this.petRepository.save(pet);
+    }
 
+    public void Like(Pet pet, Profile profile) {
+        pet.getLikes().add(profile);
+        this.petRepository.save(pet);
+    }
+
+    public List<Pet> getMyLikePets(Profile me) {
+        return this.petRepository.findAllByLikes(me.getProfileName());
+    }
 }
