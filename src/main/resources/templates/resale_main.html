@@ -21,10 +21,42 @@
     </head>
     <body>
     <!-- Section-->
-    <section class="py-5">
-        <a type="button" class="btn btn-outline-warning" th:href="@{|/resalePost/createResalePost|}">거래글 쓰기</a>
+    <section class="py-5" style="width: 500rem;">
+        <div class="d-flex justify-content-end">
+<!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
+<!--                <div class="input-group">-->
+<!--                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"-->
+<!--                           style="width: 330px;" th:value="${kw}">-->
+<!--                    <button class="btn btn-outline-success" type="submit">🔍</button>-->
+<!--                </div>-->
+<!--            </form>-->
+            <a type="button" class="btn btn-primary" th:href="@{|/resalePost/createResalePost|}">거래글 쓰기</a>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="resaleDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    중고거래
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="resaleDropdown">
+                    <li><a class="dropdown-item" th:href="@{|#|}">관심목록</a></li>
+                    <li><a class="dropdown-item" th:href="@{|#|}">판매내역</a></li>
+                    <li><a class="dropdown-item" th:href="@{|#|}">구매내역</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">내 마켓 보기</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="container px-3 px-lg-5 mt-5">
-            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+<!--            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-start">-->
+            <div class="d-flex justify-content-start">
+                <form th:action="@{/resalePost/search}" class="d-flex" role="search">
+                    <div class="input-group">
+                        <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="거래 게시글 제목이나 내용을 검색하세요." aria-label="Search"
+                               style="width: 330px;" th:value="${kw}">
+                        <button class="btn btn-outline-success" type="submit">🔍</button>
+                    </div>
+                </form>
+            </div>
+            <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-4 row-cols-xl-4 justify-content-center">
                 <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
                 <div th:each="post : ${paging}" class="col mb-5">
                     <a th:href=@{|/resalePost/detail/${post.id}/0|} style="text-decoration: none; color:inherit; ">
@@ -35,7 +67,7 @@
                             <!--                            </div>-->
                             <div th:if="${not #lists.isEmpty(post.resalePostImages)}">
                                 <div th:each="img, iterStat : ${post.resalePostImages}" th:if="${iterStat.index lt 1}">
-                                    <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">
+                                    <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:250px;">
                                 </div>
                             </div>
                             <div th:unless="${post.resalePostImages != null and not #lists.isEmpty(post.resalePostImages)}">
@@ -51,6 +83,7 @@
                                     <!--post content-->
                                     <span th:text="'가격 : ' + ${post.price} + '원'"></span>
                                     <div th:text="'조회수 : ' + ${post.view}"></div>
+                                    <div th:text="'찜한 회원 : ' + ${post.wishProfiles.size() + '명'}"></div>
                                 </div>
                             </div>
                         </div>

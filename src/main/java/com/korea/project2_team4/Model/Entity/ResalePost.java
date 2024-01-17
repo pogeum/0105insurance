@@ -30,6 +30,9 @@ public class ResalePost {
 
     private String price;
 
+    @Column(columnDefinition = "VARCHAR(100)")
+    private String category;
+
     @OneToMany(mappedBy = "resalePostImages", cascade = CascadeType.REMOVE )
     private List<Image> resalePostImages;
 

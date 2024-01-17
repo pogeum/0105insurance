@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -45,6 +46,14 @@ public class ResalePostController {
     @GetMapping("/main")
     public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
         Page<ResalePost> resalePostList = resalePostService.resalePostList(page);
+        model.addAttribute("paging",resalePostList);
+        return "resale_main";
+    }
+    @GetMapping("/search")
+    public String searchResalePost(Model model,
+                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "kw", defaultValue = "") String kw){
+        Page<ResalePost> resalePostList = resalePostService.resalePostsForSearch(page, kw);
         model.addAttribute("paging",resalePostList);
         return "resale_main";
     }
@@ -80,6 +89,7 @@ public class ResalePostController {
         resalePost.setTitle(resalePostForm.getTitle());
         resalePost.setPrice(resalePostForm.getPrice());
         resalePost.setContent(resalePostForm.getContent());
+        resalePost.setCategory(resalePostForm.getCategory());
         resalePost.setCreateDate(LocalDateTime.now());
         resalePost.setSeller(sitemember.getProfile());
         if (imageFiles != null && !imageFiles.isEmpty()) {
@@ -98,6 +108,71 @@ public class ResalePostController {
 //        }
 
         return "redirect:/resalePost/detail/"+ resalePost.getId() +"/0";
+    }
+    @PostMapping("/deleteResalePost/{id}")
+    public String deletePost(@PathVariable Long id) {
+
+        resalePostService.deleteById(id);
+
+        return "redirect:/resalePost/main";
+    }
+    @PostMapping("/resalePostWish")
+    public String resalePostWish(Principal principal, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        if (principal != null) {
+            ResalePost resalePost = this.resalePostService.getResalePost(id);
+            Member member = memberService.getMember(principal.getName());
+            Profile profile = member.getProfile();
+            //프로필 이름은 멤버의 닉네임 이다. principal.getName() 은 username이다. principal.getName()으로 profileService.getProfileByName 메서드를 사용할 수 없음.
+            Long postId = resalePost.getId();
+            boolean isChecked = false;
+            if (resalePostService.getWished(resalePost, profile)) {
+                resalePostService.cancelWish(resalePost, profile);
+            } else {
+                resalePostService.wish(resalePost, profile);
+                isChecked = true;
+            }
+            redirectAttributes.addFlashAttribute("isChecked", isChecked);
+            return "redirect:/resalePost/detail/" + postId + "/1";
+        } else {
+            return "redirect:/member/login";
+        }
+    }
+    @GetMapping("/updateResalePost/{id}")
+    public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {
+        if (principal != null) {
+            Member member = this.memberService.getMember(principal.getName());
+            model.addAttribute("loginedMember", member);
+        }
+
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        model.addAttribute("post", resalePost);
+
+        return "ResalePost/resalePostUpdate_form";
+    }
+    @PostMapping(value = "/updateResalePost/{id}", consumes = {"multipart/form-data"})
+    public String updatePost(@PathVariable("id") Long id, @ModelAttribute ResalePost updatePost,
+                             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+    ) throws IOException, NoSuchAlgorithmException {
+
+        ResalePost existingPost = resalePostService.getResalePost(id);
+
+        if (existingPost != null) {
+            existingPost.setTitle(updatePost.getTitle());
+            existingPost.setContent(updatePost.getContent());
+            existingPost.setModifyDate(LocalDateTime.now());
+            existingPost.setCategory(updatePost.getCategory());
+            existingPost.setPrice(updatePost.getPrice());
+
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                imageService.uploadResalePostImage(imageFiles, existingPost);
+            }
+
+            existingPost.setCategory(updatePost.getCategory());
+
+            resalePostService.save(existingPost);
+        }
+
+        return "redirect:/resalePost/detail/{id}/1";
     }
 }
 

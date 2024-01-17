@@ -29,8 +29,14 @@ public class ResalePostService {
     public Page<ResalePost> resalePostList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 12, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findAll(pageable);
+    }
+    public Page<ResalePost> resalePostsForSearch(int page, String kw){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByTitleOrContentContainingIgnoreCase(kw,pageable);
     }
 
     public ResalePost getResalePost(Long id) {
@@ -50,6 +56,26 @@ public class ResalePostService {
     }
     public void save(ResalePost resalePost){
         resalePostRepository.save(resalePost);
+    }
+    public void deleteById(Long id){
+        resalePostRepository.deleteById(id);
+    }
+
+    public void wish(ResalePost resalePost, Profile profile) {
+        resalePost.getWishProfiles().add(profile);
+        this.resalePostRepository.save(resalePost);
+    }
+
+    public void cancelWish(ResalePost resalePost, Profile profile) {
+        resalePost.getWishProfiles().remove(profile);
+        this.resalePostRepository.save(resalePost);
+    }
+
+    public boolean getWished(ResalePost resalePost, Profile profile) {
+        if (resalePost == null) {
+            return false;
+        }
+        return resalePost.getWishProfiles().contains(profile);
     }
 
 }

@@ -55,14 +55,60 @@
 <!--                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>-->
 <!--                        </form>-->
 <!--                    </div>-->
-<!--                    <div class="col-md-auto"-->
-<!--                         th:if="${post.author?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
-<!--                        <form th:action="@{|/post/deletePost/${post.id}|}" method="post"-->
-<!--                              onsubmit="return DeletePost();">-->
-<!--                            <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제-->
-<!--                            </button>-->
+                    <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">
+                        <input type="hidden" id="heart-fill"
+                               th:value="${#lists.contains(post.wishProfiles, loginedMember.getProfile())}">
+                        <form id="likeForm" class="flex-fill" th:action="@{|/resalePost/resalePostWish|}" method="post"
+                              onsubmit="return toggleHeartIcon()">
+                            <input type="hidden" name="id" th:value="${post.id}">
+                            <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                               style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill bg-primary"
+                                  th:text="${post.wishProfiles.size()}"></span></i>
+                        </form>
+                    </div>
+
+                    <div class="pb-5 col-md-12 text-end">
+                        <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"
+                           style="font-size: 2rem; color:red; cursor:pointer;">
+                            <span class="badge rounded-pill bg-primary"
+                                  th:text="${post.wishProfiles.size()}"></span></i>
+                    </div>
+
+<!--                    <div sec:authorize="isAuthenticated()" class="pb-5 col-md-12 text-end">-->
+<!--                        <input type="hidden" id="heart-fill"-->
+<!--                               th:value="${#lists.contains(post.likeMembers, loginedMember)}">-->
+<!--                        <form id="likeForm" class="flex-fill" th:action="@{|/post/postLike|}" method="post"-->
+<!--                              onsubmit="return toggleHeartIcon()">-->
+<!--                            <input type="hidden" name="id" th:value="${post.id}">-->
+<!--                            <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"-->
+<!--                               style="font-size: 2rem; color:red; cursor:pointer;">-->
+<!--                            <span class="badge rounded-pill bg-primary"-->
+<!--                                  th:text="${post.likeMembers.size()}"></span></i>-->
 <!--                        </form>-->
 <!--                    </div>-->
+<!--                    <div class="pb-5 col-md-12 text-end">-->
+<!--                        <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()"-->
+<!--                           style="font-size: 2rem; color:red; cursor:pointer;">-->
+<!--                            <span class="badge rounded-pill bg-primary"-->
+<!--                                  th:text="${post.likeMembers.size()}"></span></i>-->
+<!--                    </div>-->
+<!--                    -->
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" method="get">
+                            <input type="hidden" name="id" th:value="${post.id}" />
+                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>
+                        </form>
+                    </div>
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/deleteResalePost/${post.id}|}" method="post" onsubmit="return DeletePost();">
+<!--                            onsubmit="return DeletePost();"-->
+                            <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제
+                            </button>
+                        </form>
+                    </div>
 
                 </div>
             </div>
@@ -94,6 +140,26 @@
         </div>
     </div>
     <script layout:fragment="script" type='text/javascript' th:inline="javascript">
+        function DeletePost() {
+            return confirm("게시글을 삭제하시겠습니까?");
+        }
+
+        //게시물 좋아요
+        function toggleHeartIcon() {
+            var heartFill = document.getElementById('heart-fill');
+            var isFilled = heartFill.value;
+            if (isFilled == "" || isFilled === "false") {
+                heartIcon.classList.remove('bi-heart-fill');
+                heartIcon.classList.add('bi-heart');
+            } else {
+                heartIcon.classList.remove('bi-heart');
+                heartIcon.classList.add('bi-heart-fill');
+            }
+        }
+        function heartSubmit() {
+            document.getElementById('likeForm').submit();
+        }
+        toggleHeartIcon();
     </script>
 </div>
 </html>
