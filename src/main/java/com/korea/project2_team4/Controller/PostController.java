@@ -82,6 +82,8 @@ public class PostController {
     }
 
 
+
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/createPost")
     public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult

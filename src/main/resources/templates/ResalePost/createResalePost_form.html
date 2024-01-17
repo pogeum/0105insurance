@@ -1,0 +1,33 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+<div layout:fragment="content" class="row py-5 px-4">
+
+    <form th:action="@{/resalePost/createResalePost}" th:object="${resalePostForm}" method="post" enctype="multipart/form-data" id="myForm">
+        <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+            <div class="mb-3">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                <small class="text-danger" id="title-error"></small>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">내용</label>
+                <textarea class="form-control" id="content" th:field="*{content}" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">가격</label>
+                <textarea class="form-control" id="price" th:field="*{price}" rows="3" required></textarea>
+            </div>
+            <div>
+                <label for="imageFiles">이미지 업로드</label>
+
+                <input type="file" id="imageFiles" name="imageFiles" multiple required>
+            </div>
+            <button type="submit" class="btn btn-light">저장</button>
+        </div>
+    </form>
+
+</div>
+<script layout:fragment="script" type='text/javascript'>
+
+</script>
+</html>
