@@ -251,4 +251,15 @@ public class ImageService {
     public Image findBySaveName(String saveName) {
         return imageRepository.findBySaveName(saveName);
     }
+
+    public void sendChatImage(String fileName, String saveName, String filePath, ChatMessage chatMessage) {
+        Image image = new Image();
+        image.setFileName(fileName);
+        image.setSaveName(saveName);
+        image.setFilePath(filePath);
+        image.setChatImages(chatMessage);
+        this.imageRepository.save(image);
+    }
+
+
 }

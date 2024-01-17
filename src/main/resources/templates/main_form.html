@@ -8,8 +8,8 @@
     </head>
     <body>
     <!-- Section-->
-    <section class="py-5">
-        <div class="container px-3 px-lg-5 mt-5">
+    <section class="py-5" style="width: 500rem;">
+        <div class=" container px-3 px-lg-5 mt-5">
             <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
 <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
                 <div th:each="post : ${postList}" class="col mb-5" th:if="${not #lists.isEmpty(post.postImages)}">
@@ -19,7 +19,7 @@
 <!--                            <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">-->
 <!--                                <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">-->
 <!--                            </div>-->
-                            <div >
+                            <div>
                                 <div th:each="img, iterStat : ${post.postImages}" th:if="${iterStat.index lt 1}">
                                     <img class="card-img-top" th:src="@{|/resources/${img.saveName}|}" alt="post image" style="width:100%; height:300px;">
                                 </div>
