@@ -10,7 +10,7 @@
     <!-- Section-->
     <section class="py-5">
         <div class="container px-3 px-lg-5 mt-5">
-            <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+            <div class="row gx-3 gx-lg-5 row-cols-md-3  justify-content-center">
 <!--============================이부분 each문으로 포스트 적용하면 됩니다.=====================================-->
                 <div th:each="post : ${postList}" class="col mb-5" th:if="${not #lists.isEmpty(post.postImages)}">
                     <a  th:href=@{|/post/detail/${post.id}/0|} style="text-decoration: none; color:inherit; ">

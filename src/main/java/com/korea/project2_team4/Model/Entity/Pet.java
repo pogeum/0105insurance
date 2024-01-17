@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -20,5 +22,9 @@ public class Pet {
 
     @OneToOne(mappedBy = "petImage", cascade = CascadeType.REMOVE)
     private Image petImage;
+
+
+    @ManyToMany
+    private Set<Profile> likes;
 
 }

@@ -206,12 +206,23 @@
 
     stompClient.connect({}, function (frame) {
         setConnected(true);
+        // 연결 상태 전송
+        sendConnectionStatus(true);
+        console.log('aaaaa');
+        console.log(status);
+
+
         console.log('Connected: ' + frame);
         console.log(myprofileName);
         stompClient.subscribe('/sub/messaging', function (messaging) {
             showMessaging(JSON.parse(messaging.body), myprofileName);
         });
     });
+
+    function sendConnectionStatus(status) {
+        var status = 'sender.connected'
+        stompClient.send("/pub/connect-status", {}, status.toString());
+    }
 
 
 </script>
