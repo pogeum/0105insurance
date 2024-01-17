@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -98,6 +99,34 @@ public class ResalePostController {
 //        }
 
         return "redirect:/resalePost/detail/"+ resalePost.getId() +"/0";
+    }
+    @PostMapping("/deleteResalePost/{id}")
+    public String deletePost(@PathVariable Long id) {
+
+        resalePostService.deleteById(id);
+
+        return "redirect:/resalePost/main";
+    }
+    @PostMapping("/resalePostWish")
+    public String resalePostWish(Principal principal, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        if (principal != null) {
+            ResalePost resalePost = this.resalePostService.getResalePost(id);
+            Member member = memberService.getMember(principal.getName());
+            Profile profile = member.getProfile();
+            //프로필 이름은 멤버의 닉네임 이다. principal.getName() 은 username이다. principal.getName()으로 profileService.getProfileByName 메서드를 사용할 수 없음.
+            Long postId = resalePost.getId();
+            boolean isChecked = false;
+            if (resalePostService.getWished(resalePost, profile)) {
+                resalePostService.cancelWish(resalePost, profile);
+            } else {
+                resalePostService.wish(resalePost, profile);
+                isChecked = true;
+            }
+            redirectAttributes.addFlashAttribute("isChecked", isChecked);
+            return "redirect:/resalePost/detail/" + postId + "/1";
+        } else {
+            return "redirect:/member/login";
+        }
     }
 }
 

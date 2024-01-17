@@ -51,5 +51,25 @@ public class ResalePostService {
     public void save(ResalePost resalePost){
         resalePostRepository.save(resalePost);
     }
+    public void deleteById(Long id){
+        resalePostRepository.deleteById(id);
+    }
+
+    public void wish(ResalePost resalePost, Profile profile) {
+        resalePost.getWishProfiles().add(profile);
+        this.resalePostRepository.save(resalePost);
+    }
+
+    public void cancelWish(ResalePost resalePost, Profile profile) {
+        resalePost.getWishProfiles().remove(profile);
+        this.resalePostRepository.save(resalePost);
+    }
+
+    public boolean getWished(ResalePost resalePost, Profile profile) {
+        if (resalePost == null) {
+            return false;
+        }
+        return resalePost.getWishProfiles().contains(profile);
+    }
 
 }
