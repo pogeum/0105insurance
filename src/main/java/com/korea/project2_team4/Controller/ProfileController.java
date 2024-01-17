@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.HtmlUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -263,11 +264,14 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/petprofile/{petName}")
-    public String petprofile(Model model, @PathVariable("petName")String petName) {
+    @GetMapping("/petprofile/{petName}/{hit}")
+    public String petprofile(Principal principal,Model model, @PathVariable("petName")String petName) {
         Pet pet = petService.getpetByname(petName);
 //        List<Post> ownerposts = postService.getPostsbyAuthor(pet.getOwner()); //???
-
+        if (principal !=null ) {
+            Member member = memberService.getMember(principal.getName());
+            model.addAttribute("loginedMember", member);
+        }
         List<Post> postList = new ArrayList<>();
 
         if (tagService.tagExists(petName)) {
@@ -280,11 +284,32 @@ public class ProfileController {
                 }
             }
         }
-
-
         model.addAttribute("postList", postList);
         model.addAttribute("pet", pet);
         return "Profile/pet_profile";
+    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/petLike")
+    public String petLike(Principal principal, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+        if (principal != null) {
+            Pet pet = this.petService.getpetById(id);
+            Member member = this.memberService.getMember(principal.getName());
+            Profile profile = member.getProfile();
+
+            boolean isChecked = false;
+
+            if (petService.isLiked(pet, profile)) {
+                petService.unLike(pet, profile);
+            } else {
+                petService.Like(pet, profile);
+                isChecked = true;
+            }
+            redirectAttributes.addFlashAttribute("isChecked", isChecked);
+            String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
+            return "redirect:/profile/petprofile/" + encodedPetName + "/1";
+        } else {
+            return "redirect:/member/login";
+        }
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -302,7 +327,8 @@ public class ProfileController {
 
         petService.updatePet(pet, name, content);
 
-        return "redirect:/profile/petprofile?petid=" + petid;
+        String encodedPetName = URLEncoder.encode(pet.getName(), "UTF-8");
+        return "redirect:/profile/petprofile/" + encodedPetName + "/1";
 
     }
 
@@ -318,6 +344,16 @@ public class ProfileController {
 
     }
 
+    @GetMapping("/petList")
+    public String petList(Principal principal,Model model) {
+        Member sitemember = this.memberService.getMember(principal.getName());
+        Profile me = sitemember.getProfile();
+        List<Pet> petList = petService.getMyLikePets(me);
+
+        model.addAttribute("petList", petList);
+        return "Profile/petList";
+
+    }
 
 
     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓팔로우 관리↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
