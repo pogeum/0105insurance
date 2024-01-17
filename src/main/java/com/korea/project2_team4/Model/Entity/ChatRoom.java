@@ -31,12 +31,15 @@ public class ChatRoom {
 
     private String password;
 
+    private int maxMember;
+
     @Builder
-    public ChatRoom(Long id, String roomName, Member admin, String password) {
+    public ChatRoom(Long id, String roomName, Member admin, String password, int maxMember) {
         this.id = id;
         this.roomName = roomName;
         this.admin = admin;
         this.password = password;
+        this.maxMember = maxMember;
     }
     public void changeAdmin(Member admin){
         this.admin = admin;

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,6 +28,9 @@ public class ChatMessage {
 
     @ManyToOne
     private MemberChatRoom chatRoom;
+
+    @OneToMany(mappedBy = "chatImages", cascade = CascadeType.REMOVE)
+    private List<Image> chatImages = new ArrayList<>();
 
     @Builder
     public ChatMessage (Long id, String message, Member sender, LocalDateTime time, MemberChatRoom chatRoom) {

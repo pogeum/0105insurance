@@ -52,6 +52,7 @@ public class ChatService {
                     .roomName(chatRoom.getRoomName())
                     .adminName(chatRoom.getAdmin().getUserName())
                     .memberCount(chatRoom.getMemberChatRooms().size())
+                    .maxMember(chatRoom.getMaxMember())
                     .inChatRoom(memberChatRoomRepository.findByChatroomAndMember(chatRoom, member).isPresent())
                     .build());
         });
@@ -60,8 +61,8 @@ public class ChatService {
     }
 
 
-    // 채팅방 만들 때 관리자와 방 번호, 이름 생성, 비빌번호 설정
-    public ChatRoom createChatRoom(String roomName, String password, Principal principal) {
+    // 채팅방 만들 때 관리자와 방 번호, 이름 생성, 비빌번호 설정, 인원 수 설정
+    public ChatRoom createChatRoom(String roomName, String password, int maxMember, Principal principal) {
 
         Member admin = memberRepository.findByUserName(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -70,6 +71,7 @@ public class ChatService {
                 .roomName(roomName)
                 .admin(admin)
                 .password(passwordEncoder.encode(password))
+                .maxMember(maxMember)
                 .build();
 
         chatRoomRepository.save(chatRoom);
@@ -99,12 +101,17 @@ public class ChatService {
                     .anyMatch(memberChatRoom -> memberChatRoom.getMember().getId().equals(member.getId()));
 
             if (!isUserInChatRoom) {
-                MemberChatRoom memberChatRoom = MemberChatRoom.builder()
-                        .chatroom(chatRoom)
-                        .member(member)
-                        .build();
+                if (chatRoom.getMemberChatRooms().size() + 1 <= chatRoom.getMaxMember()) {
+                    MemberChatRoom memberChatRoom = MemberChatRoom.builder()
+                            .chatroom(chatRoom)
+                            .member(member)
+                            .build();
 
-                memberChatRoomRepository.save(memberChatRoom);
+                    memberChatRoomRepository.save(memberChatRoom);
+                } else {
+                    throw new RuntimeException("채팅 방이 가득 찼습니다..");
+                }
+
             }
         } else {
             throw new RuntimeException("비밀번호가 틀립니다.");

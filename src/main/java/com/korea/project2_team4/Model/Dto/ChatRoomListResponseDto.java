@@ -11,14 +11,16 @@ public class ChatRoomListResponseDto {
     private String roomName;
     private String adminName;
     private int memberCount;
+    private int maxMember;
     private boolean inChatRoom;
     @Builder
-    public ChatRoomListResponseDto(Long id, String roomName, String adminName, int memberCount, boolean inChatRoom){
+    public ChatRoomListResponseDto(Long id, String roomName, String adminName, int memberCount, int maxMember ,  boolean inChatRoom){
         this.id = id;
         this.roomName = roomName;
         this.adminName = adminName;
         this.memberCount = memberCount;
         this.inChatRoom = inChatRoom;
+        this.maxMember = maxMember;
     }
 
 }
