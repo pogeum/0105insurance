@@ -83,7 +83,9 @@ public class ProfileService {
     public Profile getProfileByName(String profileName) {
         return this.profileRepository.findByProfileName(profileName).get();
     }
-
+    public Profile getProfile(String profileName) {
+        return this.profileRepository.findByProfileName(profileName).orElse(null);
+    }
     public void updateprofile(Profile profile, String profilename, String content) {
         profile.setProfileName(profilename);
         profile.setContent(content);
