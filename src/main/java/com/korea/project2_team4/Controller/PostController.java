@@ -86,8 +86,8 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/createPost")
-    public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult
-            , @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
+    public String createPost(Principal principal, PostForm postForm, BindingResult bindingResult,
+                             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                              @RequestParam(value = "selectedTagNames", required = false) List<String> selectedTagNames,
                              @RequestParam(value = "newTagNames", required = false) List<String> newTagNames,
                              @RequestParam(value = "petTagName", required = false) List<String> petTagNames) throws IOException, NoSuchAlgorithmException {
