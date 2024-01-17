@@ -49,6 +49,14 @@ public class ResalePostController {
         model.addAttribute("paging",resalePostList);
         return "resale_main";
     }
+    @GetMapping("/search")
+    public String searchResalePost(Model model,
+                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "kw", defaultValue = "") String kw){
+        Page<ResalePost> resalePostList = resalePostService.resalePostsForSearch(page, kw);
+        model.addAttribute("paging",resalePostList);
+        return "resale_main";
+    }
 
     @GetMapping("/detail/{id}/{hit}")
     public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit) {
@@ -128,6 +136,43 @@ public class ResalePostController {
         } else {
             return "redirect:/member/login";
         }
+    }
+    @GetMapping("/updateResalePost/{id}")
+    public String updatePost(Principal principal, Model model, @PathVariable("id") Long id) {
+        if (principal != null) {
+            Member member = this.memberService.getMember(principal.getName());
+            model.addAttribute("loginedMember", member);
+        }
+
+        ResalePost resalePost = resalePostService.getResalePost(id);
+        model.addAttribute("post", resalePost);
+
+        return "ResalePost/resalePostUpdate_form";
+    }
+    @PostMapping(value = "/updateResalePost/{id}", consumes = {"multipart/form-data"})
+    public String updatePost(@PathVariable("id") Long id, @ModelAttribute ResalePost updatePost,
+                             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles
+    ) throws IOException, NoSuchAlgorithmException {
+
+        ResalePost existingPost = resalePostService.getResalePost(id);
+
+        if (existingPost != null) {
+            existingPost.setTitle(updatePost.getTitle());
+            existingPost.setContent(updatePost.getContent());
+            existingPost.setModifyDate(LocalDateTime.now());
+            existingPost.setCategory(updatePost.getCategory());
+            existingPost.setPrice(updatePost.getPrice());
+
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                imageService.uploadResalePostImage(imageFiles, existingPost);
+            }
+
+            existingPost.setCategory(updatePost.getCategory());
+
+            resalePostService.save(existingPost);
+        }
+
+        return "redirect:/resalePost/detail/{id}/1";
     }
 }
 

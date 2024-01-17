@@ -96,6 +96,13 @@
 <!--                    -->
                     <div class="col-md-auto"
                          th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                        <form th:action="@{|/resalePost/updateResalePost/${post.id}|}" method="get">
+                            <input type="hidden" name="id" th:value="${post.id}" />
+                            <button type="submit" class="btn btn-success admin-btn" style="margin-right: 0.1rem">수정</button>
+                        </form>
+                    </div>
+                    <div class="col-md-auto"
+                         th:if="${post.seller?.id == loginedMember?.id or #authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_MANAGER'')')}">
                         <form th:action="@{|/resalePost/deleteResalePost/${post.id}|}" method="post" onsubmit="return DeletePost();">
 <!--                            onsubmit="return DeletePost();"-->
                             <button type="submit" class="btn btn-danger admin-btn" style="margin-right: 2rem">삭제

@@ -32,6 +32,12 @@ public class ResalePostService {
         Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findAll(pageable);
     }
+    public Page<ResalePost> resalePostsForSearch(int page, String kw){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+        return resalePostRepository.findByTitleOrContentContainingIgnoreCase(kw,pageable);
+    }
 
     public ResalePost getResalePost(Long id) {
         Optional<ResalePost> postOptional = resalePostRepository.findById(id);
