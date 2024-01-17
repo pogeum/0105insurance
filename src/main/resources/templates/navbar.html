@@ -21,18 +21,17 @@
 
 
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{|/resalePost/main|}">중고 물품 거래</a>
+                    <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         중고거래
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{|#|}">관심목록</a></li>
-                        <li><a class="dropdown-item" th:href="@{|/#|}">판매목록</a></li>
-                        <li><a class="dropdown-item" th:href="@{|/#|}">구매내역</a></li>
+                        <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>
+<!--                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>-->
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">내 마켓 보기</a></li>
+                        <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#">내 마켓 보기</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">

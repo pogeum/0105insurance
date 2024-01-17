@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,8 +25,20 @@ public class MainController {
     @GetMapping("/")
     public String root(Model model) {
         List<Post> postList = postService.getPostslikes();
+        System.out.println(postList.size());
+        List<Post> trimmedPostList = new ArrayList<>();
+        for (Post p : postList) {
+            if (p.getPostImages().size() != 0) {
+                trimmedPostList.add(p);
+            }
 
-        model.addAttribute("postList", postList);
+        }
+
+        if (trimmedPostList.size()>12) {
+            trimmedPostList = postList.subList(0, 12);
+        }
+        System.out.println(trimmedPostList.size());
+        model.addAttribute("postList", trimmedPostList);
         return "main_form";
     }
 

@@ -32,4 +32,7 @@ public class Image {
     @OneToOne
     private Pet petImage;
 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private ChatMessage chatImages;
+
 }
