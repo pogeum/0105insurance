@@ -81,6 +81,7 @@ public class ResalePostController {
         resalePost.setTitle(resalePostForm.getTitle());
         resalePost.setPrice(resalePostForm.getPrice());
         resalePost.setContent(resalePostForm.getContent());
+        resalePost.setCategory(resalePostForm.getCategory());
         resalePost.setCreateDate(LocalDateTime.now());
         resalePost.setSeller(sitemember.getProfile());
         if (imageFiles != null && !imageFiles.isEmpty()) {

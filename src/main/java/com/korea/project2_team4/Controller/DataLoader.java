@@ -47,7 +47,7 @@ public class DataLoader implements CommandLineRunner {
     public void saveTestResalePost() {
         if (resalePostRepository.findAll().isEmpty()) {
 
-            for (int i = 1; i <= 15; i++) {
+            for (int i = 1; i <= 20; i++) {
                 ResalePost resalePost = new ResalePost();
                 resalePost.setTitle(String.format("중고거래 제목 입니다:[%03d].", i));
                 resalePost.setContent("테스트 데이터 내용 입니다.");

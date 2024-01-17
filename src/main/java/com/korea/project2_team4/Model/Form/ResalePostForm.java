@@ -11,9 +11,12 @@ import java.util.List;
 public class ResalePostForm {
 
     private String title;
+
     private String content;
 
     private String price;
+
+    private String category;
 
     private List<MultipartFile> fileList; // 이미지 업로드를 위한 필드
 }

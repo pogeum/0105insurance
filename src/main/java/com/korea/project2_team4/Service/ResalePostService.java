@@ -29,7 +29,7 @@ public class ResalePostService {
     public Page<ResalePost> resalePostList(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 12, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
         return resalePostRepository.findAll(pageable);
     }
 

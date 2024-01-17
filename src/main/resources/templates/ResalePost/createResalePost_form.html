@@ -4,6 +4,15 @@
 
     <form th:action="@{/resalePost/createResalePost}" th:object="${resalePostForm}" method="post" enctype="multipart/form-data" id="myForm">
         <div class="col-xl-4 col-md-6 col-sm-10 mx-auto">
+            <!-- 카테고리 선택 -->
+            <div>
+                <label for="category" class="form-label">카테고리</label>
+                <select id="category" name="category" class="form-select" aria-label="Default select example">
+                    <option th:selected="${resalePostForm.category == '강아지'}" value="강아지">강아지</option>
+                    <option th:selected="${resalePostForm.category == '고양이'}" value="고양이">고양이</option>
+                    <option th:selected="${resalePostForm.category == '기타'}" value="기타">기타</option>
+                </select>
+            </div>
             <div class="mb-3">
                 <label for="title" class="form-label">제목</label>
                 <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="제목을 입력해 주세요" required>
