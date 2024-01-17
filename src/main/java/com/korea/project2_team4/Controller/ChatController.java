@@ -13,10 +13,12 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +79,7 @@ public class ChatController {
 
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO, Principal principal) {
-
+        System.out.println(Arrays.toString(chatDTO.getImage()));
         try {
 
             chatDTO.setSender(principal.getName());

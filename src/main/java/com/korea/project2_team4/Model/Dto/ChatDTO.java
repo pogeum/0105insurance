@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 // 채팅을 위한 DTO 입니다.
 // 채팅 타입에 따라서 동작하는 구조가 달라진다.
@@ -21,6 +22,7 @@ public class ChatDTO {
     private String roomId; // 방 번호
     private String sender; // 채팅을 보낸 사람
     private String message; // 메시지
+    private byte[] image; // 이미지
     private String time; // 채팅발송 시간
 
 }
