@@ -129,13 +129,13 @@
                             <input type="hidden" id="heart-fill" th:value="${#lists.contains(pet.likes, loginedMember)}">
                             <form id="likeForm" th:action="@{|/profile/petLike|}" method="post" onsubmit="return toggleHeartIcon()">
                                 <input type="hidden" name="id" th:value="${pet.id}">
-                                <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
+                                <i th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()" th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'" style="font-size: 2rem; color:red; cursor:pointer;">
                                     <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
                                 </i>
                             </form>
                         </div>
                         <div class="pb-5 col-md-12 text-end">
-                            <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
+                            <i sec:authorize="!isAuthenticated()" th:id="heartIcon" class="bi bi-heart" th:classappend="${fill} ? 'bi-heart-fill' : 'bi-heart'" onclick="heartSubmit()" style="font-size: 2rem; color:red; cursor:pointer;">
                                 <span class="badge rounded-pill" th:text="${pet.likes.size()}"></span>
                             </i>
                         </div>

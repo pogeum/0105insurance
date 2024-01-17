@@ -1,118 +1,242 @@
-<nav th:fragment="navbarFragment" class="navbar navbar-expand-lg bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">PetPlanet</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<nav th:fragment="navbarFragment" class="navbar navbar-expand-lg">
+<!--    <div class="container-fluid">-->
+<!--        <a class="navbar-brand" th:href="@{/}">PetPlanet</a>-->
+<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarSupportedContent">-->
+<!--            <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        커뮤니티
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/post/community/main(category='', sort='', TagName='')}">전체</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
-                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
-                    </ul>
-                </li>
+<!--                <li class="nav-item dropdown">-->
+<!--                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                        커뮤니티-->
+<!--                    </a>-->
+<!--                    <ul class="dropdown-menu">-->
+<!--                        <li><a class="dropdown-item" th:href="@{/post/community/main(category='', sort='', TagName='')}">전체</a></li>-->
+<!--                        <li><hr class="dropdown-divider"></li>-->
+<!--                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>-->
+<!--                        <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>-->
+<!--                    </ul>-->
+<!--                </li>-->
 
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        중고거래
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>
-<!--                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>-->
-                        <li><hr class="dropdown-divider"></li>
-                        <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#">내 마켓 보기</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">리뷰공간</a>
-                </li>
-                <li class="nav-item">
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" th:href="@{|/adoption/main|}">추가 기능</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item dropdown">-->
+<!--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                        중고거래-->
+<!--                    </a>-->
+<!--                    <ul class="dropdown-menu">-->
+<!--                        <li><a class="dropdown-item" th:href="@{|/resalePost/main|}">팔아요</a></li>-->
+<!--&lt;!&ndash;                        <li><a class="dropdown-item" th:href="@{|/#|}">사고싶어요</a></li>&ndash;&gt;-->
+<!--                        <li><hr class="dropdown-divider"></li>-->
+<!--                        <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="#">내 마켓 보기</a></li>-->
+<!--                    </ul>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link active" href="#">리뷰공간</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
 
-                    <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>
+<!--                    <a class="nav-link active" sec:authorize="isAuthenticated()" th:href="@{/post/createPost}">글쓰기(임시)</a>-->
 
-                </li>
-                <li class="nav-item">
+<!--                </li>-->
+<!--                <li class="nav-item">-->
 
-                    <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chat/chatRoomList">채팅기능(임시)</a>
-                </li>
-            </ul>
+<!--                    <a class="nav-link active" sec:authorize="isAuthenticated()" href="/chat/chatRoomList">채팅기능(임시)</a>-->
+<!--                </li>-->
+<!--            </ul>-->
 
-            <div class="d-flex justify-content-end">
-                <ul class="nav">
-                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findUserName|}">아이디 찾기</a>
-                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findPassword|}">비밀 번호 찾기</a>
+<!--            <div class="d-flex justify-content-end">-->
+<!--                <ul class="nav">-->
+<!--                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findUserName|}">아이디 찾기</a>-->
+<!--                    <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{|/member/findPassword|}">비밀 번호 찾기</a>-->
+<!--                    <li class="nav-item">-->
+<!--                    <li sec:authorize="hasRole('ROLE_ADMIN')">-->
+<!--                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>-->
+<!--                    </li>-->
+<!--                    <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">-->
+<!--                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">매니저</a>-->
+<!--                    </li>-->
+<!--                        <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>-->
+<!--                        <a class="nav-link rounded" sec:authorize="isAuthenticated()"-->
+<!--                           th:href="@{/member/logout}">로그아웃</a>-->
+<!--                    </li>-->
+
+<!--                    <li class="nav-item" sec:authorize="isAnonymous()">-->
+<!--                        <a class="nav-link rounded" th:href="@{/member/signup}">회원가입</a>-->
+<!--                    </li>-->
+
+<!--                    <li sec:authorize="isAuthenticated()">-->
+<!--                        <div class="collapse navbar-collapse" id="navbarSupportedContent2">-->
+<!--                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+<!--&lt;!&ndash;                                th:if="${#authentication.principal.username != 'admin'}"&ndash;&gt;-->
+<!--                                <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
+<!--                                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">-->
+<!--                                    </a>-->
+<!--                                    <ul class="dropdown-menu">-->
+<!--                                        <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>-->
+<!--                                        <li><hr class="dropdown-divider"></li>-->
+<!--                                        &lt;!&ndash;each 루프돌려서 펫 드롭다운리스트 생성&ndash;&gt;-->
+<!--                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>-->
+<!--                                            <div id="alarm" style="display:inline;">🔔</div>-->
+<!--                                        </li>-->
+<!--&lt;!&ndash;                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>&ndash;&gt;-->
+<!--                                    </ul>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </div>-->
+<!--                    </li>-->
+
+<!--                    <li sec:authorize="isAuthenticated()">-->
+<!--                        <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>-->
+<!--                    </li>-->
+
+
+<!--                </ul>-->
+<!--            </div>-->
+
+<!--            <form th:action="@{/post/search}" class="d-flex" role="search">-->
+<!--                <div class="input-group">-->
+<!--                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"-->
+<!--                           style="width: 330px;" th:value="${kw}">-->
+<!--                    <button class="btn btn-outline-success" type="submit">🔍</button>-->
+<!--                </div>-->
+<!--&lt;!&ndash;                <div class="recent-keyword">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="recent-search">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div th:if="${recentSearchKeywords}">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <p th:each="keyword : ${recentSearchKeywords}" th:text="${keyword}"></p>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="wrap w-100">
+        <div class="row align-items-center m-0 d-none d-md-flex">
+            <div class="col-5 text-center py-3" style="background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);">
+                <ul class="d-flex list-unstyled justify-content-center m-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            커뮤니티
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/post/community/main(category='', sort='', TagName='')}">전체</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{|/post/community/main?category=자유게시판|}">자유게시판</a></li>
+                            <li><a class="dropdown-item" th:href="@{|/post/community/main?category=QnA|}">QnA</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
-                    <li sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">관리자</a>
+                        <a class="nav-link text-white" href="#">Link</a>
                     </li>
-                    <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-                        <a class="nav-link rounded" th:href="@{|/member/adminPage|}">매니저</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-white dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
                     </li>
-                        <a class="nav-link rounded" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
-                        <a class="nav-link rounded" sec:authorize="isAuthenticated()"
-                           th:href="@{/member/logout}">로그아웃</a>
+                    <li class="nav-item">
+                        <a class="nav-link text-white disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li>
-
-                    <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a class="nav-link rounded" th:href="@{/member/signup}">회원가입</a>
-                    </li>
-
-                    <li sec:authorize="isAuthenticated()">
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent2">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                                th:if="${#authentication.principal.username != 'admin'}"-->
-                                <li class="nav-item dropdown" th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-                                    <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.principal.username + ' 님'}">
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <a class="nav-link rounded" th:href="@{|/profile/my|}">내 프로필</a>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <!--each 루프돌려서 펫 드롭다운리스트 생성-->
-                                        <li><a class="dropdown-item" th:href="@{|/profile/myDmPages/${#authentication.principal.profile.profileName}|}" style="display:inline;">DM</a>
-                                            <div id="alarm" style="display:inline;">🔔</div>
-                                        </li>
-<!--                                        <li><a class="dropdown-item" th:text="${#authentication.principal.profile.profileName}"></a></li>-->
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li sec:authorize="isAuthenticated()">
-                        <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
-                    </li>
-
+<!--                </ul>-->
+<!--                <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
 
                 </ul>
             </div>
-
-            <form th:action="@{/post/search}" class="d-flex" role="search">
-                <div class="input-group">
-                    <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"
-                           style="width: 330px;" th:value="${kw}">
-                    <button class="btn btn-outline-success" type="submit">🔍</button>
-                </div>
-<!--                <div class="recent-keyword">-->
-<!--                    <div class="recent-search">-->
-<!--                        <div th:if="${recentSearchKeywords}">-->
-<!--                            <p th:each="keyword : ${recentSearchKeywords}" th:text="${keyword}"></p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-            </form>
+            <div class="col-2 bg-transparent px-3">
+                <h1 class="text-center fw-bold figure-img text-dark">Pet Planet</h1>
+            </div>
+            <div class="col-5  text-center py-3" style="background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);">
+<!--                <ul class="d-flex list-unstyled justify-content-center m-0">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link text-white" href="#">Home</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link text-white" href="#">Link</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item dropdown">-->
+<!--                        <a class="nav-link text-white dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                            Dropdown-->
+<!--                        </a>-->
+<!--                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--                            <li><a class="dropdown-item" href="#">Action</a></li>-->
+<!--                            <li><a class="dropdown-item" href="#">Another action</a></li>-->
+<!--                            <li>-->
+<!--                                <hr class="dropdown-divider">-->
+<!--                            </li>-->
+<!--                            <li><a class="dropdown-item" href="#">Something else here</a></li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link text-white disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+                <li sec:authorize="isAuthenticated()">-->
+                                            <a class="nav-link rounded" th:href="@{/profile/myPage}">마이 페이지</a>
+                                        </li>
+                <form th:action="@{/post/search}" class="d-flex" role="search">
+                    <div class="input-group">
+                        <input class="form-control me-2" type="text" id="search_kw" name="kw" placeholder="원하시는 제목이나 내용을 검색하세요." aria-label="Search"
+                               style="width: 330px;" th:value="${kw}">
+                        <button class="btn btn-outline-success" type="submit">🔍</button>
+                    </div>
+                    <!--                <div class="recent-keyword">-->
+                    <!--                    <div class="recent-search">-->
+                    <!--                        <div th:if="${recentSearchKeywords}">-->
+                    <!--                            <p th:each="keyword : ${recentSearchKeywords}" th:text="${keyword}"></p>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                </div>-->
+                </form>
+            </div>
         </div>
+        <nav class="navbar navbar-light bg-light d-md-none">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </div>
+
     <script layout:fragment="script" type='text/javascript'>
 
     </script>
