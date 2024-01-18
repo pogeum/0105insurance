@@ -32,7 +32,10 @@
                             <form id="sendMessageForm" class="d-flex">
                                 <input class="form-control" type="text" id="message" name="message" placeholder="메시지 입력하기" required>
                                 <button class="btn btn-primary" type="submit">전송</button>
+                                <button class="btn btn-primary" type="button" onclick="document.getElementById('imageUpload').click()">첨부</button>
                             </form>
+                            <input type="file" id="imageUpload" name="image" accept="image/*" onchange="previewImage()" style="display: none;">
+                            <div id="imagePreview"></div>
                         </div>
                     </div>
                 </div>
@@ -87,18 +90,43 @@
 
             var messageInput = document.getElementById('message');
             var message = messageInput.value.trim();
-            if (message !== '') {
-                // 메시지 전송
-                stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
-                    type: 'TALK',
-                    roomId: chatRoomId,
-                    sender: 'username',
-                    message: message,
-                    time: new Date().toLocaleTimeString()
-                }));
 
-                // 입력 폼 초기화
-                messageInput.value = '';
+            var imageInput = document.getElementById('imageUpload');
+
+            var imageFile = imageInput.files[0];
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageBytes = new Uint8Array(e.target.result);
+
+                    stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
+                        type: 'TALK',
+                        roomId: chatRoomId,
+                        sender: 'username',
+                        message: message,
+                        image: imageBytes,
+                        time: new Date().toLocaleTimeString()
+                    }));
+                    // 입력 폼 초기화
+                    messageInput.value = '';
+                    imageInput.value = '';
+                }
+            }
+            else {
+                if (message !== '') {
+                    // 메시지 전송
+                    stompClient.send('/pub/chat/sendMessage', {}, JSON.stringify({
+                        type: 'TALK',
+                        roomId: chatRoomId,
+                        sender: 'username',
+                        message: message,
+                        image: null,
+                        time: new Date().toLocaleTimeString()
+                    }));
+                    // 입력 폼 초기화
+                    messageInput.value = '';
+                }
             }
         });
 
@@ -112,6 +140,34 @@
 
         function confirmDeleteChatRoom() {
             return confirm("채팅방을 삭제하시겠습니까?");
+        }
+
+        function previewImage() {
+            var input = document.getElementById("imageUpload");
+            var preview  = document.getElementById("imagePreview");
+            while (preview.firstChild) {
+                preview.removeChild(preview.firstChild);
+            }
+
+            var files = input.files;
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+
+                if (file.type.match('image.*')) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        preview.appendChild(img);
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('이미지 파일을 선택하세요.');
+                }
+            }
         }
 
     </script>

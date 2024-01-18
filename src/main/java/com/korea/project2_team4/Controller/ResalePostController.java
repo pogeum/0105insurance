@@ -5,8 +5,10 @@ import com.korea.project2_team4.Model.Form.PostForm;
 import com.korea.project2_team4.Model.Form.ResalePostForm;
 import com.korea.project2_team4.Repository.PostRepository;
 import com.korea.project2_team4.Service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +44,9 @@ public class ResalePostController {
     private final RecentSearchService recentSearchService;
     private final ReportService reportService;
     private final ResalePostService resalePostService;
+    @Autowired
+    private HttpServletRequest request; // HttpServletRequest를 주입받습니다.
+
 
     @GetMapping("/main")
     public String resalePost(Model model, @RequestParam(value = "page", defaultValue = "0") int page){
@@ -55,11 +60,14 @@ public class ResalePostController {
                                    @RequestParam(value = "kw", defaultValue = "") String kw){
         Page<ResalePost> resalePostList = resalePostService.resalePostsForSearch(page, kw);
         model.addAttribute("paging",resalePostList);
+        model.addAttribute("kw",kw);
         return "resale_main";
     }
 
     @GetMapping("/detail/{id}/{hit}")
-    public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit) {
+    public String postDetail(Principal principal, Model model, @PathVariable("id") Long id, @PathVariable("hit") Integer hit, HttpSession session) {
+//        session.removeAttribute("previousPage");
+//        request.getSession().setAttribute("previousPage", request.getRequestURI());
         if (principal != null) {
             Member member = this.memberService.getMember(principal.getName());
             model.addAttribute("loginedMember", member);
@@ -73,6 +81,19 @@ public class ResalePostController {
         }
         return "ResalePost/resalePostDetail_form";
     }
+
+//    @GetMapping("/previousPage")
+//    public String redirectToPreviousPage(HttpSession session) {
+//        String previousPage = (String) request.getSession().getAttribute("previousPage");
+//        if (previousPage != null) {
+//            session.removeAttribute("previousPage");
+//            return "redirect:" + previousPage;
+//        } else {
+//            // 이전 페이지 정보가 없는 경우, 기본적으로 어디론가 이동하거나 에러 페이지로 리다이렉트할 수 있습니다.
+//            return "redirect:/resalePost/main";
+//        }
+//    }
+
     @GetMapping("/createResalePost")
     public String createPost(Model model, ResalePostForm resalePostForm) {
         model.addAttribute("resalePostForm",resalePostForm);
